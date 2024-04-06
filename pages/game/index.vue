@@ -83,7 +83,7 @@ const games = useVingKind({
     listApi: `/api/${restVersion()}/game`,
     createApi: `/api/${restVersion()}/game`,
     query: { includeMeta: true, sortBy: 'createdAt', sortOrder: 'desc' },
-    newDefaults: { name: '', userId: currentUser.id, archived: false, collection: '' },
+    newDefaults: { name: '', userId: '', archived: false, collection: '' },
 });
 await Promise.all([
     games.search(),
