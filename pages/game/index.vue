@@ -61,14 +61,6 @@
                     <div class="mb-4">
                         <FormInput name="userId" type="text" v-model="games.new.userId" required label="User Id" />
                     </div>
-                    <div class="mb-4">
-                        <FormSelect name="archived" :options="games.propsOptions?.archived" v-model="games.new.archived"
-                            label="Archived" />
-                    </div>
-                    <div class="mb-4">
-                        <FormInput name="collection" type="text" v-model="games.new.collection" required
-                            label="Collection" />
-                    </div>
                     <div>
                         <Button type="submit" class="w-auto" severity="success">
                             <i class="pi pi-plus mr-1"></i> Create Game
@@ -86,11 +78,12 @@ definePageMeta({
     middleware: ['auth']
 });
 const dt = useDateTime();
+const currentUser = useCurrentUserStore();
 const games = useVingKind({
     listApi: `/api/${restVersion()}/game`,
     createApi: `/api/${restVersion()}/game`,
     query: { includeMeta: true, sortBy: 'createdAt', sortOrder: 'desc' },
-    newDefaults: { name: '', userId: '', archived: false, collection: '' },
+    newDefaults: { name: '', userId: currentUser.id, archived: false, collection: '' },
 });
 await Promise.all([
     games.search(),
