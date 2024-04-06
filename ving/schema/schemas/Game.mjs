@@ -65,7 +65,7 @@ export const gameSchema = {
         {
             type: "boolean",
             name: 'archived',
-            required: true,
+            required: false,
             default: false,
             db: (prop) => dbBoolean(prop),
             enums: [false, true],
@@ -76,7 +76,7 @@ export const gameSchema = {
         {
             type: "string",
             name: "collection",
-            required: true,
+            required: false,
             length: 60,
             default: '',
             db: (prop) => dbString(prop),

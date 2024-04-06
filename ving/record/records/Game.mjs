@@ -1,7 +1,7 @@
 import { VingRecord, VingKind } from "#ving/record/VingRecord.mjs";
 import { eq } from '#ving/drizzle/orm.mjs';
 import { publishUserToast } from '#ving/messagebus.mjs';
-import ving from '#ving/index';
+import ving from '#ving/index.mjs';
 
 /** Management of individual Games.
  * @class
