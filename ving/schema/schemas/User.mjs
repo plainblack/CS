@@ -164,6 +164,18 @@ export const userSchema = {
                 kind: 'S3File',
             },
         },
+        {
+            type: "virtual",
+            name: 'userId',
+            required: false,
+            view: ['public'],
+            edit: [],
+            relation: {
+                type: 'child',
+                name: 'games',
+                kind: 'Game',
+            },
+        },
     ],
 };
 
