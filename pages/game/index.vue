@@ -20,10 +20,6 @@
             <Column header="Manage">
                 <template #body="slotProps">
                     <NuxtLink :to="`/game/${slotProps.data.props.id}`" class="mr-2 no-underline">
-                        <Button icon="pi pi-eye" title="View" alt="View Game" />
-                    </NuxtLink>
-                    <NuxtLink v-if="slotProps.data.meta?.isOwner" :to="`/game/${slotProps.data.props.id}/edit`"
-                        class="mr-2 no-underline">
                         <Button icon="pi pi-pencil" severity="success" title="Edit" alt="Edit Game" />
                     </NuxtLink>
                     <Button v-if="slotProps.data.meta?.isOwner" title="Delete" alt="Delete Game" icon="pi pi-trash"

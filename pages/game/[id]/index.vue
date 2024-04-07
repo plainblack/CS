@@ -1,13 +1,11 @@
 <template>
     <div class="surface-ground px-4 md:px-6 lg:px-8">
-        <h1> {{ game.props?.name }}</h1>
+        <h1> {{ game.props?.name }} Settings</h1>
 
         <div class="p-fluid flex flex-column lg:flex-row">
             <GameNav :game="game" />
             <div v-if="game.props" class="flex-auto">
                 <div class="surface-card p-5 border-1 surface-border border-round">
-                    <div class="text-900 font-semibold text-lg">Settings</div>
-                    <p class="mt-1 mb-4 text-sm text-gray-500">How you have configured your game.</p>
 
                     <div class="flex gap-5 flex-column-reverse md:flex-row">
                         <div class="flex-auto p-fluid">
@@ -23,16 +21,7 @@
                                 <FormInput name="collection" type="text" v-model="game.props.collection"
                                     label="Collection" @change="game.update()" />
                             </div>
-                        </div>
 
-                    </div>
-                </div>
-                <div class="mt-5 surface-card p-5 border-1 surface-border border-round">
-                    <div class="text-900 font-semibold text-lg">Notes</div>
-                    <p class="mt-1 mb-4 text-sm text-gray-500">Keep notes about this game here.</p>
-
-                    <div class="flex gap-5 flex-column-reverse md:flex-row">
-                        <div class="flex-auto p-fluid">
                             <div class="mb-4">
                                 <FormInput name="notes" type="textarea" v-model="game.props.notes" label="Notes"
                                     @change="game.update()" />
@@ -63,10 +52,4 @@ const game = useVingRecord({
     },
 });
 await game.fetch();
-onBeforeRouteLeave(() => game.dispose());
-const dt = useDateTime();
-const breadcrumbs = [
-    { label: 'Games', to: '/game' },
-    { label: 'Settings' },
-];
 </script>
