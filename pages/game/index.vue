@@ -15,21 +15,7 @@
         <DataTable :value="games.records" stripedRows @sort="(e) => games.sortDataTable(e)">
 
             <Column field="props.id" header="Id" sortable></Column>
-            <Column field="props.createdAt" header="Created At" sortable>
-                <template #body="slotProps">
-                    {{ dt.formatDateTime(slotProps.data.props.createdAt) }}
-                </template>
-            </Column>
-            <Column field="props.updatedAt" header="Updated At" sortable>
-                <template #body="slotProps">
-                    {{ dt.formatDateTime(slotProps.data.props.updatedAt) }}
-                </template>
-            </Column>
             <Column field="props.name" header="Name" sortable></Column>
-            <Column field="props.notes" header="Notes" sortable></Column>
-            <Column field="props.fieldSchema" header="Field Schema" sortable></Column>
-            <Column field="props.fields" header="Fields" sortable></Column>
-            <Column field="props.userId" header="User Id" sortable></Column>
             <Column field="props.archived" header="Archived" sortable></Column>
             <Column field="props.collection" header="Collection" sortable></Column>
             <Column header="Manage">
