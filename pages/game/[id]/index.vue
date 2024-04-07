@@ -1,37 +1,52 @@
 <template>
-    <Crumbtrail :crumbs="breadcrumbs" />
-    <h1>{{ game.props?.name }}</h1>
-    <div v-if="game.props?.id" class="surface-card p-4 border-1 surface-border border-round flex-auto">
+    <div class="surface-ground px-4 md:px-6 lg:px-8">
+        <h1> {{ game.props?.name }}</h1>
 
-        <div><b>Id</b>: {{ game.props?.id }}</div>
+        <div class="p-fluid flex flex-column lg:flex-row">
+            <GameNav :game="game" />
+            <div v-if="game.props" class="flex-auto">
+                <div class="surface-card p-5 border-1 surface-border border-round">
+                    <div class="text-900 font-semibold text-lg">Settings</div>
+                    <p class="mt-1 mb-4 text-sm text-gray-500">How you have configured your game.</p>
 
-        <div><b>Created At</b>: {{ dt.formatDateTime(game.props?.createdAt) }}</div>
+                    <div class="flex gap-5 flex-column-reverse md:flex-row">
+                        <div class="flex-auto p-fluid">
+                            <div class="mb-4">
+                                <FormInput name="name" type="text" v-model="game.props.name" required label="Name"
+                                    @change="game.update()" />
+                            </div>
+                            <div class="mb-4">
+                                <FormSelect name="archived" :options="game.options.archived"
+                                    v-model="game.props.archived" label="Archived" @change="game.update()" />
+                            </div>
+                            <div class="mb-4">
+                                <FormInput name="collection" type="text" v-model="game.props.collection"
+                                    label="Collection" @change="game.update()" />
+                            </div>
+                        </div>
 
-        <div><b>Updated At</b>: {{ dt.formatDateTime(game.props?.updatedAt) }}</div>
+                    </div>
+                </div>
+                <div class="mt-5 surface-card p-5 border-1 surface-border border-round">
+                    <div class="text-900 font-semibold text-lg">Notes</div>
+                    <p class="mt-1 mb-4 text-sm text-gray-500">Keep notes about this game here.</p>
 
-        <div><b>Name</b>: {{ game.props?.name }}</div>
+                    <div class="flex gap-5 flex-column-reverse md:flex-row">
+                        <div class="flex-auto p-fluid">
+                            <div class="mb-4">
+                                <FormInput name="notes" type="textarea" v-model="game.props.notes" label="Notes"
+                                    @change="game.update()" />
+                            </div>
+                        </div>
 
-        <div><b>Notes</b>: {{ game.props?.notes }}</div>
+                    </div>
+                </div>
+            </div>
 
-        <div><b>Field Schema</b>: {{ game.props?.fieldSchema }}</div>
-
-        <div><b>Fields</b>: {{ game.props?.fields }}</div>
-
-        <div><b>User Id</b>: {{ game.props?.userId }}</div>
-
-        <div><b>Archived</b>: {{ game.props?.archived }}</div>
-
-        <div><b>Collection</b>: {{ game.props?.collection }}</div>
-
-    </div>
-    <div class="mt-3" v-if="game.meta?.isOwner">
-        <NuxtLink :to="`/game/${game.props?.id}/edit`" class="no-underline mr-2 mb-2">
-            <Button severity="success" title="Edit" alt="Edit Game"><i class="pi pi-pencil mr-1"></i> Edit</Button>
-        </NuxtLink>
-        <Button @click="game.delete()" severity="danger" title="Delete" alt="Delete Game"><i
-                class="pi pi-trash mr-1"></i> Delete</Button>
+        </div>
     </div>
 </template>
+
 
 <script setup>
 definePageMeta({
@@ -52,6 +67,6 @@ onBeforeRouteLeave(() => game.dispose());
 const dt = useDateTime();
 const breadcrumbs = [
     { label: 'Games', to: '/game' },
-    { label: 'View' },
+    { label: 'Settings' },
 ];
 </script>
