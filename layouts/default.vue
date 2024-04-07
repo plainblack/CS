@@ -52,7 +52,6 @@
                 </template>
             </Menubar>
         </client-only>
-
         <client-only>
             <SystemWideAlert />
         </client-only>
@@ -78,6 +77,7 @@ onMounted(async () => {
 })
 const topNav = [
     { label: 'Home', to: '/', icon: 'prime:home' },
+    { label: 'Games', to: '/game', icon: "prime:star" },
     { label: 'Ving Documentation', to: 'https://plainblack.github.io/ving/', icon: "prime:book" },
     {
         label: 'Sample Dropdown', icon: "prime:thumbs-down", items: [
