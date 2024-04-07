@@ -21,7 +21,7 @@
                     label="Archived" @change="game.update()" />
             </div>
             <div class="mb-4">
-                <FormInput name="collection" type="text" v-model="game.props.collection" required label="Collection"
+                <FormInput name="collection" type="text" v-model="game.props.collection" label="Collection"
                     @change="game.update()" />
             </div>
         </FieldsetItem>
@@ -72,7 +72,6 @@ const game = useVingRecord({
     },
 });
 await game.fetch()
-onBeforeRouteLeave(() => game.dispose());
 
 const breadcrumbs = [
     { label: 'Games', to: '/game' },
