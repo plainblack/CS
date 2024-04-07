@@ -3,18 +3,17 @@
 
     <div class="surface-card p-4 border-1 surface-border border-round">
 
-        <div class="p-inputgroup flex-1">
-            <span class="p-input-icon-left w-full">
+        <InputGroup>
+            <InputGroupAddon>
                 <i class="pi pi-search" />
-                <InputText type="text" placeholder="Search Games" class="w-full" v-model="games.query.search"
-                    @keydown.enter="games.search()" />
-            </span>
+            </InputGroupAddon>
+            <InputText type="text" placeholder="Search Games" class="w-full" v-model="games.query.search"
+                @keydown.enter="games.search()" />
             <Button label="Search" @click="games.search()" />
-        </div>
+        </InputGroup>
 
         <DataTable :value="games.records" stripedRows @sort="(e) => games.sortDataTable(e)">
 
-            <Column field="props.id" header="Id" sortable></Column>
             <Column field="props.name" header="Name" sortable></Column>
             <Column field="props.archived" header="Archived" sortable></Column>
             <Column field="props.collection" header="Collection" sortable></Column>
@@ -66,7 +65,7 @@ const games = useVingKind({
     listApi: `/api/${restVersion()}/game`,
     createApi: `/api/${restVersion()}/game`,
     query: { includeMeta: true, sortBy: 'name', sortOrder: 'asc' },
-    newDefaults: { name: '', userId: currentUser.props?.id, archived: false, collection: '' },
+    newDefaults: { name: '', userId: currentUser.props?.id },
 });
 await Promise.all([
     games.search(),
