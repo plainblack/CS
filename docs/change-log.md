@@ -3,13 +3,17 @@ outline: deep
 ---
 # Change Log
 
+## 2024-04-07
+* Made the MenuBar in the default layout client only until PrimeVue fixes #5541.
+* useVingKind().mint() now carries forward the query params into the new record.
+
 ## 2024-04-06
 * Added VING_SITE_URL to install instructions.
 * Fixed API generator missing a slash.
 * Fixed API options cassing problem.
 * Upgraded to PrimeVue 3.51.0 from 3.47.2.
 * Fixed undefined session in delete api.
-* Fixed record page generator capitalization and record disposal.
+* Fixed record page generator capitalization.
 
 ## 2024-04-05
 * Changed the way foreign keys are generated due to the possibility of creating keynames that were too long.
