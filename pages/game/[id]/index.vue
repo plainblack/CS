@@ -48,7 +48,7 @@ const game = useVingRecord({
     },
 });
 await game.fetch();
-onBeforeRouteLeave(() => Game.dispose());
+onBeforeRouteLeave(() => game.dispose());
 const dt = useDateTime();
 const breadcrumbs = [
     { label: 'Games', to: '/game' },
