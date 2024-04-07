@@ -12,10 +12,15 @@
             <Button label="Search" @click="games.search()" />
         </InputGroup>
 
+        {{ games.propsOptions }}
         <DataTable :value="games.records" stripedRows @sort="(e) => games.sortDataTable(e)">
 
             <Column field="props.name" header="Name" sortable></Column>
-            <Column field="props.archived" header="Archived" sortable></Column>
+            <Column field="props.archived" header="Archived" sortable>
+                <template #body="slotProps">
+                    {{ games.op }}
+                </template>
+            </Column>
             <Column field="props.collection" header="Collection" sortable></Column>
             <Column header="Manage">
                 <template #body="slotProps">
