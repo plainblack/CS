@@ -44,9 +44,6 @@
                     <div class="mb-4">
                         <FormInput name="name" type="text" v-model="games.new.name" required label="Name" />
                     </div>
-                    <div class="mb-4">
-                        <FormInput name="userId" type="text" v-model="games.new.userId" required label="User Id" />
-                    </div>
                     <div>
                         <Button type="submit" class="w-auto" severity="success">
                             <i class="pi pi-plus mr-1"></i> Create Game
@@ -68,8 +65,8 @@ const currentUser = useCurrentUserStore();
 const games = useVingKind({
     listApi: `/api/${restVersion()}/game`,
     createApi: `/api/${restVersion()}/game`,
-    query: { includeMeta: true, sortBy: 'createdAt', sortOrder: 'desc' },
-    newDefaults: { name: '', userId: '', archived: false, collection: '' },
+    query: { includeMeta: true, sortBy: 'name', sortOrder: 'asc' },
+    newDefaults: { name: '', userId: currentUser.props?.id, archived: false, collection: '' },
 });
 await Promise.all([
     games.search(),
