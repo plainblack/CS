@@ -2,11 +2,11 @@ import { useKind } from '#ving/record/utils.mjs';
 import { describeParams, obtainSession, getBody } from '#ving/utils/rest.mjs';
 import {defineEventHandler, getRouterParams} from 'h3';
 export default defineEventHandler(async (event) => {
-    const games = await useKind('Game');
+    const collaborators = await useKind('Collaborator');
     const { id } = getRouterParams(event);
-    const game = await games.findOrDie(id);
+    const collaborator = await collaborators.findOrDie(id);
     const session = obtainSession(event);
-    await game.canEdit(session);
-    await game.updateAndVerify(await getBody(event), session);
-    return game.describe(describeParams(event, session));
+    await collaborator.canEdit(session);
+    await collaborator.updateAndVerify(await getBody(event), session);
+    return collaborator.describe(describeParams(event, session));
 });
