@@ -3,7 +3,7 @@ import { baseSchemaProps, dbString, zodString, dbEnum, dbBoolean, dbText, zodTex
 export const collaboratorSchema = {
     kind: 'Collaborator',
     tableName: 'collaborators',
-    owner: ['$userId', 'admin'],
+    owner: ['$userId', 'admin', '^game'],
     props: [
         ...baseSchemaProps,
         {
