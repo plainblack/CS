@@ -15,6 +15,13 @@
       "when": 1712376595942,
       "tag": "0001_thick_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1712550536559,
+      "tag": "0002_ambitious_multiple_man",
+      "breakpoints": true
     }
   ]
 }

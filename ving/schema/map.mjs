@@ -2,6 +2,7 @@ import { findObject } from '#ving/utils/findObject.mjs';
 import { ouch } from '#ving/utils/ouch.mjs';
 import { userSchema } from "#ving/schema/schemas/User.mjs";
 import { apikeySchema } from "#ving/schema/schemas/APIKey.mjs";
+import { collaboratorSchema } from "#ving/schema/schemas/Collaborator.mjs";
 import { gameSchema } from "#ving/schema/schemas/Game.mjs";
 import { s3fileSchema } from "#ving/schema/schemas/S3File.mjs";
 
@@ -11,6 +12,7 @@ import { s3fileSchema } from "#ving/schema/schemas/S3File.mjs";
 export const vingSchemas = [
     userSchema,
     apikeySchema,
+    collaboratorSchema,
     gameSchema,
     s3fileSchema,
 ];
