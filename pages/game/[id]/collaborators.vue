@@ -9,7 +9,7 @@
 
                     <div class="flex gap-5 flex-column-reverse md:flex-row">
                         <div class="flex-auto p-fluid">
-                            <h2>Existing Collaborators</h2>
+                            <h2 class="mt-0">Existing Collaborators</h2>
 
                             <DataTable :value="collaborators.records" stripedRows
                                 @sort="(e) => collaborators.sortDataTable(e)">
