@@ -14,7 +14,13 @@
 
         <DataTable :value="games.records" stripedRows @sort="(e) => games.sortDataTable(e)">
 
-            <Column field="props.name" header="Name" sortable></Column>
+            <Column field="props.name" header="Name" sortable>
+                <template #body="slotProps">
+                    <NuxtLink :to="`/game/${slotProps.data.props.id}`" v-ripple>
+                        {{ slotProps.data.props.name }}
+                    </NuxtLink>
+                </template>
+            </Column>
             <Column field="props.archived" header="Archived" sortable>
                 <template #body="slotProps">
                     {{ enum2label(slotProps.data.props.archived, games.propsOptions.archived) }}
