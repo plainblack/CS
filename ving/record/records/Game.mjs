@@ -54,16 +54,18 @@ export class GameRecord extends VingRecord {
         await this.createDefaults();
     }
 
-    /*
-    isOwner(currentUser) {
+
+    async isOwner(currentUser) {
         let result = super.isOwner(currentUser);
         if (result)
             return result;
-            if (currentUser === undefined)
+        if (currentUser === undefined)
             return false;
-            const collaborator = await (await this.children('collaborators')).findOrDie(newOwnerId);
-        }
-        */
+        const collaborator = await (await this.children('collaborators')).findOrDie(newOwnerId);
+        if (collaborator)
+            return true;
+    }
+
 
     async transferOwnership(newOwnerId) {
         const newOwner = await (await this.children('collaborators')).findOrDie(newOwnerId);
