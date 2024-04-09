@@ -6,7 +6,7 @@ const makeWords = (value) => splitByCase(value).join(' ');
 const makeLabel = (value) => upperFirst(splitByCase(value).join(' '));
 
 
-const columns = (schema) => {
+const columns = (name, schema) => {
     let out = '';
     for (const prop of schema.props) {
         if (prop.name == 'email') {
@@ -17,6 +17,16 @@ const columns = (schema) => {
                 </template>
             </Column>`;
         }
+        else if (['name', 'id'].includes(prop.name)) {
+            out += `
+            <Column field="props.${prop.name}" header="${makeLabel(prop.name)}" sortable>
+                <template #body="slotProps">
+                    <NuxtLink :to="\`/${name.toLowerCase()}/\${slotProps.data.props.id}\`" v-ripple>
+                        {{ slotProps.data.props.${prop.name} }}
+                    </NuxtLink>
+                </template>
+            </Column>`;
+        }
         else if (['boolean', 'enum'].includes(prop.type)) {
             out += `
             <Column field="props.${prop.name}" header="${makeLabel(prop.name)}" sortable>
@@ -24,6 +34,14 @@ const columns = (schema) => {
                     {{ enum2label(slotProps.data.props.${prop.name}, ${schema.tableName}.propsOptions.${prop.name}) }}
                 </template>
             </Column>`;
+        }
+        else if (prop.name == 'userId') {
+            out += `
+        <Column field="props.userId" header="User Id" sortable>
+            <template #body="slotProps">
+                <UserProfileLink :user="slotProps.data.related?.user" />
+            </template>
+        </Column>`;
         }
         else if (prop.type == 'date') {
             out += `
@@ -112,7 +130,7 @@ const indexTemplate = ({ name, schema }) =>
         </InputGroup>
 
         <DataTable :value="${schema.tableName}.records" stripedRows @sort="(e) => ${schema.tableName}.sortDataTable(e)">
-            ${columns(schema)}
+            ${columns(name, schema)}
             <Column header="Manage">
                 <template #body="slotProps">
                     <NuxtLink :to="\`/${name.toLowerCase()}/\${slotProps.data.props.id}\`" class="mr-2 no-underline">
@@ -173,6 +191,11 @@ const viewProps = (schema) => {
             else if (['boolean', 'enum'].includes(prop.type)) {
                 out += `
             <div><b>${makeLabel(prop.name)}</b>: {{enum2label(${schema.kind.toLowerCase()}.props?.${prop.name}, ${schema.kind.toLowerCase()}.options?.${prop.name})}}</div>
+            `;
+            }
+            else if (prop.name == 'userId') {
+                out += `
+            <div><b>${makeLabel(prop.name)}</b>: <UserProfileLink :user="${schema.kind.toLowerCase()}.related?.user" /></div>
             `;
             }
             else if (prop.type != 'virtual') {
