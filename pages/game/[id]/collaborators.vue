@@ -15,7 +15,7 @@
                                 @sort="(e) => collaborators.sortDataTable(e)">
                                 <Column field="props.userId" header="User Id" sortable>
                                     <template #body="slotProps">
-                                        <UserProfile :user="slotProps.data.related?.user" />
+                                        <UserProfileLink :user="slotProps.data.related?.user" />
                                     </template>
                                 </Column>
                                 <Column field="props.createdAt" header="Created At" sortable>
