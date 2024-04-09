@@ -16,7 +16,7 @@
         <li>
             <hr class="mb-2 border-50" />
             <NuxtLink :to="`/game`" class="no-underline mr-2">
-                <Button severity="primary" title="Back to Games" alt="Back" text><i class="pi pi-arrow-left mr-1"></i>
+                <Button severity="secondary" title="Back to Games" alt="Back" text><i class="pi pi-arrow-left mr-1"></i>
                     Back
                     to
                     Games</Button>
