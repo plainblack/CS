@@ -3,6 +3,11 @@ outline: deep
 ---
 # Change Log
 
+## 2024-04-10
+* Implemented: filterQualifier: true should be in the examples for all relation ids #96
+* Implemented: add documentation to ving schema about filterQuery #87
+* Added recordsAsOptions() method to the useVingKind() composable.
+
 ## 2024-04-09
 * Fixed: no type int example in ving schema #82
 * Fixed: record delete generator not generating correctly #81
