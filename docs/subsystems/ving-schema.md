@@ -71,6 +71,7 @@ The `type` field determines how the prop will react to data it is given. Below y
     name: 'admin',
     required: true,
     default: false,
+    filterQualifier: true,
     db: (prop) => dbBoolean(prop),
     enums: [false, true],
     enumLabels: ['Not Admin', 'Admin'],
@@ -86,7 +87,6 @@ The `type` field determines how the prop will react to data it is given. Below y
     type: "int",
     name: "sizeInBytes",
     filterRange: true,
-    filterQualifier: true,
     required: false,
     default: 0,
     db: (prop) => dbInt(prop),
@@ -102,6 +102,7 @@ The `type` field determines how the prop will react to data it is given. Below y
     type: "date",
     name: "startAt",
     required: true,
+    filterRange: true,
     default: () => new Date(),
     db: (prop) => dbDateTime(prop),
     view: ['public'],
@@ -116,6 +117,7 @@ The `type` field determines how the prop will react to data it is given. Below y
     name: 'useAsDisplayName',
     required: true,
     length: 20,
+    filterQualifier: true,
     default: 'username',
     db: (prop) => dbEnum(prop),
     enums: ['username', 'email', 'realName'],
@@ -133,6 +135,7 @@ These are used to add a parent relationship.
     name: 'userId',
     required: true,
     length: 36,
+    filterQualifier: true,
     db: (prop) => dbRelation(prop),
     relation: {
         type: 'parent',
@@ -154,6 +157,7 @@ These are used to add a parent relationship.
     required: true,
     unique: true,
     length: 256,
+    filterQuery: true,
     default: '',
     db: (prop) => dbString(prop),
     zod: (prop) => zodString(prop).email(),
@@ -185,6 +189,7 @@ These are used to add a parent relationship.
     name: "memo",
     required: true,
     length: 256,
+    filterQuery: true,
     default: '',
     db: (prop) => dbText(prop),
     zod: (prop) => zodText(prop),
@@ -310,6 +315,19 @@ The `length` field is required when the prop is of type `string`, `enum`, and `i
 ##### unique
 
 The `unique` field is an optional boolean. When set to `true` a unique index will be created on this prop in the database, and the record will test that the data being set to the prop is unqiue. 
+
+##### filterQuery
+
+An optional boolean that if true will allow searching via the [rest api](rest) for keyword matches against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+
+##### filterQualifier
+
+An optional boolean that if true will allow searching via the [rest api](rest) for exact match filtering against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+
+##### filterRange
+
+An optional boolean that if true will allow searching via the [rest api](rest) for range matching against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+
 
 ##### autoUpdate
 
