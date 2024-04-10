@@ -45,6 +45,9 @@
 
 
                             <h2 class="mt-0">Add a Collaborator</h2>
+                            <AutoComplete v-model="selectedCollaborator" optionLabel="label"
+                                :suggestions="users.recordsAsOptions('meta', 'displayName')" @complete="searchUsers" />
+                            {{ users.records.length }} - {{ selectedCollaborator }} - {{ users.records }}
 
                             <Form :send="() => collaborators.create()">
                                 <div class="flex gap-5 flex-column-reverse md:flex-row">
@@ -106,7 +109,20 @@ await Promise.all([
     collaborators.fetchPropsOptions(),
 ]);
 onBeforeRouteLeave(() => collaborators.dispose());
-
+const selectedCollaborator = ref();
+const users = useVingKind({
+    listApi: `/api/${restVersion()}/user`,
+    createApi: `/api/${restVersion()}/user`,
+    query: { includeMeta: true, sortBy: 'username' },
+});
+await users.search();
+const searchUsers = async (event) => {
+    console.log(event);
+    users.query.search = event.query.trim();
+    await users.search();
+    console.log('got here')
+    console.log(users.records);
+}
 const dt = useDateTime();
 
 </script>
