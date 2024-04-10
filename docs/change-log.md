@@ -3,6 +3,19 @@ outline: deep
 ---
 # Change Log
 
+## 2024-04-09
+* Fixed: no type int example in ving schema #82
+* Fixed: record delete generator not generating correctly #81
+* Fixed: if you misspell a schema when running record -w or record -r it should say no schema, not create an error #80
+* Added CopyToClipboard component.
+* Implemented: add clipboard button for copying an id to clipboard from view and edit pages #79
+* Fixed: displaying cache objects from CLI shows [object Object] instead of the actual object #78
+* Fixed: isRoleOrDie not documented correctly #77
+* Implemented: document Nuxt stuff #76
+* Implemented: add --bare as an option in generators that gets rid of the boiler plate #75
+* Implemented: cli improvements #83
+* Implemented: document the ving structure #84
+
 ## 2024-04-08
 * Breaking change: Refactored VingRecord isOwner(), canEdit(), and propsOptions() to be async.
 * Added skipOwnerCheck as a ving schema prop relation option.
