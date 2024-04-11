@@ -109,6 +109,7 @@ await Promise.all([
     collaborators.search(),
     collaborators.fetchPropsOptions(),
 ]);
+onBeforeRouteLeave(() => game.dispose());
 onBeforeRouteLeave(() => collaborators.dispose());
 const selectedCollaborator = ref();
 const users = useVingKind({
@@ -117,6 +118,8 @@ const users = useVingKind({
     query: { includeMeta: true, sortBy: 'username' },
 });
 await users.search();
+onBeforeRouteLeave(() => users.dispose());
+
 const dt = useDateTime();
 
 </script>

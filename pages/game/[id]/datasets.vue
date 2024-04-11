@@ -38,6 +38,8 @@ const game = useVingRecord({
     },
 });
 await game.fetch();
+onBeforeRouteLeave(() => game.dispose());
+
 const dt = useDateTime();
 
 </script>

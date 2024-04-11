@@ -52,4 +52,5 @@ const game = useVingRecord({
     },
 });
 await game.fetch();
+onBeforeRouteLeave(() => game.dispose());
 </script>
