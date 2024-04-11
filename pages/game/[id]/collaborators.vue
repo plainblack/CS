@@ -43,35 +43,21 @@
                     <div class="flex gap-5 flex-column-reverse md:flex-row">
                         <div class="flex-auto p-fluid">
 
-
                             <h2 class="mt-0">Add a Collaborator</h2>
-                            <AutoComplete v-model="selectedCollaborator" optionLabel="label"
-                                :suggestions="users.recordsAsOptions('meta', 'displayName')"
-                                @complete="async (e) => await users.search({ query: { search: e.query.trim() } })"
-                                @item-select="(e) => collaborators.create({ userId: e.value.value })" />
-
-                            <Form :send="() => collaborators.create()">
-                                <div class="flex gap-5 flex-column-reverse md:flex-row">
-                                    <div class="flex-auto p-fluid">
-
-                                        <div class="mb-4">
-                                            <FormInput name="gameId" type="text" v-model="collaborators.new.gameId"
-                                                required label="Game Id" />
-                                        </div>
-                                        <div class="mb-4">
-                                            <FormInput name="userId" type="text" v-model="collaborators.new.userId"
-                                                required label="User Id" />
-                                        </div>
-                                        <div>
-                                            <Button type="submit" class="w-auto" severity="success">
-                                                <i class="pi pi-plus mr-1"></i> Create Collaborator
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </Form>
-
+                            <InputGroup>
+                                <InputGroupAddon>
+                                    <i class="pi pi-search" />
+                                </InputGroupAddon>
+                                <AutoComplete v-model="selectedCollaborator" optionLabel="label"
+                                    :suggestions="users.recordsAsOptions('meta', 'displayName')"
+                                    placeholder="type a username or email address"
+                                    @complete="async (e) => await users.search({ query: { search: e.query.trim() } })"
+                                    @item-select="validateAndCreateCollaborator">
+                                    <template #option="item">
+                                        <UserAvatar :user="users.find(item.option.value)" />
+                                    </template>
+                                </AutoComplete>
+                            </InputGroup>
 
                         </div>
                     </div>
@@ -119,7 +105,21 @@ const users = useVingKind({
 });
 await users.search();
 onBeforeRouteLeave(() => users.dispose());
-
+const notify = useNotifyStore();
 const dt = useDateTime();
+
+const validateAndCreateCollaborator = (e) => {
+    const userId = e.value.value;
+    if (userId == currentUser.props.id) {
+        notify.warn('Cannot add self as collaborator.');
+        return;
+    }
+    if (collaborators.records.find(r => userId == r.props.userId)) {
+        notify.warn('That user is already a collaborator.');
+    }
+    else {
+        collaborators.create({ userId });
+    }
+}
 
 </script>
