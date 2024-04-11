@@ -96,5 +96,17 @@ export const gameSchema = {
                 kind: 'Collaborator',
             },
         },
+        {
+            type: "virtual",
+            name: 'gameId', // the name of this record's id in the remote table
+            required: false,
+            view: ['public'],
+            edit: [],
+            relation: {
+                type: 'child',
+                name: 'datasets',
+                kind: 'Dataset',
+            },
+        },
     ],
 };
