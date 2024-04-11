@@ -3,11 +3,27 @@ outline: deep
 ---
 # Change Log
 
+## 2024-04-11
+* Made currentUserStore more fault tollerant.
+* Implemented: add required to FormSelect #95
+* Implemented: unify the use if [id] in urls #101
+* NOTE: Due to the above change, you should move [id].get.mjs, [id].put.mjs, and [id].delete.mjs in your server/api/v1/record folders to [id]/index.get.mjs, [id]/index.put.mjs, and [id]/index.delete.mjs.
+* Added filesystem utils.
+* Updated existing code to use filesystem utils.
+* Implemented: add warning when someone generates web or rest without a record #91
+* Implemented: user id in statistics and add clipboard copy #88
+* Fixed: documentation for Related Records is broken #86
+* Implemented: write docs for utils #89
+* Fixed: drizzle kit is now interactive #93
+
 ## 2024-04-10
 * Implemented: filterQualifier: true should be in the examples for all relation ids #96
 * Implemented: add documentation to ving schema about filterQuery #87
 * Added recordsAsOptions() method to the useVingKind() composable.
 * Fixed a bug in the create() method of useVingKind & useVingRecord where props passed in to the function would be overridden by the defaults.
+* Added prepend and append slots to FormSelect component.
+* Fix: int prop didn't generate number form field #92
+* Implemented: have page generator add an s3 drop zone if it detects an s3 relationship #100
 
 ## 2024-04-09
 * Fixed: no type int example in ving schema #82
