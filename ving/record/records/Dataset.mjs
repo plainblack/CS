@@ -50,6 +50,10 @@ export class DatasetRecord extends VingRecord {
         await super.delete();
     }
 
+    copyWithRows() {
+        const newDataset = super.copy();
+    }
+
 }
 
 /** Management of all Datasets.
