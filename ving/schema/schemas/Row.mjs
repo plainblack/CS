@@ -10,7 +10,6 @@ export const rowSchema = {
             type: "string",
             name: "name",
             required: true,
-            unique: true,
             length: 60,
             default: '',
             filterQuery: true,

@@ -1,0 +1,1 @@
+ALTER TABLE `rows` DROP INDEX `nameIndex`;

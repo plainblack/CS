@@ -13,8 +13,7 @@ export const RowTable = mysqlTable('rows',
 		datasetId: varchar('datasetId', { length: 36 }).notNull()
     }, 
     (table) => ({
-        nameIndex: uniqueIndex('nameIndex').on(table.name),
-		rows_dataset_7bbf412_fk: foreignKey({ name: "rows_dataset_7bbf412_fk", columns: [table.datasetId], foreignColumns: [DatasetTable.id]}).onDelete("cascade").onUpdate("cascade")
+        rows_dataset_7bbf412_fk: foreignKey({ name: "rows_dataset_7bbf412_fk", columns: [table.datasetId], foreignColumns: [DatasetTable.id]}).onDelete("cascade").onUpdate("cascade")
     })
 );
 
