@@ -1,5 +1,4 @@
 import { VingRecord, VingKind } from "#ving/record/VingRecord.mjs";
-import { eq } from '#ving/drizzle/orm.mjs';
 
 /** Management of individual Datasets.
  * @class
@@ -50,9 +49,59 @@ export class DatasetRecord extends VingRecord {
         await super.delete();
     }
 
-    copyWithRows() {
-        const newDataset = super.copy();
+    async copyWithRows() {
+        const newDataset = await super.copy();
+        this.#skipDefaults = true;
+        await newDataset.insert();
+        const rows = await (await this.children('rows')).getMany();
+        for (const row of rows) {
+            const newRow = await row.copy();
+            newRow.datasetId = newDataset.id;
+            await newRow.insert();
+        }
     }
+
+    #skipDefaults = false;
+
+    async insert() {
+        await super.insert();
+        await this.createDefaults();
+    }
+
+    async createDefaults() {
+        if (this.#skipDefaults)
+            return;
+        const rows = await this.children('rows');
+        await rows.create({ name: 'Untitiled' });
+    }
+
+    async serialize() {
+        const rowsOut = [];
+        const rows = await (await this.children('rows')).findMany();
+        for (const row in rows) {
+            rowsOut.push(await row.serialize());
+        }
+        return {
+            rows,
+            id: this.id,
+            name: this.name,
+            enumerateOn: this.enumerateOn,
+            fields: this.fields,
+            fieldSchema: this.fieldSchema,
+            rowFieldOrder: this.rowFieldOrder,
+            rowSchema: this.rowSchema,
+        }
+    }
+
+    async deserialize(data) {
+        this.setAll(data);
+        const rows = await this.children('rows');
+        for (const rowData of data.rows) {
+            const newRow = rows.mint();
+            await newRow.deserialize(rowData);
+        }
+    }
+
 
 }
 
