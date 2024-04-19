@@ -9,33 +9,31 @@ export class DatasetRecord extends VingRecord {
 
     async describe(params = {}) {
         const out = await super.describe(params);
-        if (params?.include?.extra.includes('sumQuantity')) {
-            if (out.extra === undefined) {
-                out.extra = {};
-            }
-            out.extra.sumQuantity = 0;
-            const rows = await this.children('rows');
-            if (this.enumerateOn) {
-                const rowRecords = await rows.findMany();
-                for (const row of rowRecords) {
-                    let enumString = '';
-                    if (row.fields[this.enumerateOn]?.userValue) {
-                        enumString = row.fields[this.enumerateOn]?.userValue;
+        if (params?.include?.extra) {
+            if (out.extra === undefined)
+                out.extra = {}
+            if (params?.include?.extra.includes('totalQuantity')) {
+                out.extra.totalQuantity = 0;
+                const rows = await this.children('rows');
+                if (this.enumerateOn) {
+                    const rowRecords = await rows.findMany();
+                    for (const row of rowRecords) {
+                        let enumString = '';
+                        if (row.fields[this.enumerateOn]?.userValue) {
+                            enumString = row.fields[this.enumerateOn]?.userValue;
+                        }
+                        const enumerations = enumString.split(',');
+                        const enumCount = enumerations.length || 1;
+                        out.extra.totalQuantity += row.quantity * enumCount;
                     }
-                    const enumerations = enumString.split(',');
-                    const enumCount = enumerations.length || 1;
-                    out.extra.sumQuantity += row.quantity * enumCount;
+                }
+                else {
+                    out.extra.totalQuantity = await rows.sum('quantity');
                 }
             }
-            else {
-                out.extra.sumQuantity = await rows.sum('quantity');
+            if (params?.include?.extra.includes('rowCount')) {
+                out.extra.rowCount = await (await this.children('rows')).count();
             }
-        }
-        if (params?.include?.extra.includes('rowCount')) {
-            if (out.extra === undefined) {
-                out.extra = {};
-            }
-            out.extra.rowCount = await (await this.children('rows')).count();
         }
         return out;
     }
