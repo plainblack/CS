@@ -2,7 +2,7 @@ import { boolean, mysqlEnum, mysqlTable, timestamp, datetime, uniqueIndex, varch
 import {DatasetTable} from '#ving/drizzle/schema/Dataset.mjs';
 
 
-export const RowTable = mysqlTable('rows',
+export const RowTable = mysqlTable('datasetrows',
     {
         id: varchar('id', { length: 36 }).notNull().default('uuid-will-be-generated').primaryKey(),
 		createdAt: timestamp('createdAt').defaultNow().notNull(),
@@ -13,7 +13,7 @@ export const RowTable = mysqlTable('rows',
 		datasetId: varchar('datasetId', { length: 36 }).notNull()
     }, 
     (table) => ({
-        rows_dataset_7bbf412_fk: foreignKey({ name: "rows_dataset_7bbf412_fk", columns: [table.datasetId], foreignColumns: [DatasetTable.id]}).onDelete("cascade").onUpdate("cascade")
+        datasetrows_dataset_6c3eb48a_fk: foreignKey({ name: "datasetrows_dataset_6c3eb48a_fk", columns: [table.datasetId], foreignColumns: [DatasetTable.id]}).onDelete("cascade").onUpdate("cascade")
     })
 );
 

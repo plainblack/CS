@@ -2,7 +2,7 @@ import { baseSchemaProps, dbString, zodString, dbEnum, dbBoolean, dbText, zodTex
 
 export const rowSchema = {
     kind: 'Row',
-    tableName: 'rows',
+    tableName: 'datasetrows',
     owner: ['admin', '^dataset'],
     props: [
         ...baseSchemaProps,
