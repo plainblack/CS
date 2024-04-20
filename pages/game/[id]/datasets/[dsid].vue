@@ -1,5 +1,19 @@
 <template>
+    <Toolbar>
+        <template #start>
+            <NuxtLink :to="`/game/${game.props?.id}/datasets`" class="mr-2 no-underline">
+                <Button severity="secondary" title="Back" alt="Back to Game" class="p-button-sm p-1"><Icon name="dashicons:exit"/>Back to Game</Button>
+            </NuxtLink>
+        </template>
+        <template #center></template>
+        <template #end></template>
+    </Toolbar>
 
+    <div class="px-0 py-4 md:px-4">
+        <div style="min-height: 20rem">
+
+        </div>
+    </div>
 {{ game.props?.name }} /
 {{ dataset.props?.name }} /
 {{ rows.records.length }}
