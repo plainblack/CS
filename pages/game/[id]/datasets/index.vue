@@ -22,7 +22,7 @@
                             <DataTable :value="datasets.records" stripedRows @sort="(e) => datasets.sortDataTable(e)">
                                 <Column field="props.name" header="Name" sortable>
                                     <template #body="slotProps">
-                                        <NuxtLink :to="`/dataset/${slotProps.data.props.id}`" v-ripple>
+                                        <NuxtLink :to="`/game/${slotProps.data.props.gameId}/datasets/${slotProps.data.props.id}`" v-ripple>
                                             {{ slotProps.data.props.name }}
                                         </NuxtLink>
                                     </template>
@@ -31,10 +31,7 @@
                                 <Column field="extra.totalQuantity" header="Total Quantity" sortable></Column>
                                 <Column header="Manage">
                                     <template #body="slotProps">
-                                        <NuxtLink :to="`/dataset/${slotProps.data.props.id}`" class="mr-2 no-underline">
-                                            <Button icon="pi pi-eye"  title="View" alt="View Dataset" />
-                                        </NuxtLink>
-                                        <NuxtLink v-if="slotProps.data.meta?.isOwner" :to="`/dataset/${slotProps.data.props.id}/edit`" class="mr-2 no-underline">
+                                        <NuxtLink v-if="slotProps.data.meta?.isOwner" :to="`/game/${slotProps.data.props.gameId}/datasets/${slotProps.data.props.id}`" class="mr-2 no-underline">
                                             <Button icon="pi pi-pencil" severity="success" title="Edit" alt="Edit Dataset" />
                                         </NuxtLink>
                                         <Button v-if="slotProps.data.meta?.isOwner"  title="Delete" alt="Delete Dataset" icon="pi pi-trash" severity="danger" @click="slotProps.data.delete()" />
