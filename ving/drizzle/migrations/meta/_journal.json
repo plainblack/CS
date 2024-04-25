@@ -43,6 +43,13 @@
       "when": 1713565852740,
       "tag": "0005_thankful_starfox",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1714010189520,
+      "tag": "0006_tiny_cerise",
+      "breakpoints": true
     }
   ]
 }
