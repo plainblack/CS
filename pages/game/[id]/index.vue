@@ -14,7 +14,7 @@
                                     @change="game.update()" />
                             </div>
                             <div class="mb-4">
-                                <FormSelect name="archived" :options="game.options?.archived"
+                                <FormInput type="select" name="archived" :options="game.options?.archived"
                                     v-model="game.props.archived" label="Archived" @change="game.update()" />
                             </div>
                             <div class="mb-4">
