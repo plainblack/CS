@@ -29,7 +29,7 @@ export const rowSchema = {
             db: (prop) => dbInt(prop),
             zod: (prop) => zodNumber(prop).nonnegative(),
             view: ['public'],
-            edit: [],
+            edit: ['owner'],
         },
         {
             type: "json",
@@ -39,7 +39,7 @@ export const rowSchema = {
             db: (prop) => dbJson(prop),
             zod: (prop) => zodJsonObject(prop).passthrough(), // or replace .passthrough() with something like .extends({foo: z.string()})
             view: ['public'],
-            edit: [],
+            edit: ['owner'],
         },
         {
             type: "id",

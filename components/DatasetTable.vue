@@ -1,7 +1,8 @@
 <template>
     <client-only>
         <hot-table 
-            :data="rowData"
+            :data="rows.records"
+            :columns="columns"
             :colHeaders="columnHeaders"
             :afterViewRender="tableInit"
             :rowHeaders="true" 
@@ -36,18 +37,11 @@
         dataset: Object,
     });
 
-    const rowData = computed(() => {
-        const out = [];
-        for (const row of props.rows.records) {
-            const data = [
-                row.props?.id,
-                row.props?.quantity,
-                row.props?.name,
-            ];
-            out.push(data)
-        }
-        return out;
-    })
+    const columns = [
+      { data : 'props.id' },
+      { data : 'props.quantity' },
+      { data : 'props.name' },
+    ];
 
   const data = [
           ['', 'Ford', 'Volvo', 'Toyota', 'Honda'],
