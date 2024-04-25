@@ -84,6 +84,7 @@ export const datasetSchema = {
             type: "id",
             name: 'gameId', // the name of the remote record's id in this table
             required: true,
+            default: undefined,
             length: 36,
             filterQualifier: true,
             db: (prop) => dbRelation(prop),

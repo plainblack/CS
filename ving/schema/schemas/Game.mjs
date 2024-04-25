@@ -22,6 +22,7 @@ export const gameSchema = {
             name: 'notes',
             required: false,
             default: '',
+            length: 16777215,
             db: (prop) => dbMediumText(prop),
             zod: (prop) => zodMediumText(prop),
             view: [],
