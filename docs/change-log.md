@@ -3,7 +3,18 @@ outline: deep
 ---
 # Change Log
 
-## 20224-04-24
+## 2024-04-25
+* Fixed a bug where ving record fields of type 'int' were not being initialized properly.
+* Removed unnecessary validation on Dropzone.
+* Upgraded to Nuxt 3.11.2 from 3.10.0.
+* NOTE: run "npm i"
+* Merged VarChar, Text, and MediumText examples in docs into a String Examples section.
+* Renamed dbString to dbVarChar, but kept an alias as dbString.
+* Built ving schema validation system.
+* Fixed a bunch of bugs in the ving schema documentation.
+* Moved extensionMap from ving/record/records/S3File.mjs to ving/schema/schemas/S3File.mjs.
+
+## 2024-04-24
 * Fixed a bug where an error when making calls on currentUserStore would destroy existing data.
 * Fixed a bug where you couldn't upload an avatar if you didn't already have one.
 * Added dxf to the known extension types.
