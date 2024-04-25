@@ -49,6 +49,11 @@ Displays a button that allows you to copy a text string to the user's clipboard.
 <CopyToClipboard :text="foo"/>
 ```
 
+Props:
+
+- **text** - The text you wish to copy to the clipboard.
+- **size** - The size of the button. Defaults to the normal button size. Can also be `lg`, `sm`, or `xs`.
+
 ### Crumbtrail
 Displays a crumbtrail navigation.
 
@@ -70,13 +75,17 @@ Note that you should always wrap this in a `<client-only>` tag.
 
 ```html
 <client-only>
-    <Dropzone :acceptedFiles="['.pdf','.zip']" :afterUpload="doThisFunc"></Dropzone>
+    <Dropzone :acceptedFiles="['pdf','zip']" :afterUpload="doThisFunc"></Dropzone>
 </client-only>
 ```
       
 Props:
 
-- **acceptedFiles** - An array of file extensions that S3File should accept. Note that these should be prepended with a `.` like `.jpg` not `jpg`. Defaults to `['.png','.jpg']`.
+- **acceptedFiles** - An array of file extensions that S3File should accept. Defaults to `['png','jpg']`. This can and should be automatically filled by a `meta.acceptedFileExtensions` property from a [Ving Record](ving-record) when dealing with S3Files. It is set by the `relation.acceptedFileExtensions` attribute in a [Ving Schema](ving-schema). For example:
+
+```html
+<Dropzone :acceptedFiles="user.meta?.acceptedFileExtensions?.avatar" />
+```
 - **afterUpload** - Required. A function that will be executed after upload. This function should then call the appropriate import endpoint to post process and verify the file.
 - **info** - A string that will be displayed inside the dropzone box. Useful to give the user some insights about the nature of the files you will allow such as size or dimension contstraints. 
 - **maxFiles** - An integer of the maximum number of files the user is allowed to select for upload. Defaults to unlimited.
@@ -124,7 +133,7 @@ Props:
 - **send** - A function that should be executed once the form is sumbmitted and fields have been validated.
 
 ### FormInput
-Generate the appropritate form field based upon input types.
+Generate the appropritate form field based upon input types. This also handles labeling and error handling in an automated fashion, and thus is generally preferable to using the individual form inputs.
 
 ```html
 <FormInput name="username" v-model="user.username" />
@@ -133,7 +142,7 @@ Generate the appropritate form field based upon input types.
 Props:
 
 - **label** - A form label for proper ARIA compliance.
-- **type** - Defaults to `text` but can also be `textarea`, `password`, `number`, or `email`.
+- **type** - Defaults to `text` but can also be `textarea`, `password`, `number`, `markdown`, `select` or `email`.
 - **name** - The field name for the form input. Required.
 - **id** - Defaults to whatever the `name` field is set to, but can be any string.
 - **append** - Appends an input group to the end of the field. Example: `.00`
@@ -143,14 +152,21 @@ Props:
 - **placeholder** - Text to be displayed if the input is empty.
 - **required** - A boolean that defaults to `false`, but if true will not allow the form to be sent if empty.
 - **step** - An amount to increment a `number` type field. Defaults to `1`.
+- **options** - An array of objects that is used when type is `select`:
+    - **label** - The human readable label for the value.
+    - **value** - The value to select. Can be string, number, or boolean.
 - **mustMatch** - An object containing:
     - **field** - A label for a field or some other attribute such as `Password`. 
     - **value** - The value that this field must match.
 - **class** - A CSS class that should be applied to the field.
 
+Slots:
+
+- **prepend** - Add an option to the top of the list when type is `select`.
+- **append** - Add an option to the bottom of the list when type is `select`.
 
 ### FormLabel
-An ARIA compliant label for a form field.
+An ARIA compliant label for a form field. In general you wouldn't use this directly, but via the `label` prop of `FormInput`.
 
 ```html
 <FormLabel id="foo" label="Foo" />
@@ -160,37 +176,28 @@ Props:
 - **label** - The text to display to the user.
 - **id** - The unique id of the form field this label refers to.
 
-
-### FormSelect
-A form select list.
-
-```html
-<FormSelect @change="currentUser.update()" v-model="currentUser.props.useAsDisplayName"
-                                :options="currentUser.options?.useAsDisplayName" name="useAsDisplayName"
-                                label="Use As Display Name" />
-```
+### MarkdownInput
+An input control for a markdown editor. In general you shouldn't use this directly, but rather use the `FormInput` control with type of `markdown`.
 
 Props:
 
-- **label** - The text label to display to the user.
-- **id** - The unique id of the form field. Defaults to whatever is in the `name` field.
-- **v-model** - What Vue reactive variable should this be connected to? Required.
-- **name** - The field name for the form input. Required.
-- **options** - An array of objects:
-    - **label** - The human readable label for the value.
-    - **value** - The value to select. Can be string, number, or boolean.
-
-Slots:
-
-- **prepend** - Add an option to the top of the list.
-- **append** - Add an option to the bottom of the list.
+- **id** - A required string that is unique on the page.
+- **v-model** - A reference to the field that will be edited.
+- **placeholder** - A string to display before there is any text.
 
 ```html
-<FormSelect>
-    <template #prepend>
-        <option value="foo">Foo</option>
-    </template>
-</FormSelect>
+<MarkdownInput v-model="description" id="foo" />
+```
+
+### MarkdownViewer
+A display mechanism for markdown that is generated by `MarkdownInput`, which converts the markdown into HTML.
+
+Props:
+
+- **text** - The text containing the markdown you'd like to convert into HTML.
+
+```html
+<MarkdownView :text="description" />
 ```
 
 ### Notify
@@ -211,6 +218,36 @@ Displays a pagination bar for a [useVingKind() result set](#usevingkind).
 Props:
 
 - **kind** - A [useVingKind() object](#usevingkind).
+
+### SelectInput
+A form select list. Generally you won't use this directly, but rather use `FormInput` with type `select`.
+
+```html
+<SelectInput @change="currentUser.update()" v-model="currentUser.props.useAsDisplayName"
+                                :options="currentUser.options?.useAsDisplayName" id="useAsDisplayName"
+                                 />
+```
+
+Props:
+
+- **id** - The unique id of the form field. Required.
+- **v-model** - What Vue reactive variable should this be connected to? Required.
+- **options** - An array of objects:
+    - **label** - The human readable label for the value.
+    - **value** - The value to select. Can be string, number, or boolean.
+
+Slots:
+
+- **prepend** - Add an option to the top of the list.
+- **append** - Add an option to the bottom of the list.
+
+```html
+<SelectInput>
+    <template #prepend>
+        <option value="foo">Foo</option>
+    </template>
+</SelectInput>
+```
 
 ### SystemWideAlert
 Place this in your layouts where you would like the system wide alert to be displayed when an admin has configured one. It is triggered by the `useSystemWideAlertStore()` composable.

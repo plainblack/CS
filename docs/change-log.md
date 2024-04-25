@@ -3,6 +3,45 @@ outline: deep
 ---
 # Change Log
 
+## 20224-04-24
+* Fixed a bug where an error when making calls on currentUserStore would destroy existing data.
+* Fixed a bug where you couldn't upload an avatar if you didn't already have one.
+* Added dxf to the known extension types.
+* Added a message for developers that they need to edit the extensionMap if they wish to support a new file type.
+* Updated the Dropzone component to use file extensions without a dot, the same way as S3File uses it internally.
+* NOTE: Any dropzones you have in use need to be updated to not use a dot in the array of file extensions.
+* Implemented: figure out a way to share file extensions for s3files from schema #104
+* NOTE: Because of the above you may want to check out the new acceptedFileExtensions attribute in ving schemas and migrate your S3File integrations to use it.
+* Implemented: add a display of an s3file thumbnail to the page generator #105
+* Fixed: pulumi doesn't create the nodmods.zip file as it should #110
+* Added job options for priority, repeat, and cron.
+* Added a job handler generator to the CLI.
+* Added CLI functions to obliterate, pause, and unpause queues.
+* Added CLI functions to list jobs in a queue and kill them.
+* Added uniqueQualifiers field to ving schema props to implement: allow unique indexes within set #114
+
+## 2024-04-23
+* Created SelectInput component to replace FormSelect. However, you should use FormInput with type select instead of using this directly in most cases.
+* NOTE: The FormSelect component no longer exists. Anywhere you are using it use FormInput with type 'select' instead.
+* Added size prop to CopyToClipboard button.
+* Updated CopyToClipboard in generator to use size xs.
+* Added a little better documentation for Pulumi.
+* Fix: bio on User is required.
+* Implemented: replace axios with ofetch for CLI and jobs #117.
+* Implemented: replace lodash defaultsDeep with defu #118
+* NOTE: You will have to run npm i to get new modules.
+* Added ving/utils/indentify.mjs to help identify various data structures in a more consistent way.
+* Refactored entire code base to use ving/utils/indentify.mjs.
+* Implemented: replace Usage: with @example in jsdoc #121
+* Added more types to JSDoc.
+
+## 2024-04-22
+* Added MarkdownInput form control component for editing markdown text.
+* Added MarkdownView component for viewing markdown text.
+* Integrated MarkdownInput into FormInput component so you can just set "type" equal to "markdown" and display the input.
+* Added a `bio` field to the User that can be edited in their profile settings and displayed on their profile page.
+* NOTE: Due to the above change you should regenerate your drizzle tables and run a migration.
+
 ## 2024-04-20
 * Fixed a bug where the rest generator would incorrectly generate child relationship api.
 * Added an empty layout.

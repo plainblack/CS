@@ -1,23 +1,23 @@
 import { findVingSchema } from '#ving/schema/map.mjs';
 import ving from '#ving/index.mjs';
-import _ from 'lodash';
+import { isObject, isUndefined, isNil, isNull } from '#ving/utils/identify.mjs';
 import { eq, asc, desc, and, ne, sql, getTableName, count, sum, avg, min, max } from '#ving/drizzle/orm.mjs';
 import { stringDefault, booleanDefault, numberDefault, dateDefault } from '#ving/schema/helpers.mjs';
 
 /**
  * Creates a select list options datastructure from the `enums` and `enumLabels` on a ving schema.
  * 
- * Usage: `const options = enum2options([true,false], ['Is Admin','Is Not Admin'])`
- * 
  * @param {string[]} enums An array of enumerated values
  * @param {string[]} labels An array of enumerated labels
- * @returns An array of objects that combines enums and labels into an object with attributes of `label` and `value`
+ * @returns {object[]} An array of objects that combines enums and labels into an object with attributes of `label` and `value`
+ * @example
+ * const options = enum2options([true,false], ['Is Admin','Is Not Admin'])
  */
 export const enum2options = (enums, labels) => {
     const options = [];
     let i = 0
     for (let value of enums) {
-        const label = (labels !== undefined && labels[i] !== undefined) ? labels[i] : value.toString();
+        const label = (!isUndefined(labels) && !isUndefined(labels[i])) ? labels[i] : value.toString();
         options.push({
             value,
             label,
@@ -30,11 +30,11 @@ export const enum2options = (enums, labels) => {
 /**
  * Locates and returns one prop from the list of props
  * 
- * Usage: `findPropInSchema('useAsDisplayName', [])`
- * 
  * @param {string} name The name of the prop you are looking for
- * @param {Object[]} props The list of schema props to search in
- * @returns The prop object
+ * @param {object[]} props The list of schema props to search in
+ * @returns {object} The prop object
+ * 
+ * findPropInSchema('useAsDisplayName', [])
  */
 export const findPropInSchema = (name, props) => {
     return props.find(prop => prop.name == name);
@@ -64,12 +64,12 @@ export class VingRecord {
     /**
      * You'll almost never call this directly, but instead it will be called by a subclass of VingKind.
      * 
-     * Usage: `const user = new UserRecord(db, UsersTable)`
-     * 
      * @param {Object} db A mysql2 database connection or pool
      * @param {string} table The drizzle database table definition
      * @param {Object} props Initializers for props
      * @param {boolean} inserted Whether or not the record already exists in the database
+     * @example
+     * const user = new UserRecord(db, UsersTable)
      */
     constructor(db, table, props, inserted = true) {
         this.#props = props;
@@ -96,11 +96,11 @@ export class VingRecord {
     /**
      * Add a warning to the `warnings` list
      * 
-     * Usage: `user.addWarning({code: 404, message:'Brain not found.'})`
-     * 
      * @param {Object} warning A warning object that has a `code`, and a `message`
      * @param {number} warning.code A 3 digit error code
      * @param {string} warning.message A human readable message
+     * @example
+     * user.addWarning({code: 404, message:'Brain not found.'})
      */
     addWarning(warning) {
         this.warnings?.push(warning);
@@ -109,11 +109,11 @@ export class VingRecord {
     /**
      * The same as `isOwner` except throws a `403` error instead of returning `false`
      * 
-     * Usage: `await apikey.canEdit(session)`
-     * 
      * @param {Object} currentUser A `User` or `Session`
      * @throws 403
      * @returns {boolean} Returns `true`
+     * @example
+     * await apikey.canEdit(session)
      */
     async canEdit(currentUser) {
         if (await this.isOwner(currentUser)) {
@@ -126,9 +126,9 @@ export class VingRecord {
     /**
      * Creates a new record based upon the props of an old one. Note that this doesn't save the new record to the database, you'll need to call `insert()` on it to do that.
      * 
-     * Usage: `const newRecord = this.copy()`
-     * 
-     * @returns {Object} a newly minted record based upon the original props
+     * @returns {VingRecord} a newly minted record based upon the original props
+     * @example
+     * const newRecord = this.copy()
      */
     async copy() {
         const schema = findVingSchema(getTableName(this.table));
@@ -141,8 +141,8 @@ export class VingRecord {
 
     /**
      * Removes the record from the database
-     * 
-     * Usage: `await user.delete()`
+     * @example
+     * await user.delete()
      */
     async delete() {
         this.#deleted = true;
@@ -151,8 +151,6 @@ export class VingRecord {
 
     /**
      * Serialize the information about this record in a permission sensitive way
-     * 
-     * Usage: `const description = await user.describe({currentUser: session})`
      * 
      * @param {Object} params A list of params to change the output of the describe. Defaults to `{}`
      * @param {Object} params.currentUser The `User` or `Session` instance to test ownership against
@@ -163,25 +161,26 @@ export class VingRecord {
      * @param {boolean} params.include.private If `true` will ignore ownership considerations when formulating the description
      * @param {string[]} params.include.related An array of parent relationship names, which will then include those related objects in the description
      * @param {string[]} params.include.extra Some `VingRecord`s may define weird description functions that can be initiated by naming it in this array
-     * 
-     * @returns Serialized version of the `VingRecord`
+     * @returns {object} Serialized version of the `VingRecord`
+     * @example
+     * const description = await user.describe({currentUser: session})
      */
     async describe(params = {}) {
         const currentUser = params.currentUser;
         const include = params.include || {};
-        const isOwner = currentUser !== undefined && await this.isOwner(currentUser);
+        const isOwner = !isUndefined(currentUser) && await this.isOwner(currentUser);
         const schema = findVingSchema(getTableName(this.table));
         let out = { props: {} };
         out.props.id = this.get('id');
-        if (include !== undefined && include.links) {
+        if (include?.links) {
             const vingConfig = await ving.getConfig();
             out.links = { base: { href: `/api/${vingConfig.rest.version}/${schema.kind?.toLowerCase()}`, methods: ['GET', 'POST'] } };
             out.links.self = { href: `${out.links.base.href}/${this.#props.id}`, methods: ['GET', 'PUT', 'DELETE'] };
         }
-        if (include !== undefined && include.options) {
+        if (include?.options) {
             out.options = await this.propOptions(params);
         }
-        if (include !== undefined && include.meta) {
+        if (include?.meta) {
             out.meta = {
                 kind: schema.kind,
                 isOwner,
@@ -190,8 +189,11 @@ export class VingRecord {
                 out.meta.deleted = true;
             }
         }
-        if (include !== undefined && include.related && include.related.length) {
+        if (include?.related?.length) {
             out.related = {};
+        }
+        if (include?.extra?.length) {
+            out.extra = {};
         }
         if (this.warnings?.length) {
             out.warnings = this.warnings;
@@ -202,9 +204,9 @@ export class VingRecord {
             // determine field visibility
             const roles = [...field.view, ...field.edit];
             const visible = roles.includes('public')
-                || (include !== undefined && include.private)
+                || (include?.private)
                 || (roles.includes('owner') && isOwner)
-                || (currentUser !== undefined && currentUser.isaRole(roles));
+                || (currentUser?.isaRole(roles));
             if (!visible) continue;
 
             const fieldName = field.name.toString();
@@ -213,24 +215,28 @@ export class VingRecord {
             out.props[field.name] = this.#props[field.name];
 
             // links 
-            if (typeof out.links === 'object'
+            if (isObject(out.links)
                 && include.links
                 && field.relation
-                && typeof out.links.self === 'object'
+                && isObject(out.links.self)
             ) {
                 let lower = field.relation.name.toLowerCase();
                 out.links[lower] = { href: `${out.links.self.href}/${lower}`, methods: ['GET'] };
             }
 
-            // related
-            if (typeof out.related === 'object'
-                && include.related !== undefined
-                && field.relation
+            // relations
+            if (field.relation
                 && ['parent', 'sibling'].includes(field.relation.type)
-                && include.related.includes(field.relation.name)
             ) {
-                const parent = await this.parent(field.relation.name);
-                out.related[field.relation.name] = await parent.describe(params);
+                if (isObject(out.related) && include.related?.includes(field.relation.name)) {
+                    const parent = await this.parent(field.relation.name);
+                    out.related[field.relation.name] = await parent.describe(params);
+                }
+                if (isObject(out.meta) && 'acceptedFileExtensions' in field.relation) {
+                    if (!('acceptedFileExtensions' in out.meta))
+                        out.meta.acceptedFileExtensions = {};
+                    out.meta.acceptedFileExtensions[field.relation.name] = field.relation.acceptedFileExtensions;
+                }
             }
 
         }
@@ -241,22 +247,21 @@ export class VingRecord {
     /**
      * Retrieve the value of a prop from this record
      * 
-     * Usage: `const value = user.get('id')`
-     * 
      * @param {string} key The name of the prop
-     * @returns A value
+     * @returns {*} A value
+     * @example
+     * const value = user.get('id')
      */
     get(key) {
         return this.#props[key];
     }
 
     /**
+     * Retrieve an object of name/value pairs from this record
      * 
-     * @returns Retrieve an object of name/value pairs from this record
-     * 
-     * Usage: `const props = user.getAll()`
-     * 
-     * @returns An object of name/value pairs
+     * @returns {object} An object of name/value pairs
+     * @example
+     * const props = user.getAll()
      */
     getAll() {
         return this.#props;
@@ -264,8 +269,8 @@ export class VingRecord {
 
     /**
      * Inserts the current record into the database
-     * 
-     * Usage: `await user.insert()`
+     * @example
+     * await user.insert()
      */
     async insert() {
         if (this.#inserted) {
@@ -279,13 +284,13 @@ export class VingRecord {
     /**
      * Determine whether a user owns the current record. 
      * 
-     * Usage: `const owner = await apikey.isOwner(session)`
-     * 
      * @param {Object} currentUser A `User` or `Session`
-     * @returns Whether or not the passed in user owns this record or not
+     * @returns {boolean} Whether or not the passed in user owns this record or not
+     * @example
+     * const owner = await apikey.isOwner(session)
      */
     async isOwner(currentUser) {
-        if (currentUser === undefined)
+        if (isUndefined(currentUser))
             return false;
         const schema = findVingSchema(getTableName(this.table));
         for (let owner of schema.owner) {
@@ -317,24 +322,35 @@ export class VingRecord {
      * method with the same name will not hit the database multiple times. You can flush this
      * cache by calling either `refresh()` or  `flushParentCache()`.
      * 
-     * Usage: `const user = await apikey.parent('user')`
-     * 
      * @param {string} name The relation name
      * @throws 404 if it can't find the parent by name
-     * @returns A record related to the this record
+     * @returns {VingRecord} A record related to the this record
+     * @example
+     * const user = await apikey.parent('user')
      */
     async parent(name) {
         if (name in this.#parentCache)
             return this.#parentCache[name];
-        const schema = findVingSchema(getTableName(this.table));
-        const prop = ving.findObject(schema.props, obj => obj.relation?.name == name);
+        const prop = this.parentPropSchema(name);
         return this.#parentCache[name] = await (await ving.useKind(prop.relation.kind)).findOrDie(this.get(prop.name));
     }
 
     /**
+     * Returns the schema of the named parent prop, which can be useful for looking up special attributes.
+     * @param {string} name The name of the parent prop to find.
+     * @returns {object} A ving schema prop schema.
+     * @example
+     * user.parentPropSchema('avatar')
+     */
+    parentPropSchema(name) {
+        const schema = findVingSchema(getTableName(this.table));
+        return ving.findObject(schema.props, obj => obj.relation?.name == name);
+    }
+
+    /**
      * Flushes the parent cache created by calling the `parent()` method.
-     * 
-     * Usage: `apikey.flushParentCache()`
+     * @example
+     * apikey.flushParentCache()
      */
     flushParentCache() {
         this.#parentCache = {};
@@ -344,17 +360,17 @@ export class VingRecord {
     /**
      * Returns a query to fetch the children of a child relationship attached to this kind's schema.
      * 
-     * Usage: `const apikeys = await user.children('apikeys')
-     * 
      * @param {string} name The relation name
      * @throws 404 if it can't find the children by name
-     * @returns A drizzle query.
+     * @returns {object} A drizzle query.
+     * @example
+     * const apikeys = await user.children('apikeys')
      */
     async children(name) {
         const schema = findVingSchema(getTableName(this.table));
         const prop = ving.findObject(schema.props, obj => obj.relation?.name == name);
         const kind = await ving.useKind(prop.relation.kind);
-        if (kind.table[prop.name] == undefined)
+        if (isUndefined(kind.table[prop.name]))
             ving.log('VingRecord').error(`${schema.kind} has an invalid virtual prop name called ${name}`);
         kind.propDefaults.push({
             prop: prop.name,
@@ -367,8 +383,6 @@ export class VingRecord {
     /**
      * Returns a list of the enumerated prop options available to the current user
      * 
-     * Usage: `const options = await user.propOptions({currentUser: session})`
-     * 
      * @param {Object} params A list of params to change the output of the describe. Defaults to `{}`
      * @param {Object} params.currentUser The `User` or `Session` instance to test ownership against
      * @param {Object} params.include An object containing which things to be included in the description beyond the props
@@ -379,19 +393,21 @@ export class VingRecord {
      * @param {string[]} params.include.related An array of parent relationship names, which will then include those related objects in the description
      * @param {string[]} params.include.extra Some `VingRecord`s may define weird description functions that can be initiated by naming it in this array
      * @param {boolean} all Include all options regardless of the `currentUser`. Defaults to `false`.
-     * @returns a list of the enumerated prop options
+     * @returns {object[]} a list of the enumerated prop options
+     * @example
+     * const options = await user.propOptions({currentUser: session})
      */
     async propOptions(params = {}, all = false) {
         const options = {};
         const currentUser = params.currentUser;
         const include = params.include || {};
-        const isOwner = currentUser !== undefined && await this.isOwner(currentUser);
+        const isOwner = !isUndefined(currentUser) && await this.isOwner(currentUser);
         for (const prop of findVingSchema(getTableName(this.table)).props) {
             const roles = [...prop.view, ...prop.edit];
             const visible = roles.includes('public')
-                || (include !== undefined && include.private)
+                || (include?.private)
                 || (roles.includes('owner') && (isOwner || all))
-                || (currentUser !== undefined && currentUser.isaRole(roles));
+                || (currentUser?.isaRole(roles));
             if (!visible)
                 continue;
             if ((prop.type == 'enum' || prop.type == 'boolean') && prop.enums && prop.enums.length > 0) {
@@ -404,7 +420,7 @@ export class VingRecord {
     /**
      * Fetches the props from the database and overwrites whats in memory. Also flushes the parent relation cache.
      * 
-     * @returns the same as `getAll()`
+     * @returns {object} the same as `getAll()`
      */
     async refresh() {
         this.flushParentCache();
@@ -414,11 +430,11 @@ export class VingRecord {
     /**
      * Assign a value to a prop
      * 
-     * Usage: `user.set('username', 'andy')`
-     * 
      * @param {string} key The name of the prop
      * @param {*} value The value to set
-     * @returns The value that was set
+     * @returns {*} The value that was set
+     * @example
+     * user.set('username', 'andy')
      */
     set(key, value) {
         const schema = findVingSchema(getTableName(this.table));
@@ -446,10 +462,10 @@ export class VingRecord {
     /**
      * Set a subset of values of a record.
      * 
-     * Usage: `user.setAll({ username : 'andy' })`
-     * 
-     * @param {Object} props An object containing name/value pairs to set. Doesn't need to be a complete list of all values.
-     * @returns The same as `getAll()`
+     * @param {object} props An object containing name/value pairs to set. Doesn't need to be a complete list of all values.
+     * @returns {object} The same as `getAll()`
+     * @example
+     * user.setAll({ username : 'andy' })
      */
     setAll(props) {
         const schema = findVingSchema(getTableName(this.table));
@@ -464,47 +480,50 @@ export class VingRecord {
     /**
      * Sets props in a permission safe way
      * 
-     * Usage: `await user.setPostedProps({username: 'andy'}, session)`
-     * 
      * @param {Object} params A list of props to be set
-     * @param {Object} currentUser A `User` or `Session`
+     * @param {User|Session} currentUser A `User` or `Session`
      * @throws 441 if a required field isn't set
      * @throws 409 if a unique constraint fails
-     * @returns `true` if set, or an exception if it couldn't be
+     * @returns {boolean} `true` if set, or an exception if it couldn't be
+     * @example
+     * await user.setPostedProps({username: 'andy'}, session)
      */
     async setPostedProps(params, currentUser) {
         const schema = findVingSchema(getTableName(this.table));
-        const isOwner = currentUser !== undefined && await this.isOwner(currentUser);
+        const isOwner = !isUndefined(currentUser) && await this.isOwner(currentUser);
 
         for (const field of schema.props) {
             const fieldName = field.name.toString();
             const param = params[field.name];
             const roles = [...field.edit];
-            const editable = (roles.includes('owner') && (isOwner || !this.isInserted))
-                || (currentUser !== undefined && currentUser.isaRole(roles));
+            const editable = (roles.includes('owner') && (isOwner || !this.isInserted)) || (currentUser?.isaRole(roles));
             if (!editable) {
                 continue;
             }
-            if (param === undefined || (field.relation && field.relation.type != 'parent')) {
+            if (isUndefined(param) || (field.relation && field.relation.type != 'parent')) {
                 continue;
             }
             if (param === '' && field.required) {
                 throw ving.ouch(441, `${fieldName} is required.`, fieldName);
             }
-            if (field.name !== undefined && param !== undefined) {
+            if (!isUndefined(field.name) && !isUndefined(param)) {
                 if (field.unique) {
                     const query = this.db.select({ count: sql`count(*)`.as('count') }).from(this.table);
                     let where = eq(this.table[field.name], params[field.name]);
                     if (this.isInserted)
                         where = and(where, ne(this.table.id, this.get('id')));
-
+                    if (field.uniqueQualifiiers) {
+                        for (const qualifier of field.uniqueQualifiiers) {
+                            where = and(where, eq(this.table[qualifier], params[qualifier] || this.get(qualifier)));
+                        }
+                    }
                     let count = (await query.where(where))[0].count
                     if (count > 0) {
                         ving.log('VingRecord').warning(`${this.get('id')} unique check failed on ${field.name.toString()}`)
                         throw ving.ouch(409, `${field.name.toString()} must be unique, but ${params[field.name]} has already been used.`, field.name)
                     }
                 }
-                if (param !== null) {
+                if (!isNull(param)) {
                     this.set(field.name, param);
                     if (field.relation && field.relation.type == 'parent') {
                         const parent = await this.parent(field.relation.name);
@@ -521,18 +540,18 @@ export class VingRecord {
     /**
      * Verifies that the record has valid and required info to be created in the database
      * 
-     * Usage: `user.testCreationProps({username: 'andy'})`
-     * 
      * @param {Object} params A list of props to be set
      * @throws 441 if a required field isn't set
-     * @returns `true` if all the required params exist and validate or an exception if not
+     * @returns {boolean} `true` if all the required params exist and validate or an exception if not
+     * @example
+     * user.testCreationProps({username: 'andy'})
      */
     testCreationProps(params) {
         const schema = findVingSchema(getTableName(this.table));
         for (const prop of schema.props) {
-            if (!prop.required || prop.type == 'virtual' || (prop.default !== undefined && prop.default !== '') || prop.relation)
+            if (!prop.required || prop.type == 'virtual' || !isNil(prop.default) || prop.relation)
                 continue;
-            if (params[prop.name] !== undefined && params[prop.name] != '')
+            if (!isNil(params[prop.name]))
                 continue;
             const fieldName = prop.name.toString();
             throw ving.ouch(441, `${fieldName} is required.`, fieldName);
@@ -542,8 +561,8 @@ export class VingRecord {
 
     /**
      * Overwrites the record in the database with the values currently in memory
-     * 
-     * Usage: `await user.update()`
+     * @example
+     * await user.update()
      */
     async update() {
         const schema = findVingSchema(getTableName(this.table));
@@ -559,10 +578,10 @@ export class VingRecord {
     /**
      * A permission safe way to update the props of a record. Calls `setPostedProps` then `update`.
      * 
-     * Usage: `await user.updateAndVerify({username:'andy'}, session)`
-     * 
      * @param {Object} params props to update
-     * @param {Object} currentUser A `User` or `Session`
+     * @param {User|session} currentUser A `User` or `Session`
+     * @example
+     * await user.updateAndVerify({username:'andy'}, session)
      */
     async updateAndVerify(params, currentUser) {
         await this.setPostedProps(params, currentUser);
@@ -602,11 +621,11 @@ export class VingKind {
 
     /**
      * 
-     * Usage: `const users = UserKind(db, UsersTable, UserRecord)`
-     * 
      * @param {Object} db A mysql2 database connection or pool
      * @param {Object} table A drizzle table definition
      * @param {Object} recordClass a reference to the record class to instanciate upon fetching or creating records from this kind
+     * @example
+     * const users = UserKind(db, UsersTable, UserRecord)
      */
     constructor(db, table, recordClass) {
         this.db = db;
@@ -617,10 +636,10 @@ export class VingKind {
     /**
      * Adds `propDefaults` (if any) into a where clause to limit the scope of affected records. As long as you're using the built in queries you don't need to use this method. But you might want to use it if you're using `create`, `select`, `update`, or `delete` directly.
      * 
-     * Usage: `const results = await Users.delete.where(Users.calcWhere(like(Users.realName, 'Fred%')));`
-     * 
      * @param {Object} where A drizzle where clause
-     * @returns A drizzle where clause
+     * @returns {object} A drizzle where clause
+     * @example
+     * const results = await Users.delete.where(Users.calcWhere(like(Users.realName, 'Fred%')));
      */
     calcWhere(where) {
         let defaults = undefined;
@@ -650,10 +669,10 @@ export class VingKind {
     /**
      * Get the number of records of this kind
      * 
-     * Usage: `const numberOfUsers = await Users.count()`
-     * 
      * @param {Object} where A drizzle where clause
      * @returns {number} A count of the records
+     * @example
+     * const numberOfUsers = await Users.count()
      */
     async count(where) {
         return (await this.db.select({ value: count() }).from(this.table).where(this.calcWhere(where)))[0].value;
@@ -662,11 +681,11 @@ export class VingKind {
     /**
      * Sum the values of a field of this kind
      * 
-     * Usage: `await S3Files.sum('sizeInBytes')`
-     * 
      * @param {string} field The name of the column to sum
      * @param {Object} where A drizzle where clause
      * @returns {number} A count of the records
+     * @example
+     * await S3Files.sum('sizeInBytes')
      */
     async sum(field, where) {
         return (await this.db.select({ value: sum(this.table[field]) }).from(this.table).where(this.calcWhere(where)))[0].value * 1;
@@ -675,11 +694,11 @@ export class VingKind {
     /**
      * Average the values of a field of this kind
      * 
-     * Usage: `await S3Files.avg('sizeInBytes')`
-     * 
      * @param {string} field The name of the column to average
      * @param {Object} where A drizzle where clause
      * @returns {number} A count of the records
+     * @example
+     * await S3Files.avg('sizeInBytes')
      */
     async avg(field, where) {
         return (await this.db.select({ value: avg(this.table[field]) }).from(this.table).where(this.calcWhere(where)))[0].value * 1;
@@ -688,11 +707,11 @@ export class VingKind {
     /**
      * Get the minimum value for a field of this kind
      * 
-     * Usage: `await S3Files.min('sizeInBytes')`
-     * 
      * @param {string} field The name of the column to get the minimum
      * @param {Object} where A drizzle where clause
      * @returns {number} A count of the records
+     * @example
+     * await S3Files.min('sizeInBytes')
      */
     async min(field, where) {
         return (await this.db.select({ value: min(this.table[field]) }).from(this.table).where(this.calcWhere(where)))[0].value;
@@ -701,11 +720,11 @@ export class VingKind {
     /**
     * Get the maximum value for a field of this kind. 
     * 
-    * Usage: `await S3Files.max('sizeInBytes')`
-    * 
     * @param {string} field The name of the column to get the maximum
     * @param {Object} where A drizzle where clause
     * @returns {number} A count of the records
+    * @example
+    * await S3Files.max('sizeInBytes')
     */
     async max(field, where) {
         return (await this.db.select({ value: max(this.table[field]) }).from(this.table).where(this.calcWhere(where)))[0].value;
@@ -714,10 +733,10 @@ export class VingKind {
     /**
      * Creates a new record in the database. This is the same as calling `mint` and then `insert` on the minted record.
      * 
-     * Usage: `const record = Users.create({username: 'andy'})`
-     * 
      * @param {Object} props The list of props to add to this record
-     * @returns A newly minted record
+     * @returns {VingRecord} A newly minted record
+     * @example
+     * const record = Users.create({username: 'andy'})
      */
     async create(props) {
         const obj = this.mint(props);
@@ -727,12 +746,12 @@ export class VingKind {
 
     /**
      * Creates a new record in the database in a permission safe way. This is the same as calling `mint`, then `testCreationProps` then `setPostedProps`, then `insert`.
-     * 
-     * Usage: `const record = await Users.createAndVerify({username: 'andy'})`
      *
      * @param {Object} props A list of props
      * @param {Object} currentUser A `User` or `Session`
-     * @returns A newly minted record or throws an error if validation fails
+     * @returns {VingRecord} A newly minted record or throws an error if validation fails
+     * @example
+     * const record = await Users.createAndVerify({username: 'andy'})
      */
     async createAndVerify(props, currentUser) {
         const obj = this.mint({});
@@ -744,8 +763,6 @@ export class VingKind {
 
     /**
      * Format a privilege safe paginated list of records
-     * 
-     * Usage: `const list = await Users.describeList()`
      * 
      * @param {Object} params A list of params to change the output of the describe. Defaults to `{}`
      * @param {string} params.sortOrder Either `desc` or `asc` for descending order or ascending order. Defaults to `asc`
@@ -763,7 +780,9 @@ export class VingKind {
      * @param {string[]} params.objectParams.include.related An array of parent relationship names, which will then include those related objects in the description
      * @param {string[]} params.objectParams.include.extra Some `VingRecord`s may define weird description functions that can be initiated by naming it in this array
      * @param {Object} where A drizzle where clause for filtering the list of records described
-     * @returns A paginated list of records
+     * @returns {object} A paginated list of records
+     * @example
+     * const list = await Users.describeList()
      */
     async describeList(
         params = {},
@@ -778,7 +797,7 @@ export class VingKind {
             }
             orderBy = cols;
         }
-        const itemsPerPage = params.itemsPerPage === undefined || params.itemsPerPage > 100 || params.itemsPerPage < 1 ? 10 : params.itemsPerPage;
+        const itemsPerPage = isUndefined(params?.itemsPerPage) || params?.itemsPerPage > 100 || params?.itemsPerPage < 1 ? 10 : params.itemsPerPage;
         const page = params.page || 1;
         const maxItems = params.maxItems || 100000000000;
         const itemsUpToThisPage = itemsPerPage * page;
@@ -834,7 +853,7 @@ export class VingKind {
     /**
      * Generates a list of `describeList` filters based upon ving schema. Can be overriden to do fancy filters.
      * 
-     * @returns A list of filters
+     * @returns {object} A list of filters
      */
     describeListFilter() {
 
@@ -858,10 +877,10 @@ export class VingKind {
     /**
      * Locates and returns a single record by it's `id`.
      * 
-     * Usage: `const record = await Users.find('xxx');`
-     * 
      * @param {string} id The unique id of the record
-     * @returns a record or `undefined` if no record is found
+     * @returns {VingRecord|undefined} a record or `undefined` if no record is found
+     * @example
+     * const record = await Users.find('xxx');
      */
     async find(id) {
         try {
@@ -873,15 +892,15 @@ export class VingKind {
 
     /**
      * Locates and returns a list of records by a drizzle where clause or an empty array if no records are found.
-     *
-     * Usage: `const listOfFredRecords = await Users.findMany(like(Users.realName, 'Fred%'));`
      * 
      * @param {Object} where A drizzle where clause
      * @param {Object} options Modify the sorting and pagination of the results. Defaults to `{}`
      * @param {number} options.limit The max number of records to to return
      * @param {number} options.offset The number of records to skip before returning results
      * @param {Object[]} options.orderBy An array of drizzle table fields to sort by with `asc()` or `desc()` function wrappers
-     * @returns A list of records
+     * @returns {VingRecord[]} A list of records
+     * @example
+     * const listOfFredRecords = await Users.findMany(like(Users.realName, 'Fred%'));
      */
     async findMany(
         where,
@@ -900,15 +919,18 @@ export class VingKind {
 
     /**
      * Locates and returns an iterator of records by a drizzle where clause or an empty array if no records are found. This is identical to `findMany`, but returns an iterator rather than a list. Iterators are better for huge datasets.
-     *
-     * Usage: `const fredRecords = await Users.findAll(like(Users.realName, 'Fred%')); for await (const fred of fredRecords) { }`
      * 
      * @param {Object} where A drizzle where clause
      * @param {Object} options Modify the sorting and pagination of the results. Defaults to `{}`
      * @param {number} options.limit The max number of records to to return
      * @param {number} options.offset The number of records to skip before returning results
      * @param {Object[]} options.orderBy An array of drizzle table fields to sort by with `asc()` or `desc()` function wrappers
-     * @returns An iterator that points to a list of records
+     * @returns {Iterator<VingRecord>} An iterator that points to a list of records
+     * @example
+     * const fredRecords = await Users.findAll(like(Users.realName, 'Fred%')); 
+     * for await (const fred of fredRecords) { 
+     *  // do stuff with each record
+     * }
      */
     async * findAll(
         where,
@@ -931,10 +953,10 @@ export class VingKind {
     /**
      * Locates and returns a single record by a drizzle where clause.
      * 
-     * Usage: `const fredRecord = await Users.findOne(eq(Users.username, 'Fred'));`
-     * 
      * @param {Object} where A drizzle where clause
-     * @returns a record or `undefined` if no record is found
+     * @returns {VingRecord|undefined} a record or `undefined` if no record is found
+     * @example
+     * const fredRecord = await Users.findOne(eq(Users.username, 'Fred'));
      */
     async findOne(where) {
         const result = await this.findMany(where, { limit: 1 });
@@ -946,11 +968,11 @@ export class VingKind {
     /**
      * Locates and returns a single record by it's `id`.
      * 
-     * Usage: `const record = await Users.findOrDie('xxx')`
-     * 
      * @param {string} id the unique id of the record
      * @throws 404 if no record is found
-     * @returns a record
+     * @returns {VingRecord} a record
+     * @example
+     * const record = await Users.findOrDie('xxx')
      */
     async findOrDie(id) {
         const props = (await this.select.where(eq(this.table.id, id)))[0];
@@ -963,10 +985,10 @@ export class VingKind {
     /**
      * Create a new record from scratch. Note that this does not save to the database, you'll need to call `insert()` on it to do that.
      * 
-     * Usage: `const record = Users.mint({username: 'andy'})`
-     * 
      * @param {Object} props The list of props to initialize the record
-     * @returns A newly minted record
+     * @returns {VingRecord} A newly minted record
+     * @example
+     * const user = Users.mint({username: 'andy'})
      */
     mint(props) {
         const output = {};
@@ -974,9 +996,9 @@ export class VingKind {
             output[item.prop] = item.value;
         }
         for (const prop of findVingSchema(getTableName(this.table)).props) {
-            if (props && props[prop.name] !== undefined)
+            if (props && !isUndefined(props[prop.name]))
                 output[prop.name] = props[prop.name]
-            else if (output[prop.name] !== undefined) // the value was set above
+            else if (!isUndefined(output[prop.name])) // the value was set above
                 continue;
             else if (prop.type == 'string' || prop.type == 'enum')
                 output[prop.name] = stringDefault(prop)
