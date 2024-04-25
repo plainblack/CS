@@ -18,7 +18,7 @@ You'll find the schemas in `#ving/schema/schemas`. A schema looks like this:
             unique: true,
             length: 60,
             default: '',
-            db: (prop) => dbString(prop),
+            db: (prop) => dbVarChar(prop),
             zod: (prop) => zodString(prop),
             view: [],
             edit: ['owner'],
@@ -34,6 +34,22 @@ Use the [CLI](cli) to generate a new schema skeleton to work from.
 ```bash
 ./ving.mjs schema --new=Foo
 ```
+
+## Validating a Schema
+
+Use the [CLI](cli) to validate a schema:
+
+```bash
+./ving.mjs schema -v Foo
+```
+
+Or all schemas:
+
+```bash
+./ving.mjs schema -V  
+```
+
+The schema validator is automatically run when you generate a [ving record](ving-record) or a [drizzle table](drizzle).
 
 ## Attributes
 
@@ -148,8 +164,9 @@ These are used to add a parent relationship.
 },
 ```
 
-###### String Type Example
+###### String Type Examples
 
+**VarChar**
 ```js
 {
     type: "string",
@@ -159,8 +176,41 @@ These are used to add a parent relationship.
     length: 256,
     filterQuery: true,
     default: '',
-    db: (prop) => dbString(prop),
+    db: (prop) => dbVarChar(prop),
     zod: (prop) => zodString(prop).email(),
+    view: [],
+    edit: ['owner'],
+},
+
+```
+
+**Text**
+```js
+{
+    type: "string",
+    name: "memo",
+    required: true,
+    length: 256,
+    filterQuery: true,
+    default: '',
+    db: (prop) => dbText(prop),
+    zod: (prop) => zodText(prop),
+    view: [],
+    edit: ['owner'],
+},
+
+```
+
+**MediumText**
+```js
+{
+    type: "string",
+    name: "description",
+    required: true,
+    default: '',
+    length: 16777215,
+    db: (prop) => dbMediumText(prop),
+    zod: (prop) => zodMediumText(prop),
     view: [],
     edit: ['owner'],
 },
@@ -179,40 +229,6 @@ These are used to add a parent relationship.
     view: ['public'],
     edit: [],
 },
-```
-
-###### Text Type Example
-
-```js
-{
-    type: "string",
-    name: "memo",
-    required: true,
-    length: 256,
-    filterQuery: true,
-    default: '',
-    db: (prop) => dbText(prop),
-    zod: (prop) => zodText(prop),
-    view: [],
-    edit: ['owner'],
-},
-
-```
-
-###### MediumText Type Example
-
-```js
-{
-    type: "string",
-    name: "description",
-    required: true,
-    default: '',
-    db: (prop) => dbMediumText(prop),
-    zod: (prop) => zodMediumText(prop),
-    view: [],
-    edit: ['owner'],
-},
-
 ```
 
 ###### Virtual Type Example
@@ -247,7 +263,7 @@ The `default` field set the default value that this prop should be set to both i
 
 ##### db
 
-The `zod` field is a required function that should return a [Drizzle column type definition](https://orm.drizzle.team/docs/column-types/mysql). It is used for generating the Drizzle database tables where ving records are stored. There are a lot of drizzle helper functions defined in `ving/schema/helpers.mjs` and they all start with the keyword "db".
+The `db` field is a required function that should return a [Drizzle column type definition](https://orm.drizzle.team/docs/column-types/mysql). It is used for generating the Drizzle database tables where ving records are stored. There are a lot of drizzle helper functions defined in `ving/schema/helpers.mjs` and they all start with the keyword "db".
 
 ##### zod
 
@@ -272,11 +288,11 @@ The `view` field is an array that can:
 - Contain any role (such as `admin`)
 - Contain the special keyword `owner`, so that whoever was defined as the owner in the attributes of the schema can view that prop
 
-The `view` prop is not required.
+The `view` prop is required, but can be empty.
 
 ##### edit
 
-The `edit` field works exactly the same as the `view` field, except that if a user can `edit` a prop it can automatically `view` a prop. It is not required.
+The `edit` field works exactly the same as the `view` field, except that if a user can `edit` a prop it can automatically `view` a prop. It is required, but can be empty.
 
 ##### relation
 
@@ -308,6 +324,8 @@ If the relation `type` is `parent` and the `kind` is an `S3File` then you can al
     acceptedFileExtensions : ['jpg','gif','png']
 ```
 
+The listed extensions must be in the S3File `extensionMap`.
+
 ##### enums
 
 The `enums` field is reqiured only if the prop type is `boolean` or `enum`. It is an array containing the values that are possible for this prop to have. In the case of `boolean` that is `true` or `false`, but in the case of `enum` it can be an array of any strings. The order the values appear in the array is the order they will be displayed to the user.
@@ -318,7 +336,7 @@ The `enums` field is reqiured only if the prop type is `boolean` or `enum`. It i
 
 ##### length
 
-The `length` field is required when the prop is of type `string`, `enum`, and `id` and can be anything between `1` and `256`. It is also required if the prop is of type `text`, and then can be as big as `65535`. It is used for validating the length of the fipropeld and also sets the prop size in the database. 
+The `length` field is required when the prop is of type `string`, `enum`, and `id` and can be greater than `1` and less than whatever the MySQL field type max length is: `256` for varchar, `65535` for Text, and `16777215` for MediumText. It is used for validating the length of the prop's value and also sets the prop field size in the database. 
 
 ##### unique
 
@@ -347,15 +365,15 @@ Then each `name` would have to be unique within the specified `category`.
 
 ##### filterQuery
 
-An optional boolean that if true will allow searching via the [rest api](rest) for keyword matches against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+An optional boolean that if true will allow searching via the [rest api](rest) for keyword matches against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record). Only use on `enum` and `string` type props.
 
 ##### filterQualifier
 
-An optional boolean that if true will allow searching via the [rest api](rest) for exact match filtering against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+An optional boolean that if true will allow searching via the [rest api](rest) for exact match filtering against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record). Only use on `id`, `int`, `boolean`, `enum` and `string` type props.
 
 ##### filterRange
 
-An optional boolean that if true will allow searching via the [rest api](rest) for range matching against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+An optional boolean that if true will allow searching via the [rest api](rest) for range matching against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record). Only use on `int` and `date` type props.
 
 
 ##### autoUpdate
