@@ -57,26 +57,21 @@ All schemas should have the base props of `id`, `createdAt`, and `updatedAt` by 
 
 Props all have the fields `type`, `name`, `required`, `default`, `db`, `zod`, `view`, and `edit`, but can have more or less fields from there.
 
-#### Prop Privileges
+#### Prop Fields
 
-The `view` and `edit` props are arrays that can:
+Schema Props have a lot of varying fields. This section defines the purpose and implementation of all those props.
 
-- Be empty, if no one should be able to view or edit that prop
-- Contain the special keyword `public`, if everyone should be able to view or edit that prop
-- Contain any role (such as `admin`)
-- Contain the special keyword `owner`, so that whoever was defined as the owner in the attributes of the schema can view or edit that prop
+##### type
+The `type` field determines how the prop will react to data it is given. Below you'll find examples of all the various types allowed. It is required. It also can determine what other fields are available in the prop definition.
 
-If a user can `edit` a prop it can automatically `view` a prop.
-
-#### Prop Types
-
-##### Boolean Props
+###### Boolean Type Example
 ```js
 {
     type: "boolean",
     name: 'admin',
     required: true,
     default: false,
+    filterQualifier: true,
     db: (prop) => dbBoolean(prop),
     enums: [false, true],
     enumLabels: ['Not Admin', 'Admin'],
@@ -85,13 +80,29 @@ If a user can `edit` a prop it can automatically `view` a prop.
 },
 ```
 
-##### Date Props
+###### Int Type Example
+
+```js
+{
+    type: "int",
+    name: "sizeInBytes",
+    filterRange: true,
+    required: false,
+    default: 0,
+    db: (prop) => dbInt(prop),
+    zod: (prop) => zodNumber(prop).positive(),
+    view: ['public'],
+    edit: [],
+},
+```
+
+###### Date Type Example
 ```js
 {
     type: "date",
     name: "startAt",
     required: true,
-    autoUpdate: true,
+    filterRange: true,
     default: () => new Date(),
     db: (prop) => dbDateTime(prop),
     view: ['public'],
@@ -99,13 +110,14 @@ If a user can `edit` a prop it can automatically `view` a prop.
 },
 ```
 
-##### Enum Props
+###### Enum Type Example
 ```js
 {
     type: "enum",
     name: 'useAsDisplayName',
     required: true,
     length: 20,
+    filterQualifier: true,
     default: 'username',
     db: (prop) => dbEnum(prop),
     enums: ['username', 'email', 'realName'],
@@ -115,7 +127,7 @@ If a user can `edit` a prop it can automatically `view` a prop.
 },
 ```
 
-##### Id Props
+###### Id Type Example
 These are used to add a parent relationship.
 ```js
 {
@@ -123,6 +135,7 @@ These are used to add a parent relationship.
     name: 'userId',
     required: true,
     length: 36,
+    filterQualifier: true,
     db: (prop) => dbRelation(prop),
     relation: {
         type: 'parent',
@@ -135,7 +148,7 @@ These are used to add a parent relationship.
 },
 ```
 
-##### String Props
+###### String Type Example
 
 ```js
 {
@@ -144,6 +157,7 @@ These are used to add a parent relationship.
     required: true,
     unique: true,
     length: 256,
+    filterQuery: true,
     default: '',
     db: (prop) => dbString(prop),
     zod: (prop) => zodString(prop).email(),
@@ -153,7 +167,21 @@ These are used to add a parent relationship.
 
 ```
 
-##### Text Props
+###### JSON Type Example
+```js
+{
+    type: "json",
+    name: "metadata",
+    required: false,
+    default: '{}',
+    db: (prop) => dbJson(prop),
+    zod: (prop) => zodJsonObject(prop).passthrough(), // or replace .passthrough() with something like .extends({foo: z.string()})
+    view: ['public'],
+    edit: [],
+},
+```
+
+###### Text Type Example
 
 ```js
 {
@@ -161,6 +189,7 @@ These are used to add a parent relationship.
     name: "memo",
     required: true,
     length: 256,
+    filterQuery: true,
     default: '',
     db: (prop) => dbText(prop),
     zod: (prop) => zodText(prop),
@@ -170,7 +199,7 @@ These are used to add a parent relationship.
 
 ```
 
-##### MediumText Props
+###### MediumText Type Example
 
 ```js
 {
@@ -186,7 +215,7 @@ These are used to add a parent relationship.
 
 ```
 
-##### Virtual Props
+###### Virtual Type Example
 
 These are used to add a child relationship. They are virtual because they make no modification to the database table they represent.
 ```js
@@ -203,6 +232,135 @@ These are used to add a child relationship. They are virtual because they make n
     },
 },
 ```
+
+##### name
+
+The `name` field determines how you will access the prop through all the various APIs and how it will be stored in the database. It is required.
+
+##### required
+
+The `required` field whether the prop is required to create an instance of the record. It is required.
+
+##### default
+
+The `default` field set the default value that this prop should be set to both in code and as the default in the database schema. It is required for any prop that has the field `required` set to `true`. It is also just generally a good idea to set it in all cases, even if you explictly define it as `undefined`. 
+
+##### db
+
+The `zod` field is a required function that should return a [Drizzle column type definition](https://orm.drizzle.team/docs/column-types/mysql). It is used for generating the Drizzle database tables where ving records are stored. There are a lot of drizzle helper functions defined in `ving/schema/helpers.mjs` and they all start with the keyword "db".
+
+##### zod
+
+The `zod` field is a required function that should return a [zod](https://zod.dev) schema. It is used for validation of the data before allowing an insert/update of the database. There are a lot of zod schema functions defined in `ving/schema/helpers.mjs` and they all start with the keyword "zod".
+
+The helper functions can even be extended. For example, one of the helpers is `zodString()`, which returns a function that looks like: 
+
+```js
+z.string().min(0).max(prop.length)
+```
+But you can extend it with additional zod functions, like this one that further says the string should look like an email address:
+```js
+zodString().email()
+```
+
+##### view
+
+The `view` field is an array that can:
+
+- Be empty, if no one should be able to view that prop
+- Contain the special keyword `public`, if everyone should be able to view that prop
+- Contain any role (such as `admin`)
+- Contain the special keyword `owner`, so that whoever was defined as the owner in the attributes of the schema can view that prop
+
+The `view` prop is not required.
+
+##### edit
+
+The `edit` field works exactly the same as the `view` field, except that if a user can `edit` a prop it can automatically `view` a prop. It is not required.
+
+##### relation
+
+The `relation` field is an object that defines a relationship between this record and another record. It is only available if the prop type is `id` or `virtual` and is only required if the prop type is `virtual`. 
+
+The object has the following attributes:
+
+###### type
+
+The `type` attribute can be one of `parent` or `child` and is required.
+
+###### name
+
+The `name` attribute is a required string and defines the name of the relationship this record has with the other record. If it is of type `parent` it should be signular noun and if the type is `child` it should be a plural noun. This name will also be used in the database key.
+
+###### kind
+
+The `kind` attribute is required and should be the name of a VingKind such as `User`, `APIKey`, `S3File` or some other VingKind you define.
+
+###### skipOwnerCheck
+
+The `skipOwnerCheck` attribute is an optional boolean. It tells VingRecord's `setPostedProps()` method that it does not need to check whether the user linking a record to this relationship `isOwner()` on that record.
+
+###### acceptedFileExtensions
+
+If the relation `type` is `parent` and the `kind` is an `S3File` then you can also set this attribute to an array of file types that are to be accepted by this relationship. For example
+
+```js
+    acceptedFileExtensions : ['jpg','gif','png']
+```
+
+##### enums
+
+The `enums` field is reqiured only if the prop type is `boolean` or `enum`. It is an array containing the values that are possible for this prop to have. In the case of `boolean` that is `true` or `false`, but in the case of `enum` it can be an array of any strings. The order the values appear in the array is the order they will be displayed to the user.
+
+##### enumLabels
+
+The `enums` field is reqiured only if the prop type is `boolean` or `enum`. It is an array containing the labels for the `enums` field values. Note that the labels should appear in the order to match the values in the `enums` array.
+
+##### length
+
+The `length` field is required when the prop is of type `string`, `enum`, and `id` and can be anything between `1` and `256`. It is also required if the prop is of type `text`, and then can be as big as `65535`. It is used for validating the length of the fipropeld and also sets the prop size in the database. 
+
+##### unique
+
+The `unique` field is an optional boolean. When set to `true` a unique index will be created on this prop in the database, and the record will test that the data being set to the prop is unqiue. 
+
+##### uniqueQualifiers
+
+The `uniqueQualifiers` field is an optional array of other prop names. It can be used with the `unique` field is set to `true`. Then instead of this prop being unique across the entire table, must be unique amongst the qualifiers. For example, if you had a schema with props that looked like:
+
+```js
+{
+    type: 'string',
+    name: 'name',
+    unique: true,
+    uniqueQualifiers: ['category'],
+},
+{
+    type: 'enum',
+    name: 'category',
+    default: 'Food',
+    enums: ['Food','Weapons','Armor'],
+},
+```
+
+Then each `name` would have to be unique within the specified `category`. 
+
+##### filterQuery
+
+An optional boolean that if true will allow searching via the [rest api](rest) for keyword matches against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+
+##### filterQualifier
+
+An optional boolean that if true will allow searching via the [rest api](rest) for exact match filtering against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+
+##### filterRange
+
+An optional boolean that if true will allow searching via the [rest api](rest) for range matching against this field. This is an alternative to overriding the `describeListFilter()` method in [VingRecord](ving-record).
+
+
+##### autoUpdate
+
+The `autoUpdate` field is an optional boolean that is only used on a prop with type `date`. If `true` the date will automatically get set every time `update()` is called on the record. This is generally never needed by anything other than the built in `dateUpdated` record that every record already has.
 
 ## Generate Drizzle Tables from Ving Schema
 

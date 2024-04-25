@@ -1,4 +1,4 @@
-import { baseSchemaProps, dbString, zodString, dbEnum, dbBoolean, dbRelation } from '../helpers.mjs';
+import { baseSchemaProps, dbString, zodString, dbEnum, dbBoolean, dbRelation, dbMediumText, zodMediumText } from '../helpers.mjs';
 
 export const userSchema = {
     kind: 'User',
@@ -126,12 +126,23 @@ export const userSchema = {
             edit: ['owner'],
         },
         {
+            type: "string",
+            name: "bio",
+            required: false,
+            default: '',
+            db: (prop) => dbMediumText(prop),
+            zod: (prop) => zodMediumText(prop),
+            view: ['public'],
+            edit: ['owner'],
+        },
+        {
             type: "id",
             name: 'avatarId',
             required: false,
             length: 36,
             db: (prop) => dbRelation(prop),
             relation: {
+                acceptedFileExtensions: ['png', 'jpeg', 'jpg', 'gif'],
                 type: 'parent',
                 name: 'avatar',
                 kind: 'S3File',

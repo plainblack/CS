@@ -5,39 +5,37 @@
 
     <div class="surface-card p-4 border-1 surface-border border-round">
 
-        <div class="p-inputgroup flex-1">
-            <span class="p-input-icon-left w-full">
+        <InputGroup>
+            <InputGroupAddon>
                 <i class="pi pi-search" />
-                <InputText type="text" placeholder="Search Users" class="w-full" v-model="users.query.search"
-                    @keydown.enter="users.search()" />
-            </span>
+            </InputGroupAddon>
+            <InputText type="text" placeholder="Search Users" class="w-full" v-model="users.query.search"
+                @keydown.enter="users.search()" />
             <Button label="Search" @click="users.search()" />
-        </div>
+        </InputGroup>
 
-        <client-only>
-            <DataTable :value="users.records" stripedRows @sort="users.sortDataTable">
-                <Column field="props.username" header="Username" sortable></Column>
-                <Column field="props.realName" header="Real Name" sortable></Column>
-                <Column field="props.email" header="Email Address" sortable>
-                    <template #body="slotProps">
-                        <a :href="`mailto:${slotProps.data.props.email}`">{{ slotProps.data.props.email }}</a>
-                    </template>
-                </Column>
-                <Column field="props.createdAt" header="Created" sortable>
-                    <template #body="slotProps">
-                        {{ dt.formatDateTime(slotProps.data.props.createdAt) }}
-                    </template>
-                </Column>
-                <Column header="Manage">
-                    <template #body="slotProps">
-                        <NuxtLink :to="`/user/admin/${slotProps.data.props.id}`" class="mr-2 no-underline">
-                            <Button icon="pi pi-pencil" severity="success" />
-                        </NuxtLink>
-                        <Button icon="pi pi-trash" severity="danger" @click="slotProps.data.delete()" />
-                    </template>
-                </Column>
-            </DataTable>
-        </client-only>
+        <DataTable :value="users.records" stripedRows @sort="users.sortDataTable">
+            <Column field="props.username" header="Username" sortable></Column>
+            <Column field="props.realName" header="Real Name" sortable></Column>
+            <Column field="props.email" header="Email Address" sortable>
+                <template #body="slotProps">
+                    <a :href="`mailto:${slotProps.data.props.email}`">{{ slotProps.data.props.email }}</a>
+                </template>
+            </Column>
+            <Column field="props.createdAt" header="Created" sortable>
+                <template #body="slotProps">
+                    {{ dt.formatDateTime(slotProps.data.props.createdAt) }}
+                </template>
+            </Column>
+            <Column header="Manage">
+                <template #body="slotProps">
+                    <NuxtLink :to="`/user/admin/${slotProps.data.props.id}`" class="mr-2 no-underline">
+                        <Button icon="pi pi-pencil" severity="success" />
+                    </NuxtLink>
+                    <Button icon="pi pi-trash" severity="danger" @click="slotProps.data.delete()" />
+                </template>
+            </Column>
+        </DataTable>
 
         <Pager :kind="users" />
 
@@ -51,10 +49,12 @@
             <div class="flex gap-5 flex-column-reverse md:flex-row">
                 <div class="flex-auto p-fluid">
                     <div class="mb-4">
-                        <FormInput name="nausernameme" type="text" v-model="users.new.username" required label="Username" />
+                        <FormInput name="nausernameme" type="text" v-model="users.new.username" required
+                            label="Username" />
                     </div>
                     <div class="mb-4">
-                        <FormInput name="realName" type="text" v-model="users.new.realName" required label="Real Name" />
+                        <FormInput name="realName" type="text" v-model="users.new.realName" required
+                            label="Real Name" />
                     </div>
                     <div class="mb-4">
                         <FormInput name="email" type="email" v-model="users.new.email" required label="Email" />

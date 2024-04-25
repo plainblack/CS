@@ -4,6 +4,8 @@ outline: deep
 # Web UI
 The web user interface of ving allows you to build out complex applications using Vue 3. It starts with automatically generating pages for your ving records. We use a component library suite called [PrimeVue](https://primevue.org/) that provides all kinds of amazing functionality and a styling library called [PrimeFlex](https://www.primefaces.org/primeflex/) that gives you rich power over CSS. But we've also got a bunch of custom [components](#components) and [composables](#composables) to help you build your app.
 
+## Layouts
+The design of your site is created using [Nuxt Layouts](https://nuxt.com/docs/guide/directory-structure/layouts). You can find the default layout in `layouts/default.vue`.
 
 ## Pages
 ving is ultimately built on [Nuxt](https://nuxt.com/), so ving pages can do anything [Nuxt Pages](https://nuxt.com/docs/guide/directory-structure/pages) can do.
@@ -11,12 +13,25 @@ ving is ultimately built on [Nuxt](https://nuxt.com/), so ving pages can do anyt
 You can automatically generate a set of pages for interacting with [ving records](ving-record) through the [Rest API](rest) by using the [CLI](cli) like this:
 
 ```bash
-./ving.ts record --web Foo
+./ving.mjs record --web Foo
 ```
+
+> Note that you will need a [Ving Schema](ving-schema), [Ving Record](ving-record), and [Rest](rest) for `Foo` before the web interface can function.
 
 That will give you a place to start, and then you can use the [composables](#composables) and [components](#components) we provide to build out a complex app.
 
+## Icons
+The Ving UI makes use if the Nuxt Icon module (which behind the scenes uses the Iconify library), which joins together many different icon libraries to give you [a big selection of icons](https://icon-sets.iconify.design).
+
+For example, the code for a gear icon could be: `mdi:gear`. And then to display that icon you could do:
+
+```html
+    <Icon name="mdi:gear" color="red" />
+```
+
 ## Components
+
+You can use [any of the built in Nuxt components](https://nuxt.com/docs/api/components/client-only), or [one of the 200 components from PrimeVue](https://primevue.org/autocomplete/) or these custom Ving components:
 
 ### AdminNav
 Displays the site-wide administrative navigation.
@@ -26,6 +41,18 @@ Displays the site-wide administrative navigation.
 ```
 
 See `Crumbtrail` for more info about the `crumbs` prop.
+
+### CopyToClipboard
+Displays a button that allows you to copy a text string to the user's clipboard.
+
+```html
+<CopyToClipboard :text="foo"/>
+```
+
+Props:
+
+- **text** - The text you wish to copy to the clipboard.
+- **size** - The size of the button. Defaults to the normal button size. Can also be `lg`, `sm`, or `xs`.
 
 ### Crumbtrail
 Displays a crumbtrail navigation.
@@ -48,13 +75,17 @@ Note that you should always wrap this in a `<client-only>` tag.
 
 ```html
 <client-only>
-    <Dropzone :acceptedFiles="['.pdf','.zip']" :afterUpload="doThisFunc"></Dropzone>
+    <Dropzone :acceptedFiles="['pdf','zip']" :afterUpload="doThisFunc"></Dropzone>
 </client-only>
 ```
       
 Props:
 
-- **acceptedFiles** - An array of file extensions that S3File should accept. Note that these should be prepended with a `.` like `.jpg` not `jpg`. Defaults to `['.png','.jpg']`.
+- **acceptedFiles** - An array of file extensions that S3File should accept. Defaults to `['png','jpg']`. This can and should be automatically filled by a `meta.acceptedFileExtensions` property from a [Ving Record](ving-record) when dealing with S3Files. It is set by the `relation.acceptedFileExtensions` attribute in a [Ving Schema](ving-schema). For example:
+
+```html
+<Dropzone :acceptedFiles="user.meta?.acceptedFileExtensions?.avatar" />
+```
 - **afterUpload** - Required. A function that will be executed after upload. This function should then call the appropriate import endpoint to post process and verify the file.
 - **info** - A string that will be displayed inside the dropzone box. Useful to give the user some insights about the nature of the files you will allow such as size or dimension contstraints. 
 - **maxFiles** - An integer of the maximum number of files the user is allowed to select for upload. Defaults to unlimited.
@@ -102,7 +133,7 @@ Props:
 - **send** - A function that should be executed once the form is sumbmitted and fields have been validated.
 
 ### FormInput
-Generate the appropritate form field based upon input types.
+Generate the appropritate form field based upon input types. This also handles labeling and error handling in an automated fashion, and thus is generally preferable to using the individual form inputs.
 
 ```html
 <FormInput name="username" v-model="user.username" />
@@ -111,7 +142,7 @@ Generate the appropritate form field based upon input types.
 Props:
 
 - **label** - A form label for proper ARIA compliance.
-- **type** - Defaults to `text` but can also be `textarea`, `password`, `number`, or `email`.
+- **type** - Defaults to `text` but can also be `textarea`, `password`, `number`, `markdown`, `select` or `email`.
 - **name** - The field name for the form input. Required.
 - **id** - Defaults to whatever the `name` field is set to, but can be any string.
 - **append** - Appends an input group to the end of the field. Example: `.00`
@@ -121,14 +152,21 @@ Props:
 - **placeholder** - Text to be displayed if the input is empty.
 - **required** - A boolean that defaults to `false`, but if true will not allow the form to be sent if empty.
 - **step** - An amount to increment a `number` type field. Defaults to `1`.
+- **options** - An array of objects that is used when type is `select`:
+    - **label** - The human readable label for the value.
+    - **value** - The value to select. Can be string, number, or boolean.
 - **mustMatch** - An object containing:
     - **field** - A label for a field or some other attribute such as `Password`. 
     - **value** - The value that this field must match.
 - **class** - A CSS class that should be applied to the field.
 
+Slots:
+
+- **prepend** - Add an option to the top of the list when type is `select`.
+- **append** - Add an option to the bottom of the list when type is `select`.
 
 ### FormLabel
-An ARIA compliant label for a form field.
+An ARIA compliant label for a form field. In general you wouldn't use this directly, but via the `label` prop of `FormInput`.
 
 ```html
 <FormLabel id="foo" label="Foo" />
@@ -138,23 +176,29 @@ Props:
 - **label** - The text to display to the user.
 - **id** - The unique id of the form field this label refers to.
 
-
-### FormSelect
-A form select list.
-
-```html
-<FormSelect>
-```
+### MarkdownInput
+An input control for a markdown editor. In general you shouldn't use this directly, but rather use the `FormInput` control with type of `markdown`.
 
 Props:
 
-- **label** - The text label to display to the user.
-- **id** - The unique id of the form field. Defaults to whatever is in the `name` field.
-- **v-model** - What Vue reactive variable should this be connected to? Required.
-- **name** - The field name for the form input. Required.
-- **options** - An array of objects:
-    - **label** - The human readable label for the value.
-    - **value** - The value to select. Can be string, number, or boolean.
+- **id** - A required string that is unique on the page.
+- **v-model** - A reference to the field that will be edited.
+- **placeholder** - A string to display before there is any text.
+
+```html
+<MarkdownInput v-model="description" id="foo" />
+```
+
+### MarkdownViewer
+A display mechanism for markdown that is generated by `MarkdownInput`, which converts the markdown into HTML.
+
+Props:
+
+- **text** - The text containing the markdown you'd like to convert into HTML.
+
+```html
+<MarkdownView :text="description" />
+```
 
 ### Notify
 Place this in your layouts so that users can receive toasts that will be triggered via the `useNotifyStore()` composable.
@@ -175,6 +219,36 @@ Props:
 
 - **kind** - A [useVingKind() object](#usevingkind).
 
+### SelectInput
+A form select list. Generally you won't use this directly, but rather use `FormInput` with type `select`.
+
+```html
+<SelectInput @change="currentUser.update()" v-model="currentUser.props.useAsDisplayName"
+                                :options="currentUser.options?.useAsDisplayName" id="useAsDisplayName"
+                                 />
+```
+
+Props:
+
+- **id** - The unique id of the form field. Required.
+- **v-model** - What Vue reactive variable should this be connected to? Required.
+- **options** - An array of objects:
+    - **label** - The human readable label for the value.
+    - **value** - The value to select. Can be string, number, or boolean.
+
+Slots:
+
+- **prepend** - Add an option to the top of the list.
+- **append** - Add an option to the bottom of the list.
+
+```html
+<SelectInput>
+    <template #prepend>
+        <option value="foo">Foo</option>
+    </template>
+</SelectInput>
+```
+
 ### SystemWideAlert
 Place this in your layouts where you would like the system wide alert to be displayed when an admin has configured one. It is triggered by the `useSystemWideAlertStore()` composable.
 ```html
@@ -191,6 +265,21 @@ Place this in your layouts so the user has an indication that there are some bac
 </client-only>
 ```
 
+
+### UserAvatar
+Displays the user's avatar next to their display name.
+
+```html
+<UserAvatar :user="user" />
+```
+
+### UserProfileLink
+Wraps the `UserAvatar` component in a `NuxtLink` pointing to the user's profile page.
+
+```html
+<UserProfileLink :user="user" />
+```
+
 ### UserSettingsNav
 Navigation for user settings.
 
@@ -201,14 +290,7 @@ Navigation for user settings.
 ## Composables
 Each of these also has documentation of how to use them in the form of JSDocs in the source code.
 
-### restVersion()
-Returns the current rest version number from `ving.json` for when you are manually specifying URLs to rest services. such as this:
-
-```
-useRest(`/api/${restVersion()}/user`);
-```
-
-### useCurrentUserStore()
+### currentUserStore()
 Gets you the currently logged in user. 
 
 ```js
@@ -229,6 +311,19 @@ It also triggers 2 window events for when the user logs in or out.
     });
 ```
 
+### enum2label()
+Converts an enum value into an emum label as defined in a ving schema.
+
+```js
+const label = enum2label(enum2label('archived', [{value: 'archived', label:'Is Archived'}, {value: 'not_archived', label:'Not Archived'}]))
+```
+
+### restVersion()
+Returns the current rest version number from `ving.json` for when you are manually specifying URLs to rest services. such as this:
+
+```
+useRest(`/api/${restVersion()}/user`);
+```
 
 ### useDateTime()
 Date formatting tools based upon [date-fns](https://date-fns.org/).

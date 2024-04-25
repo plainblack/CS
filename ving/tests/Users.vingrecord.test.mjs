@@ -4,7 +4,7 @@ import { like, eq, asc, desc, and, inArray, SQL } from '#ving/drizzle/orm.mjs';
 import { getConfig } from '#ving/config.mjs';
 
 const Users = await useKind('User');
-const vingConfig = getConfig();
+const vingConfig = await getConfig();
 
 await Users.delete.where(inArray(Users.table.username, ['warden', 'captain', 'guard']));
 const warden = await Users.create({ username: 'warden', email: 'warden@shawshank.jail', realName: 'Samuel Norton' });
@@ -20,15 +20,15 @@ describe('Users', async () => {
         expect(warden.get('email')).toBe('warden@shawshank.jail');
     });
     test("is owner by id", async () => {
-        expect(warden.isOwner(warden)).toBe(true);
+        expect(await warden.isOwner(warden)).toBe(true);
     });
     test("is not admin role", async () => {
-        expect(warden.isRole('admin')).toBe(false);
+        expect(await warden.isRole('admin')).toBe(false);
     });
     test("is not owner by id or role", async () => {
         await captain.insert();
-        expect(captain.isOwner(warden)).toBe(false);
-        expect(warden.isOwner(captain)).toBe(false);
+        expect(await captain.isOwner(warden)).toBe(false);
+        expect(await warden.isOwner(captain)).toBe(false);
     });
     test("can update ving record", async () => {
         warden.admin = true;
@@ -40,16 +40,16 @@ describe('Users', async () => {
         expect(warden.get('admin')).toBe(true);
     });
     test("is owner by role", async () => {
-        expect(captain.isOwner(warden)).toBe(true);
+        expect(await captain.isOwner(warden)).toBe(true);
     });
     test("described by owner", async () => {
         const description = await captain.describe({ currentUser: captain, include: { links: true, options: true, meta: true } });
         expect(description.meta?.displayName).toBe('captain');
         expect(description.props.username).toBe('captain');
-        if (description.links !== undefined) {
+        if (description?.links) {
             expect(description.links.base.href).toBe(`/api/${vingConfig.rest.version}/user`);
         }
-        if (description.options !== undefined) {
+        if (description?.options) {
             expect(description.options.useAsDisplayName).toBeTypeOf('object');
             expect(Object.keys(description.options).length).toBe(5);
         }
@@ -64,10 +64,10 @@ describe('Users', async () => {
         expect(description.meta?.displayName).toBe('captain');
         expect(description.props.username).toBe('captain');
         expect(description.props.admin).toBe(false);
-        if (description.links !== undefined) {
+        if (description?.links) {
             expect(description.links.base.href).toBe(`/api/${vingConfig.rest.version}/user`);
         }
-        if (description.options !== undefined) {
+        if (description?.options) {
             expect(description.options.useAsDisplayName).toBeTypeOf('object');
             expect(Object.keys(description.options).length).toBe(5);
         }
@@ -77,11 +77,11 @@ describe('Users', async () => {
         expect(description.meta?.displayName).toBe('warden');
         expect(description.props.username).toBe(undefined);
         expect(description.props.admin).toBe(undefined);
-        if (description.links !== undefined) {
+        if (description?.links) {
             expect(description.links.base.href).toBe(`/api/${vingConfig.rest.version}/user`);
         }
         expect(description.options).toEqual({});
-        if (description.options !== undefined) {
+        if (description?.options) {
             expect(Object.keys(description.options).length).toBe(0);
         }
     });
@@ -90,15 +90,16 @@ describe('Users', async () => {
         expect(await warden.testPassword('foo')).toBe(true);
     });
     test('set password via posted params', async () => {
-        warden.setPostedProps({ password: 'food' }, warden);
+        await warden.setPostedProps({ password: 'food' }, warden);
         expect(await warden.testPassword('food')).toBe(true);
     });
-    test('set useAsDisplayName via posted params', () => {
-        warden.setPostedProps({ useAsDisplayName: 'email' }, warden);
+    test('set useAsDisplayName via posted params', async () => {
+        await warden.setPostedProps({ useAsDisplayName: 'email' }, warden);
         expect(warden.get('useAsDisplayName')).toBe('email');
     });
-    const guard = Users.copy(captain.getAll());
+    const guard = await captain.copy();
     test("clone a record", () => {
+        expect(guard.get('realName')).toBe('Byron Hadley');
         guard.setAll({
             username: 'guard',
             email: 'guard@shawshank.jail',

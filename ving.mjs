@@ -20,4 +20,4 @@ const main = defineCommand({
   },
 });
 
-runMain(main);
+runMain(main,);

@@ -1,13 +1,11 @@
 import { useKind } from '#ving/record/utils.mjs';
 import { obtainSession, describeParams } from '#ving/utils/rest.mjs';
 import { defineEventHandler, getRouterParams } from 'h3';
-
 export default defineEventHandler(async (event) => {
-    const users = await useKind('User');
+    const S3Files = await useKind('S3File');
     const { id } = getRouterParams(event);
-    const user = await users.findOrDie(id);
-    const session = obtainSession(event);
-    user.canEdit(session);
-    await user.delete();
-    return user.describe(describeParams(event, session));
+    const s3file = await S3Files.findOrDie(id);
+    await s3file.canEdit(obtainSession(event));
+    await s3file.delete();
+    return s3file.describe(describeParams(event));
 });

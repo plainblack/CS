@@ -1,6 +1,7 @@
 import { v4 } from 'uuid';
 import { z } from 'zod';
 export const uuid = v4;
+import { isFunction, isString, isNumber, isBoolean } from '#ving/utils/identify.mjs';
 
 /**
  * Interrogates the schema and returns a default value for a string prop as defined in the `default`
@@ -9,11 +10,11 @@ export const uuid = v4;
  * @returns a string default
  */
 export const stringDefault = (prop, skipFunc = false) => {
-    if (typeof prop.default == 'string')
+    if (isString(prop.default))
         return prop.default;
-    if (!skipFunc && typeof prop.default == 'function') {
+    if (!skipFunc && isFunction(prop.default)) {
         const value = prop.default();
-        if (typeof value == 'string')
+        if (isString(value))
             return value;
     }
     return '';
@@ -26,11 +27,11 @@ export const stringDefault = (prop, skipFunc = false) => {
  * @returns a number default
  */
 export const numberDefault = (prop, skipFunc = false) => {
-    if (typeof prop.default == 'number')
+    if (isNumber(prop.default))
         return prop.default;
-    if (!skipFunc && typeof prop.default == 'function') {
+    if (!skipFunc && isFunction(prop.default)) {
         const value = prop.default();
-        if (typeof value == 'number')
+        if (isNumber(value))
             return value;
     }
     return 0;
@@ -43,11 +44,11 @@ export const numberDefault = (prop, skipFunc = false) => {
  * @returns a boolean default
  */
 export const booleanDefault = (prop, skipFunc = false) => {
-    if (typeof prop.default == 'boolean')
+    if (isBoolean(prop.default))
         return prop.default;
-    if (!skipFunc && typeof prop.default == 'function') {
+    if (!skipFunc && isFunction(prop.default)) {
         const value = prop.default();
-        if (typeof value == 'boolean')
+        if (isBoolean(value))
             return value;
     }
     return false;
@@ -63,7 +64,7 @@ export const booleanDefault = (prop, skipFunc = false) => {
 export const dateDefault = (prop, skipFunc = false) => {
     if (prop.default instanceof Date)
         return prop.default;
-    if (!skipFunc && typeof prop.default == 'function') {
+    if (!skipFunc && isFunction(prop.default)) {
         const value = prop.default();
         if (value instanceof Date)
             return value;
@@ -77,7 +78,7 @@ export const dateDefault = (prop, skipFunc = false) => {
  * @returns a zod rule
  */
 export const zodString = (prop) => {
-    return z.string().min(1).max(prop.length);
+    return z.string().min(0).max(prop.length);
 }
 
 /**
@@ -104,7 +105,7 @@ export const zodJsonObject = (prop) => {
  * @returns a zod rule
  */
 export const zodText = (prop) => {
-    return z.string().min(1).max(prop.length);
+    return z.string().min(0).max(prop.length);
 }
 
 /**
@@ -113,7 +114,7 @@ export const zodText = (prop) => {
  * @returns a zod rule
  */
 export const zodMediumText = (prop) => {
-    return z.string().min(1).max(162777215);
+    return z.string().min(0).max(162777215);
 }
 
 /**

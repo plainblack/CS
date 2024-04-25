@@ -14,7 +14,8 @@
                         @change="user.update()" />
                 </div>
                 <div class="mb-4">
-                    <FormInput name="realName" v-model="user.props.realName" label="Real Name" @change="user.update()" />
+                    <FormInput name="realName" v-model="user.props.realName" label="Real Name"
+                        @change="user.update()" />
                 </div>
 
                 <div class="mb-4">
@@ -25,20 +26,20 @@
 
             <FieldsetItem name="Privileges">
                 <div class="mb-4">
-                    <FormSelect @change="user.update()" v-model="user.props.admin" :options="user.options?.admin"
+                    <FormInput type="select" @change="user.update()" v-model="user.props.admin" :options="user.options?.admin"
                         name="admin" label="Admin" />
                 </div>
             </FieldsetItem>
 
             <FieldsetItem name="Preferences">
                 <div class="mb-4">
-                    <FormSelect @change="user.update()" v-model="user.props.useAsDisplayName"
+                    <FormInput type="select" @change="user.update()" v-model="user.props.useAsDisplayName"
                         :options="user.options?.useAsDisplayName" name="useAsDisplayName" label="Use As Display Name" />
                 </div>
 
                 <div class="mb-4">
-                    <FormSelect @change="user.update()" v-model="user.props.developer" :options="user.options?.developer"
-                        label="Are you a software developer?" name="developer" />
+                    <FormInput type="select" @change="user.update()" v-model="user.props.developer"
+                        :options="user.options?.developer" label="Are you a software developer?" name="developer" />
                 </div>
 
                 <div class="mb-4">
@@ -48,6 +49,10 @@
             </FieldsetItem>
 
             <FieldsetItem name="Statistics">
+                <div class="mb-4"><b>Id</b>: {{ user.props?.id }}
+                    <CopyToClipboard :text="user.props.id" size="xs" />
+                </div>
+
                 <div class="mb-4">
                     Created at {{ dt.formatDateTime(user.props.createdAt) }}
                 </div>
@@ -67,7 +72,7 @@
         </FieldsetNav>
     </client-only>
 </template>
-  
+
 <script setup>
 definePageMeta({
     middleware: ['auth', 'admin']

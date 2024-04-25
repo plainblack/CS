@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import ua from 'ua-parser-js';
+import { isObject, isUndefined } from '#ving/utils/identify.mjs';
 
 const query = { includeOptions: true, includeMeta: true, includeLinks: true };
 
@@ -15,16 +16,18 @@ export const useCurrentUserStore = defineStore('currentUser', {
             const response = await useRest(`/api/${restVersion()}/user/whoami`, {
                 query,
             });
-            if (response.data && typeof response.data == 'object') {
+            if (isObject(response.data)) {
                 this.setState(response.data);
             }
             return response;
         },
         setState(data) {
-            this.props = data.props || {};
-            this.meta = data.meta || {};
-            this.options = data.options || {};
-            this.links = data.links || {};
+            if (data) {
+                this.props = data?.props || {};
+                this.meta = data?.meta || {};
+                this.options = data?.options || {};
+                this.links = data?.links || {};
+            }
         },
         async login(login, password) {
             const response = await useRest(`/api/${restVersion()}/session`, {
@@ -50,7 +53,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
             return response;
         },
         async importAvatar(s3file) {
-            const response = await useRest(this.links.self.href + '/import-avatar', {
+            const response = await useRest(this.links?.self?.href + '/import-avatar', {
                 method: 'put',
                 body: { s3FileId: s3file.props.id },
                 query,
@@ -59,12 +62,13 @@ export const useCurrentUserStore = defineStore('currentUser', {
             return response;
         },
         async update() {
-            const response = await useRest(this.links.self.href, {
+            const response = await useRest(this.links?.self?.href, {
                 method: 'put',
                 body: this.props,
                 query,
             });
-            this.setState(response.data)
+            if (response.data)
+                this.setState(response.data);
             return response;
         },
         async create(newUser) {
@@ -80,13 +84,13 @@ export const useCurrentUserStore = defineStore('currentUser', {
         },
         async sendVerifyEmail(redirectAfter) {
             const parser = new ua(navigator.userAgent);
-            const response = await useRest(this.links.self.href + '/send-verify-email', {
+            const response = await useRest(this.links?.self?.href + '/send-verify-email', {
                 method: 'post',
                 query: { includeOptions: true, redirectAfter, browser: parser.getBrowser().name, os: parser.getOS().name },
             });
         },
         async verifyEmail(verify) {
-            const response = await useRest(this.links.self.href + '/verify-email', {
+            const response = await useRest(this.links?.self?.href + '/verify-email', {
                 method: 'post',
                 query: { includeOptions: true, verify },
             });
@@ -94,10 +98,10 @@ export const useCurrentUserStore = defineStore('currentUser', {
             return response;
         },
         async isAuthenticated() {
-            if (this.props?.id === undefined) {
+            if (isUndefined(this.props?.id)) {
                 await this.fetch();
             }
-            return this.props?.id !== undefined;
+            return !isUndefined(this.props?.id);
         },
     },
 });
