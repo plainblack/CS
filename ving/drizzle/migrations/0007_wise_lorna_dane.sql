@@ -1,0 +1,1 @@
+ALTER TABLE `datasetrows` ADD CONSTRAINT `name_datasetId_47b82ff_uq` UNIQUE(`name`,`datasetId`);
