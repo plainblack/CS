@@ -10,6 +10,8 @@ export const rowSchema = {
             type: "string",
             name: "name",
             required: true,
+            unique: true,
+            uniqueQualifiers: ['datasetId'],
             length: 60,
             default: '',
             filterQuery: true,
