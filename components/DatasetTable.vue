@@ -2,9 +2,10 @@
     <client-only>
         <hot-table 
             :data="rows.records"
-            :columns="columns"
+            :columns="columnFields"
             :colHeaders="columnHeaders"
             :afterViewRender="tableInit"
+            :afterChange="tableUpdate"
             :rowHeaders="true" 
             :columnSorting="true"
             :fixedColumnsLeft="3"
@@ -26,37 +27,80 @@
 </template>
 
 <script setup>
-    import { HotTable } from '@handsontable/vue3';
+  import { HotTable } from '@handsontable/vue3';
   import { registerAllModules } from 'handsontable/registry';
   import 'handsontable/dist/handsontable.full.css';
 
   registerAllModules();
+  const notify = useNotifyStore();
 
-    const props = defineProps({
-        rows: Object,
-        dataset: Object,
-    });
+  const props = defineProps({
+      rows: Object,
+      dataset: Object,
+  });
 
-    const columns = [
-      { data : 'props.id' },
-      { data : 'props.quantity' },
-      { data : 'props.name' },
-    ];
+  const columnHeaders = computed(() => {
+    let out = ['', 'quantity', 'name'];
+    for (let field of rowFieldOrder.value) {
+      out.push(field);
+    }
+    return out;
+  });
 
-  const data = [
-          ['', 'Ford', 'Volvo', 'Toyota', 'Honda'],
-          ['2016', 10, 11, 12, 13],
-          ['2017', 20, 11, 14, 13],
-          ['2018', 30, 15, 12, 13]
-        ];
-
-    const columnHeaders = computed(() => {
-      let out = ['', 'quantity', 'name'];
-      for (let field of rowFieldOrder.value) {
-        out.push(field);
+  const tableUpdate = (changes) => {
+    if (changes != null) {
+      const hotInstance = hotTableWrapper.value.hotInstance;
+      for (let change of changes) {
+        const tableRow = hotInstance.getSourceDataAtRow(
+          hotInstance.toPhysicalRow(change[0])
+        );
+        const row = props.rows.find(tableRow.$id);
+        let field = change[1];
+        if (field == 'props.name') {
+          saveName(row, change[2]);
+        } else if (field == 'props.quantity') {
+          saveProp(row);
+        } else if (field == 'props.id') {
+          // do nothing
+        } else {
+          field = getFieldName(field);
+          // TODO:
+         /* self.$store.dispatch('saveRowFieldHistory', {
+            row: row,
+            fields: [field],
+          });*/
+        }
       }
-      return out;
-    });
+    }
+  }
+  
+  const getFieldName = (path) =>  path.replace(/fields\.(.*)\.userValue/, '$1');
+
+  const saveName = (row, was) => {
+    if (row.props.name == '') {
+      notify.error('You must give the row a name.');
+      return;
+    }
+    let error = false;
+    for (let other of props.rows.records) {
+      if (other.props.name == row.props.name && other.props.id != row.props.id) {
+        error = true;
+      }
+    }
+    if (error) {
+      notify.error('You already have another row named ' + row.props.name + '.');
+      console.log(was)
+      row.props.name = was;
+    } else {
+      saveProp(row);
+    }
+  }
+
+  const saveProp = (row) => {
+    row.update();
+    // TODO: 
+  //   this.$store.dispatch('calcRow', row);
+  }
 
     const rowControlsRenderer = (instance, td, rowIndex) => {
         return td;
@@ -94,8 +138,7 @@
     });
 
     const rowFieldOrder = computed(() => {
-        return [];
-       // return props.dataset.props?.rowFieldOrder || [];
+        return props.dataset.props?.rowFieldOrder || [];
     });
 
     /*
@@ -114,14 +157,14 @@
     const columnFields = computed(() => {
       const columns = [
         {
-          data: 'id',
+          data: 'props.id',
           type: 'text',
           readOnly: true,
           renderer: rowControlsRenderer,
         },
-        { data: 'quantity', type: 'numeric' },
+        { data: 'props.quantity', type: 'numeric' },
         {
-          data: 'name',
+          data: 'props.name',
           type: 'text',
           columnSorting: {
             compareFunctionFactory(sortOrder) {
@@ -139,9 +182,9 @@
         },
       ];
       
-      /*for (let field of rowFieldOrder.value) {
+      for (let field of rowFieldOrder.value) {
         columns.push({
-          data: 'fields.' + field + '.userValue',
+          data: 'props.fields.' + field + '.userValue',
           type: 'text',
           renderer(instance, td, row) {
             //, , col, prop, value, cellProperties)
@@ -212,7 +255,7 @@
             return td;
           },
         });
-      }*/
+      }
       return columns;
     });
 
