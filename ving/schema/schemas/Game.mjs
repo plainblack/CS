@@ -52,7 +52,7 @@ export const gameSchema = {
             type: "id",
             name: 'userId',
             required: true,
-            length: 36,
+            default: undefined,
             db: (prop) => dbRelation(prop),
             relation: {
                 type: 'parent',
@@ -88,6 +88,7 @@ export const gameSchema = {
         {
             type: "virtual",
             name: 'gameId', // the name of this record's id in the remote table
+            default: undefined,
             required: false,
             view: ['public'],
             edit: [],
@@ -101,6 +102,7 @@ export const gameSchema = {
             type: "virtual",
             name: 'gameId', // the name of this record's id in the remote table
             required: false,
+            default: undefined,
             view: ['public'],
             edit: [],
             relation: {

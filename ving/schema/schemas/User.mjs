@@ -180,6 +180,7 @@ export const userSchema = {
             required: false,
             view: ['public'],
             edit: [],
+            default: undefined,
             relation: {
                 type: 'child',
                 name: 'games',

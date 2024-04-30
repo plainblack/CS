@@ -85,7 +85,6 @@ export const datasetSchema = {
             name: 'gameId', // the name of the remote record's id in this table
             required: true,
             default: undefined,
-            length: 36,
             filterQualifier: true,
             db: (prop) => dbRelation(prop),
             relation: {
@@ -100,6 +99,7 @@ export const datasetSchema = {
             type: "virtual",
             name: 'datasetId', // the name of this record's id in the remote table
             required: false,
+            default: undefined,
             view: ['public'],
             edit: ['owner'],
             relation: {

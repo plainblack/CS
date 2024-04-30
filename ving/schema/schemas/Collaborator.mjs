@@ -11,7 +11,6 @@ export const collaboratorSchema = {
             name: 'gameId', // the name of the remote record's id in this table
             required: true,
             default: undefined,
-            length: 36,
             db: (prop) => dbRelation(prop),
             relation: {
                 type: 'parent',
@@ -26,7 +25,6 @@ export const collaboratorSchema = {
             name: 'userId',
             required: true,
             default: undefined,
-            length: 36,
             db: (prop) => dbRelation(prop),
             relation: {
                 type: 'parent',
