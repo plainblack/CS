@@ -1,7 +1,6 @@
 <template>
     <div>
-        <client-only>
-            <Menubar :model="topNav" class="bg-gray-900">
+            <Menubar id="topnav" :model="topNav" class="bg-gray-900 border-noround py-0">
                 <template #start>
                     <img :src="config.public.site.logoUrl" :alt="config.public.site.name" height="40"
                         class="mr-0 lg:mr-6">
@@ -11,7 +10,7 @@
                         class="flex px-6 p-3 lg:px-3 lg:py-2 align-items-center bg-gray-900 font-medium border-round cursor-pointer text-gray-400 hover:text-white hover:bg-gray-800">
                         <Icon :name="item.icon" class="mr-2" />
                         <span class="ml-2">{{ item.label }}</span>
-                        <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2" />
+                        <Icon v-if="hasSubmenu" name="pepicons-pop:angle-down" class="ml-2"/>
                     </a>
                     <NuxtLink v-else :to="item.to" v-ripple
                         class="flex px-6 p-3 lg:px-3 lg:py-2 bg-gray-900 align-items-center text-gray-400 hover:text-white hover:bg-gray-800 font-medium border-round cursor-pointer">
@@ -24,7 +23,7 @@
                     <div class="flex align-items-center gap-2">
                         <InputGroup class="border-secondary">
                             <InputGroupAddon class="bg-gray-900 border-primary">
-                                <i class="pi pi-search" />
+                                <Icon name="ion:search"/>
                             </InputGroupAddon>
                             <InputText placeholder="Search (non-functional)" type="text"
                                 class="w-8rem sm:w-auto bg-gray-900 text-white border-primary" />
@@ -51,21 +50,16 @@
                     </div>
                 </template>
             </Menubar>
-        </client-only>
 
-        <client-only>
-            <SystemWideAlert />
-        </client-only>
-        <div class="px-0 py-4 md:px-4">
+        <SystemWideAlert />
+        <div class="px-0 py-1 md:px-4">
             <div style="min-height: 20rem">
                 <slot />
             </div>
         </div>
     </div>
-    <client-only>
         <Notify />
         <Throbber />
-    </client-only>
 </template>
 
 <script setup>

@@ -9,9 +9,17 @@
 </template>
 
 <script setup>
+import {z} from 'zod';
 
 const props = defineProps({
-    crumbs: Object,
+    crumbs: {
+        type: Array,
+        required: true,
+        validator : (value) => z.object({
+                    label: z.string().min(1),
+                    to: z.string().min(1),
+                }).strict().array().safeParse(value).success,
+    },
 });
 
 </script>

@@ -6,7 +6,6 @@ import { isUndefined } from '#ving/utils/identify.mjs';
 const makeWords = (value) => splitByCase(value).join(' ');
 const makeLabel = (value) => upperFirst(splitByCase(value).join(' '));
 
-
 const columns = (name, schema) => {
     let out = '';
     for (const prop of schema.props) {
@@ -90,13 +89,13 @@ const createProps = (schema) => {
             if (['enum', 'boolean'].includes(prop.type)) {
                 out += `
                     <div class="mb-4">
-                        <FormInput type="select" name="${prop.name}" :options="${schema.tableName}.propsOptions?.${prop.name}" v-model="${schema.tableName}.new.${prop.name}" label="${makeLabel(prop.name)}" />
+                        <FormInput name="${prop.name}" type="select" :options="${schema.tableName}.propsOptions?.${prop.name}" v-model="${schema.tableName}.new.${prop.name}" label="${makeLabel(prop.name)}" />
                     </div>`;
             }
             else if (prop.type != 'virtual') {
                 out += `
                     <div class="mb-4">
-                        <FormInput type="select" name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.tableName}.new.${prop.name}" required label="${makeLabel(prop.name)}" />
+                        <FormInput name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.tableName}.new.${prop.name}" required label="${makeLabel(prop.name)}" />
                     </div>`;
             }
         }
@@ -125,52 +124,44 @@ const newDefaults = (schema) => {
 
 const indexTemplate = ({ name, schema }) =>
     `<template>
-    <h1>${makeWords(name)}s</h1>
+    <PanelFrame title="${makeWords(name)}s">
+        <template #content>
+            <PanelZone title="Existing ${makeWords(name)}s">
+                <InputGroup>
+                    <InputGroupAddon>
+                        <Icon name="ion:search" />
+                    </InputGroupAddon>
+                    <InputText type="text" placeholder="${makeWords(name)}s" class="w-full"
+                        v-model="${schema.tableName}.query.search" @keydown.enter="${schema.tableName}.search()" />
+                    <Button label="Search" @click="${schema.tableName}.search()" />
+                </InputGroup>
 
-    <div class="surface-card p-4 border-1 surface-border border-round">
-
-        <InputGroup>
-            <InputGroupAddon>
-                <i class="pi pi-search" />
-            </InputGroupAddon>
-            <InputText type="text" placeholder="${makeWords(name)}s" class="w-full"
-                v-model="${schema.tableName}.query.search" @keydown.enter="${schema.tableName}.search()" />
-            <Button label="Search" @click="${schema.tableName}.search()" />
-        </InputGroup>
-
-        <DataTable :value="${schema.tableName}.records" stripedRows @sort="(e) => ${schema.tableName}.sortDataTable(e)">
-            ${columns(name, schema)}
-            <Column header="Manage">
-                <template #body="slotProps">
-                    <NuxtLink :to="\`/${name.toLowerCase()}/\${slotProps.data.props.id}\`" class="mr-2 no-underline">
-                        <Button icon="pi pi-eye"  title="View" alt="View ${makeWords(name)}" />
-                    </NuxtLink>
-                    <NuxtLink v-if="slotProps.data.meta?.isOwner" :to="\`/${name.toLowerCase()}/\${slotProps.data.props.id}/edit\`" class="mr-2 no-underline">
-                        <Button icon="pi pi-pencil" severity="success" title="Edit" alt="Edit ${makeWords(name)}" />
-                    </NuxtLink>
-                    <Button v-if="slotProps.data.meta?.isOwner"  title="Delete" alt="Delete ${makeWords(name)}" icon="pi pi-trash" severity="danger" @click="slotProps.data.delete()" />
-                </template>
-            </Column>
-        </DataTable>
-        <Pager :kind="${schema.tableName}" />
-    </div>
-    <div class="mt-5 surface-card p-5 border-1 surface-border border-round">
-        <h2 class="mt-0">Create ${makeWords(name)}</h2>
-
-        <Form :send="() => ${schema.tableName}.create()">
-            <div class="flex gap-5 flex-column-reverse md:flex-row">
-                <div class="flex-auto p-fluid">
+                <DataTable :value="${schema.tableName}.records" stripedRows @sort="(e) => ${schema.tableName}.sortDataTable(e)">
+                    ${columns(name, schema)}
+                    <Column header="Manage">
+                        <template #body="slotProps">
+                            <ManageButton severity="primary" :items="[
+                                { icon:'ph:eye', label:'View', to:\`/${name.toLowerCase()}/\${slotProps.data.props.id}\`},
+                                { icon:'ph:pencil', label:'Edit', to:\`/${name.toLowerCase()}/\${slotProps.data.props.id}/edit\`},
+                                { icon:'ph:trash', label:'Delete', action:slotProps.data.delete}
+                                ]" /> 
+                        </template>
+                    </Column>
+                </DataTable>
+                <Pager :kind="${schema.tableName}" />
+            </PanelZone>
+            <PanelZone title="Create ${makeWords(name)}">
+                <Form :send="() => ${schema.tableName}.create()">
                     ${createProps(schema)}
                     <div>
                         <Button type="submit" class="w-auto" severity="success">
-                        <i class="pi pi-plus mr-1"></i> Create ${makeWords(name)}
+                            <Icon name="ph:plus" class="mr-1"/> Create ${makeWords(name)}
                         </Button>
                     </div>
-                </div>
-
-            </div>
-        </Form>
-    </div>
+                </Form>
+            </PanelZone>
+        </template>
+    </PanelFrame>
 </template>
 
 <script setup>
@@ -220,7 +211,7 @@ const viewProps = (schema) => {
             }
             else if (prop.type == 'id') {
                 out += `
-            <div><b>${makeLabel(prop.name)}</b>: {{${schema.kind.toLowerCase()}.props?.${prop.name}}} <CopyToClipboard :text="${schema.kind.toLowerCase()}.props?.${prop.name}" /></div>
+            <div><b>${makeLabel(prop.name)}</b>: {{${schema.kind.toLowerCase()}.props?.${prop.name}}} <CopyToClipboard :text="${schema.kind.toLowerCase()}.props?.${prop.name}" size="xs" /></div>
             `;
             }
             else if (prop.type != 'virtual') {
@@ -237,7 +228,7 @@ const includeRelatedTemplate = (schema) => {
     const related = [];
     for (const prop of schema.props) {
         if (prop.view.length > 0 || prop.edit.length > 0) {
-            if (prop.relation?.kind == 'S3File') {
+            if (['S3File', 'User'].includes(prop.relation?.kind)) {
                 related.push(prop.relation.name);
             }
         }
@@ -252,17 +243,24 @@ const nameOrId = (schema) => schema.props.find((prop) => prop.name == 'name') ? 
 
 const viewTemplate = ({ name, schema }) =>
     `<template>
-    <Crumbtrail :crumbs="breadcrumbs" />
-    <h1>{{${name.toLowerCase()}.props?.${nameOrId(schema)}}}</h1>
-    <div v-if="${name.toLowerCase()}.props?.id" class="surface-card p-4 border-1 surface-border border-round flex-auto">
-        ${viewProps(schema)}
-    </div>
-    <div class="mt-3" v-if="${name.toLowerCase()}.meta?.isOwner">
-        <NuxtLink :to="\`/${name.toLowerCase()}/\${${name.toLowerCase()}.props?.id}/edit\`" class="no-underline mr-2 mb-2">
-            <Button severity="success" title="Edit" alt="Edit ${makeWords(name)}"><i class="pi pi-pencil mr-1"></i> Edit</Button>
-        </NuxtLink>
-        <Button @click="${name.toLowerCase()}.delete()" severity="danger" title="Delete" alt="Delete ${makeWords(name)}"><i class="pi pi-trash mr-1"></i> Delete</Button>
-    </div>
+    <PanelFrame :title="${name.toLowerCase()}.props?.${nameOrId(schema)}" section="${makeWords(name)}s">
+        <template #left>
+            <PanelNav :links="[
+                { label: '${makeWords(name)}s', to: '/${name.toLowerCase()}', icon: 'ep:back' },
+            ]" />
+        </template>
+        <template #content>
+            <PanelZone v-if="${name.toLowerCase()}.props?.id">
+                ${viewProps(schema)}
+            </PanelZone>
+            <div v-if="${name.toLowerCase()}.meta?.isOwner">
+                <NuxtLink :to="\`/${name.toLowerCase()}/\${${name.toLowerCase()}.props?.id}/edit\`" class="no-underline mr-2 mb-2">
+                    <Button severity="success" title="Edit" alt="Edit ${makeWords(name)}"><Icon name="ph:pencil" class="mr-1"/> Edit</Button>
+                </NuxtLink>
+                <Button @click="${name.toLowerCase()}.delete()" severity="danger" title="Delete" alt="Delete ${makeWords(name)}"><Icon name="ph:trash" class="mr-1"/> Delete</Button>
+            </div>
+        </template>
+    </PanelFrame>
 </template>
   
 <script setup>
@@ -279,10 +277,6 @@ const ${name.toLowerCase()} = useVingRecord({
 await ${name.toLowerCase()}.fetch();
 onBeforeRouteLeave(() => ${name.toLowerCase()}.dispose());
 const dt = useDateTime();
-const breadcrumbs = [
-    { label: '${makeWords(name)}s', to: '/${name.toLowerCase()}' },
-    { label: 'View' },
-];
 </script>`;
 
 const editProps = (schema) => {
@@ -292,22 +286,20 @@ const editProps = (schema) => {
             if (['enum', 'boolean'].includes(prop.type)) {
                 out += `
                     <div class="mb-4">
-                        <FormInput type="select" name="${prop.name}" :options="${schema.kind.toLowerCase()}.options?.${prop.name}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.update()" />
+                        <FormInput name="${prop.name}" type="select" :options="${schema.kind.toLowerCase()}.options?.${prop.name}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.save('${prop.name}')" />
                     </div>`;
             }
             else if (prop.type == 'id' && prop?.relation?.type == 'parent' && prop.relation?.kind == 'S3File') {
                 out += `
                     <div class="mb-4">
-                        <client-only>
-                            <Dropzone :acceptedFiles="${schema.kind.toLowerCase()}.meta?.acceptedFileExtensions?.${prop?.relation?.name}" :afterUpload="(s3file) => ${schema.kind.toLowerCase()}.importS3File('${prop?.relation?.name}', s3file.props?.id)"
-                                :maxFiles="1" :resizeHeight="300" :resizeWidth="300" resizeMethod="crop"></Dropzone>
-                        </client-only>
+                        <Dropzone id="${prop?.relation?.name}" :acceptedFiles="${schema.kind.toLowerCase()}.meta?.acceptedFileExtensions?.${prop?.relation?.name}" :afterUpload="(s3file) => ${schema.kind.toLowerCase()}.importS3File('${prop?.relation?.name}', s3file.props?.id)"
+                            :maxFiles="1" :resizeHeight="300" :resizeWidth="300" resizeMethod="crop"></Dropzone>
                     </div>`;
             }
             else if (prop.type != 'virtual') {
                 out += `
                     <div class="mb-4">
-                        <FormInput name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" ${prop.required ? 'required' : ''} label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.update()" />
+                        <FormInput name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" ${prop.required ? 'required' : ''} label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.save('${prop.name}')" />
                     </div>`;
             }
         }
@@ -341,26 +333,31 @@ const statProps = (schema) => {
 
 const editTemplate = ({ name, schema }) =>
     `<template>
-    <Crumbtrail :crumbs="breadcrumbs" />
-    <h1>Edit ${makeWords(name)}</h1>
+    <PanelFrame :title="'Edit '+${name.toLowerCase()}.props?.${nameOrId(schema)}" section="${makeWords(name)}s">
+        <template #left>
+            <PanelNav :links="[
+                { label: '${makeWords(name)}s', to: '/${name.toLowerCase()}', icon: 'ep:back' },
+            ]" />
+        </template>
+        <template #content>
+            <FieldsetNav v-if="${name.toLowerCase()}.props">
+                <FieldsetItem name="Properties">
+                    ${editProps(schema)}
+                </FieldsetItem>
 
-    <FieldsetNav v-if="${name.toLowerCase()}.props">
-        <FieldsetItem name="Properties">
-            ${editProps(schema)}
-        </FieldsetItem>
+                <FieldsetItem name="Statistics">
+                    ${statProps(schema)}
+                </FieldsetItem>
 
-        <FieldsetItem name="Statistics">
-            ${statProps(schema)}
-        </FieldsetItem>
-
-        <FieldsetItem name="Actions">
-            <NuxtLink :to="\`/${name.toLowerCase()}/\${${name.toLowerCase()}.props?.id}\`" class="no-underline">
-                <Button title="View" alt="View ${makeWords(name)}" class="mr-2 mb-2"><i class="pi pi-eye mr-1"></i> View</Button>
-            </NuxtLink>
-            <Button @click="${name.toLowerCase()}.delete()" severity="danger" class="mr-2 mb-2" title="Delete" alt="Delete ${makeWords(name)}"><i class="pi pi-trash mr-1"></i> Delete</Button>
-        </FieldsetItem>
-
-    </FieldsetNav>
+                <FieldsetItem name="Actions">
+                    <NuxtLink :to="\`/${name.toLowerCase()}/\${${name.toLowerCase()}.props?.id}\`" class="no-underline">
+                        <Button title="View" alt="View ${makeWords(name)}" class="mr-2 mb-2"><Icon name="ph:eye" class="mr-1"/> View</Button>
+                    </NuxtLink>
+                    <Button @click="${name.toLowerCase()}.delete()" severity="danger" class="mr-2 mb-2" title="Delete" alt="Delete ${makeWords(name)}"><Icon name="ph:trash" class="mr-1"/> Delete</Button>
+                </FieldsetItem>
+            </FieldsetNav>
+        </template>
+    </PanelFrame>
 </template>
   
 <script setup>
@@ -385,12 +382,6 @@ const ${name.toLowerCase()} = useVingRecord({
 });
 await ${name.toLowerCase()}.fetch()
 onBeforeRouteLeave(() => ${name.toLowerCase()}.dispose());
-
-const breadcrumbs = [
-    { label: '${makeWords(name)}s', to: '/${name.toLowerCase()}' },
-    { label: 'View', to: '/${name.toLowerCase()}/'+${name.toLowerCase()}.props.id },
-    { label: 'Edit' },
-];
 </script>`;
 
 export const generateWeb = (params) => {

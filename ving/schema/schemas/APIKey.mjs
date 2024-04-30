@@ -1,4 +1,4 @@
-import { baseSchemaProps, dbVarChar, zodString, dbText, zodText, dbRelation } from '../helpers.mjs';
+import { baseSchemaProps, dbVarChar, zodString, dbText, dbRelation } from '../helpers.mjs';
 import crypto from 'crypto';
 
 export const apikeySchema = {
@@ -25,7 +25,7 @@ export const apikeySchema = {
             length: 65535,
             required: true,
             db: (prop) => dbText(prop),
-            zod: (prop) => zodText(prop).url(),
+            zod: (prop) => zodString(prop).url(),
             default: '',
             view: [],
             edit: ['owner'],
@@ -37,7 +37,7 @@ export const apikeySchema = {
             length: 65535,
             default: '',
             db: (prop) => dbText(prop),
-            zod: (prop) => zodText(prop),
+            zod: (prop) => zodString(prop),
             view: [],
             edit: ['owner'],
         },
@@ -55,7 +55,6 @@ export const apikeySchema = {
             type: "id",
             name: 'userId',
             required: true,
-            length: 36,
             db: (prop) => dbRelation(prop),
             relation: {
                 type: 'parent',

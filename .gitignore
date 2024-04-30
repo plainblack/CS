@@ -12,4 +12,3 @@ dist
 *.zip
 docs/.vitepress/cache
 docs/.vitepress/dist
-package-lock.json

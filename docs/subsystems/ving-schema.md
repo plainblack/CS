@@ -132,7 +132,6 @@ The `type` field determines how the prop will react to data it is given. Below y
     type: "enum",
     name: 'useAsDisplayName',
     required: true,
-    length: 20,
     filterQualifier: true,
     default: 'username',
     db: (prop) => dbEnum(prop),
@@ -150,7 +149,6 @@ These are used to add a parent relationship.
     type: "id",
     name: 'userId',
     required: true,
-    length: 36,
     filterQualifier: true,
     db: (prop) => dbRelation(prop),
     relation: {
@@ -190,11 +188,11 @@ These are used to add a parent relationship.
     type: "string",
     name: "memo",
     required: true,
-    length: 256,
+    length: 65535,
     filterQuery: true,
     default: '',
     db: (prop) => dbText(prop),
-    zod: (prop) => zodText(prop),
+    zod: (prop) => zodString(prop),
     view: [],
     edit: ['owner'],
 },
@@ -210,7 +208,7 @@ These are used to add a parent relationship.
     default: '',
     length: 16777215,
     db: (prop) => dbMediumText(prop),
-    zod: (prop) => zodMediumText(prop),
+    zod: (prop) => zodString(prop),
     view: [],
     edit: ['owner'],
 },
@@ -239,6 +237,7 @@ These are used to add a child relationship. They are virtual because they make n
     type: "virtual",
     name: 'userId',  // the name of the column in the child table that connects it to this table
     required: false,
+    default: undefined,
     view: ['public'],
     edit: [],
     relation: {
@@ -259,7 +258,7 @@ The `required` field whether the prop is required to create an instance of the r
 
 ##### default
 
-The `default` field set the default value that this prop should be set to both in code and as the default in the database schema. It is required for any prop that has the field `required` set to `true`. It is also just generally a good idea to set it in all cases, even if you explictly define it as `undefined`. 
+The `default` field sets the default value that this prop should be set to both in code and as the default in the database schema. It is required. It can be a function or whatever the appropriate type is for this field, including explicitly `undefined` in some cases.
 
 ##### db
 
@@ -336,7 +335,7 @@ The `enums` field is reqiured only if the prop type is `boolean` or `enum`. It i
 
 ##### length
 
-The `length` field is required when the prop is of type `string`, `enum`, and `id` and can be greater than `1` and less than whatever the MySQL field type max length is: `256` for varchar, `65535` for Text, and `16777215` for MediumText. It is used for validating the length of the prop's value and also sets the prop field size in the database. 
+The `length` field is required when the prop is of type `string`. It can be greater than `1` and less than whatever the MySQL field type max length is: `256` for varchar, `65535` for Text, and `16777215` for MediumText. It is used for validating the length of the prop's value and also sets the prop field size in the database. 
 
 ##### unique
 

@@ -3,17 +3,51 @@ outline: deep
 ---
 # Change Log
 
+## 2024-04-29
+* Implemented: reformat page generator to use panel components on view and edit #139
+
+## 2024-04-28
+* Added zod based validation to PanelNav, ManageButton, Crumbtrail components.
+* Implemented: Track and update dirty columns only #132
+* Fixed a problem where updating an api key wasn't saving.
+* Implemented: change @change .update() to .save() #137
+* NOTE: Recommend updating your UI components to use .save('propname') instead of .update() on @change events to reduce wire traffic.
+* Eliminated p-fluid from all pages as it wasn't necessary and was causing weird button stretching.
+* NOTE: Delete p-fluid from all generated pages in your apps.
+* NOTE: AdminNav component has been removed. Replaced with adminLinks() composable.
+* Implemented: reformat admin to use panel components #138
+
+## 2024-04-26
+* Removed all the client-only component tags as the hydration mismatches have been fixed.
+* Check to make sure a job handler exists before allowing a job to be created.
+* Implemented: CLI should let you search for jobs by handler name #125
+* Fixed a bug in job worker where it could not error properly from a job handler that didn't exist.
+* Fixed: enum should not have a length field in the schema validator #130
+* Implemented: in schema validator, disambiguate virtual columns #129
+* id type fields in ving schema no longer need a length.
+* Added validation for the length attribute on dbVarChar, dbText, and dbMediumText.
+* zodText() and zodMediumText() have become deprecated aliases for zodString().
+* Implemented: make default a required field in a prop definition #127
+* Fixed /api/v1/user/:id/s3files
+* Added ManageButton component.
+* Added link to user in user admin panel.
+* Removed all references to PrimeVue icons as they don't size well with the Iconify icons.
+* Replaced UserSettingsNav with PanelNav and userSettingsLinks() and userSettingsButtons().
+* Made the profile editing page mobile friendly.
+* Added PanelFrame component which dovetails nicely with PanelNav for building UIs.
+* Added PanelZone as a content area for PanelFrame.
+
 ## 2024-04-25
 * Fixed a bug where ving record fields of type 'int' were not being initialized properly.
 * Removed unnecessary validation on Dropzone.
 * Upgraded to Nuxt 3.11.2 from 3.10.0.
-* NOTE: run "npm i"
 * Merged VarChar, Text, and MediumText examples in docs into a String Examples section.
 * Renamed dbString to dbVarChar, but kept an alias as dbString.
 * Built ving schema validation system.
 * Fixed a bunch of bugs in the ving schema documentation.
 * Moved extensionMap from ving/record/records/S3File.mjs to ving/schema/schemas/S3File.mjs.
-* Removed package-lock.json from git repo as it causes upstream conflicts like crazy.
+* Upgraded from mysql2 3.3.4 to 3.9.7.
+* NOTE: run "npm i"
 
 ## 2024-04-24
 * Fixed a bug where an error when making calls on currentUserStore would destroy existing data.

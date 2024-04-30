@@ -1,4 +1,4 @@
-import { baseSchemaProps, dbVarChar, zodString, dbEnum, dbBoolean, dbText, zodText, dbRelation, dbDateTime, dbTimestamp, dbInt, dbJson, zodNumber, zodJsonObject } from '../helpers.mjs';
+import { baseSchemaProps, dbVarChar, zodString, dbEnum, dbBoolean, dbText, dbRelation, dbDateTime, dbTimestamp, dbInt, dbJson, zodNumber, zodJsonObject } from '../helpers.mjs';
 
 export const s3fileSchema = {
     kind: 'S3File',
@@ -78,7 +78,6 @@ export const s3fileSchema = {
             type: "enum",
             name: 'status',
             required: true,
-            length: 20,
             default: 'pending',
             db: (prop) => dbEnum(prop),
             enums: ['pending', 'ready', 'postProcessingFailed', 'verifyFailed'],
@@ -90,7 +89,6 @@ export const s3fileSchema = {
             type: "enum",
             name: 'icon',
             required: true,
-            length: 20,
             default: 'pending',
             db: (prop) => dbEnum(prop),
             enums: ['pending', 'thumbnail', 'extension', 'self'],
@@ -103,7 +101,6 @@ export const s3fileSchema = {
             name: 'userId',
             required: true,
             filterQualifier: true,
-            length: 36,
             db: (prop) => dbRelation(prop),
             relation: {
                 type: 'parent',
@@ -120,6 +117,7 @@ export const s3fileSchema = {
             required: false,
             view: ['public'],
             edit: [],
+            default: undefined,
             relation: {
                 type: 'child',
                 name: 'avatarUsers',
