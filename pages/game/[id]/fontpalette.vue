@@ -1,13 +1,10 @@
 <template>
-    <PanelFrame :title="`${game.props?.name} Designs`">
+    <PanelFrame :title="`${game.props?.name} Font Palette`">
         <template #left>
             <PanelNav :links="links" :buttons="buttons" />
         </template>
         <template #content>
-            <PanelZone v-if="game.props" title="Existing Designs">
-
-            </PanelZone>
-            <PanelZone title="Create Design">
+            <PanelZone v-if="game.props">
 
             </PanelZone>
         </template>
@@ -35,5 +32,4 @@ onBeforeRouteLeave(() => game.dispose());
 const dt = useDateTime();
 const links = gameLinks(game);
 const buttons = gameButtons(game);
-
 </script>

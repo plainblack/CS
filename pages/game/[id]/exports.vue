@@ -1,25 +1,14 @@
 <template>
-    <div class="surface-ground px-4 md:px-6 lg:px-8">
-        <h1> {{ game.props?.name }} Exports</h1>
+    <PanelFrame :title="`${game.props?.name} Exports`">
+        <template #left>
+            <PanelNav :links="links" :buttons="buttons" />
+        </template>
+        <template #content>
+            <PanelZone v-if="game.props">
 
-        <div class="flex flex-column lg:flex-row">
-            <GameNav :game="game" />
-            <div v-if="game.props" class="flex-auto">
-                <div class="surface-card p-5 border-1 surface-border border-round">
-
-                    <div class="flex gap-5 flex-column-reverse md:flex-row">
-                        <div class="flex-auto">
-
-
-
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
+            </PanelZone>
+        </template>
+    </PanelFrame>
 </template>
 
 
@@ -41,5 +30,7 @@ await game.fetch();
 onBeforeRouteLeave(() => game.dispose());
 
 const dt = useDateTime();
+const links = gameLinks(game);
+const buttons = gameButtons(game);
 
 </script>
