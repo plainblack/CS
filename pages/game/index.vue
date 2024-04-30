@@ -44,7 +44,7 @@
 
         <Form :send="() => games.create()">
             <div class="flex gap-5 flex-column-reverse md:flex-row">
-                <div class="flex-auto p-fluid">
+                <div class="flex-auto">
 
                     <div class="mb-4">
                         <FormInput name="name" type="text" v-model="games.new.name" required label="Name" />

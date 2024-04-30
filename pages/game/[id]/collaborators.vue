@@ -2,13 +2,13 @@
     <div class="surface-ground px-4 md:px-6 lg:px-8">
         <h1> {{ game.props?.name }} Collaborators</h1>
 
-        <div class="p-fluid flex flex-column lg:flex-row">
+        <div class="flex flex-column lg:flex-row">
             <GameNav :game="game" />
             <div v-if="game.props" class="flex-auto">
                 <div class="surface-card p-5 border-1 surface-border border-round">
 
                     <div class="flex gap-5 flex-column-reverse md:flex-row">
-                        <div class="flex-auto p-fluid">
+                        <div class="flex-auto">
                             <h2 class="mt-0">Existing Collaborators</h2>
 
                             <DataTable :value="collaborators.records" stripedRows
@@ -41,7 +41,7 @@
                 <div class="surface-card p-5 border-1 surface-border border-round mt-5">
 
                     <div class="flex gap-5 flex-column-reverse md:flex-row">
-                        <div class="flex-auto p-fluid">
+                        <div class="flex-auto">
 
                             <h2 class="mt-0">Add a Collaborator</h2>
                             <InputGroup>

@@ -2,13 +2,13 @@
     <div class="surface-ground px-4 md:px-6 lg:px-8">
         <h1> {{ game.props?.name }} Datasets</h1>
 
-        <div class="p-fluid flex flex-column lg:flex-row">
+        <div class="flex flex-column lg:flex-row">
             <GameNav :game="game" />
             <div v-if="game.props" class="flex-auto">
                 <div class="surface-card p-5 border-1 surface-border border-round">
 
                     <div class="flex gap-5 flex-column-reverse md:flex-row">
-                        <div class="flex-auto p-fluid">
+                        <div class="flex-auto">
 
                             <InputGroup>
                                 <InputGroupAddon>
@@ -49,14 +49,14 @@
                     <div class="surface-card mt-5 p-5 border-1 surface-border border-round">
 
                     <div class="flex gap-5 flex-column-reverse md:flex-row">
-                        <div class="flex-auto p-fluid">
+                        <div class="flex-auto">
 
 
                             <h2 class="mt-0">Create Dataset</h2>
 
                                 <Form :send="() => datasets.create()">
                                     <div class="flex gap-5 flex-column-reverse md:flex-row">
-                                        <div class="flex-auto p-fluid">
+                                        <div class="flex-auto">
                                             
                                             <div class="mb-4">
                                                 <FormInput name="name" type="text" v-model="datasets.new.name" required label="Name" />
