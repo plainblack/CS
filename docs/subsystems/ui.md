@@ -33,14 +33,6 @@ For example, the code for a gear icon could be: `mdi:gear`. And then to display 
 
 You can use [any of the built in Nuxt components](https://nuxt.com/docs/api/components/client-only), or [one of the 200 components from PrimeVue](https://primevue.org/autocomplete/) or these custom Ving components:
 
-### AdminNav
-Displays the site-wide administrative navigation.
-
-```html
-<AdminNav :crumbs="breadcrumbs" />
-```
-
-See `Crumbtrail` for more info about the `crumbs` prop.
 
 ### CopyToClipboard
 Displays a button that allows you to copy a text string to the user's clipboard.
@@ -71,12 +63,8 @@ Props:
 ### Dropzone
 Creates a user interface for uploading [S3Files](/rest/S3File). It handles the resizing of images on the client side, restriction of file types on the client side, requesting the presigned upload URL, uploading the file to S3. The only thing you need to do is specify via `afterUpload` what happens to the file after the user uploads it.
 
-Note that you should always wrap this in a `<client-only>` tag.
-
 ```html
-<client-only>
-    <Dropzone :acceptedFiles="['pdf','zip']" :afterUpload="doThisFunc"></Dropzone>
-</client-only>
+<Dropzone :acceptedFiles="['pdf','zip']" :afterUpload="doThisFunc"></Dropzone>
 ```
       
 Props:
@@ -176,6 +164,28 @@ Props:
 - **label** - The text to display to the user.
 - **id** - The unique id of the form field this label refers to.
 
+
+### ManageButton
+Sometimes you need to list a bunch of management functions in a tight space, like in a DataTable. This component does exactly that. 
+
+```html
+<ManageButton severity="primary" :items="[
+    { icon:'ph:eye', label:'View', to:`/foo`},
+    { icon:'ph:pencil', label:'Edit', to:`/foo/edit`},
+    { icon:'ph:trash', label:'Delete', action: () => { console.log('delete me')}}
+    ]" /> 
+```
+
+Props:
+- **severity** - Required. Must be one of `primary`, `secondary`, `success`, `warning`, `danger`, `info`, `help`, or `contrast`.
+- **items** - An array of objects. The first item in the list will be used as the primary button, where subsequent items will be used as submenu items.
+    - **icon** - Required. A Iconify icon code.
+    - **label** - Required. The text to display to the user.
+    - **to** - Optional. A URL to link to.
+    - **action** - Optional. A function that will trigger on click.
+
+
+
 ### MarkdownInput
 An input control for a markdown editor. In general you shouldn't use this directly, but rather use the `FormInput` control with type of `markdown`.
 
@@ -203,9 +213,7 @@ Props:
 ### Notify
 Place this in your layouts so that users can receive toasts that will be triggered via the `useNotifyStore()` composable.
 ```html
-<client-only>
-    <Notify/>
-</client-only>
+<Notify/>
 ```
 
 ### Pager
@@ -219,11 +227,86 @@ Props:
 
 - **kind** - A [useVingKind() object](#usevingkind).
 
+
+### PanelFrame
+Build a mobile first UI with this layout mechanism combined with `PanelNav`.
+
+```html
+<PanelFrame>
+    <template #left>
+        <PanelNav :links="links" :buttons="buttons" />
+    </template>
+    <template #content>
+        <PanelZone title="Foo">
+            Bar
+        </PanelZone>
+    </template>
+</PanelFrame>
+```
+
+Slots:
+- **left** - A space on the left (or top in mobile) for a nav.
+- **right** - A space on the right (or bottom in mobile) for a nav.
+- **content** - A space in the middle for your content.
+
+Props:
+- **title** - Display a title.
+- **section** - Display a title over the left nav.
+
+
+### PanelNav
+Generates a vertical panel on large screens and a horizontal one on small screens to be used as navigation in an application group.
+
+```html
+<PanelNav
+    :links="[
+        { icon:'ph:eye', label:'Foo', to:`/foo`},
+        { icon:'ph:pencil', label:'Bar', to:`/bar`},
+    ]" 
+    :buttons="[
+        { icon:'ph:door', label:'Log Out', to:`/out` severity:'primary'},
+        { icon:'ph:trash', label:'Delete', action: () => { console.log('delete me')}, severity:'danger' }
+    ]" 
+    /> 
+```
+
+Props:
+- **links** - An array of objects to be displayed as links. 
+    - **icon** - Required. A Iconify icon code.
+    - **label** - Required. The text to display to the user.
+    - **to** - Optional. A URL to link to.
+- **buttons** - An array of objects to be displayed as buttons.
+    - **icon** - Required. A Iconify icon code.
+    - **label** - Required. The text to display to the user.
+    - **severity** - Required. Must be one of `primary`, `secondary`, `success`, `warning`, `danger`, `info`, `help`, or `contrast`.
+    - **to** - Optional. A URL to link to.
+    - **action** - Optional. A function that will trigger on click.
+
+### PanelZone
+A content area for a `PanelFrame`.
+
+```html
+<PanelZone title="Foo" info="Stuff about foo.">
+    <div>
+       Content goes here
+    </div>
+</PanelZone>
+```
+
+Slots:
+- **default** - Content.
+- **header** - Replace the entire header.
+
+Props:
+- **title** - Display a title in the header.
+- **info** - Give the header a little subtext.
+
+
 ### SelectInput
 A form select list. Generally you won't use this directly, but rather use `FormInput` with type `select`.
 
 ```html
-<SelectInput @change="currentUser.update()" v-model="currentUser.props.useAsDisplayName"
+<SelectInput @change="currentUser.save('useAsDisplayName')" v-model="currentUser.props.useAsDisplayName"
                                 :options="currentUser.options?.useAsDisplayName" id="useAsDisplayName"
                                  />
 ```
@@ -252,17 +335,13 @@ Slots:
 ### SystemWideAlert
 Place this in your layouts where you would like the system wide alert to be displayed when an admin has configured one. It is triggered by the `useSystemWideAlertStore()` composable.
 ```html
-<client-only>
-    <SystemWideAlert/>
-</client-only>
+<SystemWideAlert/>
 ```
 
 ### Throbber
 Place this in your layouts so the user has an indication that there are some background activites such as rest calls happening. It is triggered by the `useThrobberStore()` composable.
 ```html
-<client-only>
-    <Throbber />
-</client-only>
+<Throbber />
 ```
 
 
@@ -280,15 +359,15 @@ Wraps the `UserAvatar` component in a `NuxtLink` pointing to the user's profile 
 <UserProfileLink :user="user" />
 ```
 
-### UserSettingsNav
-Navigation for user settings.
-
-```html
-<UserSettingsNav />
-```
-
 ## Composables
 Each of these also has documentation of how to use them in the form of JSDocs in the source code.
+
+### adminLinks()
+Returns a data structure for use with the `PanelNav` component.
+
+```js
+const links = adminLinks();
+```
 
 ### currentUserStore()
 Gets you the currently logged in user. 
@@ -356,9 +435,7 @@ Allows you to notify the user via toasts.
 ```
 You would then use the Notify Component in your layout.
 ```html
-<client-only>
-    <Notify />
-</client-only>
+<Notify />
 ```
 
 ### useRest()
@@ -366,6 +443,20 @@ A wrapper around the Nuxt composable `$fetch()` that allows for streamlined fetc
 
 ```js
 const response = useFetch(`/api/${restVersion()}/user`);
+```
+
+### userSettingsButtons()
+Returns a data structure for use with the `PanelNav` component.
+
+```js
+const buttons = userSettingsButtons();
+```
+
+### userSettingsLinks()
+Returns a data structure for use with the `PanelNav` component.
+
+```js
+const links = userSettingsLinks();
 ```
 
 ### useSystemWideAlertStore()
