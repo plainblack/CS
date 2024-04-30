@@ -11,20 +11,20 @@
                         <div class="flex-auto">
                             <div class="mb-4">
                                 <FormInput name="name" type="text" v-model="game.props.name" required label="Name"
-                                    @change="game.update()" />
+                                    @change="game.save('name')" />
                             </div>
                             <div class="mb-4">
                                 <FormInput type="select" name="archived" :options="game.options?.archived"
-                                    v-model="game.props.archived" label="Archived" @change="game.update()" />
+                                    v-model="game.props.archived" label="Archived" @change="game.save('archived')" />
                             </div>
                             <div class="mb-4">
                                 <FormInput name="collection" type="text" v-model="game.props.collection"
-                                    label="Collection" @change="game.update()" />
+                                    label="Collection" @change="game.save('collection')" />
                             </div>
 
                             <div class="mb-4">
                                 <FormInput name="notes" type="textarea" v-model="game.props.notes" label="Notes"
-                                    @change="game.update()" />
+                                    @change="game.save('notes')" />
                             </div>
                         </div>
 

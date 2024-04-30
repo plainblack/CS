@@ -57,7 +57,7 @@ function addRow() {
 
 function rename() {
     rows.records[0].props.name = 'Untitled'+Math.random().toString();
-    rows.records[0].update();
+    rows.records[0].save('name');
 }
 
 

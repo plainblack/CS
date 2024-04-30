@@ -6,10 +6,10 @@
         <FieldsetItem name="Properties">
             
                     <div class="mb-4">
-                        <FormInput name="name" type="text" v-model="row.props.name" required label="Name" @change="row.update()" />
+                        <FormInput name="name" type="text" v-model="row.props.name" required label="Name" @change="row.save('name')" />
                     </div>
                     <div class="mb-4">
-                        <FormInput name="datasetId" type="text" v-model="row.props.datasetId" required label="Dataset Id" @change="row.update()" />
+                        <FormInput name="datasetId" type="text" v-model="row.props.datasetId" required label="Dataset Id" @change="row.save('datasetId')" />
                     </div>
         </FieldsetItem>
 
