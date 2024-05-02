@@ -30,7 +30,7 @@
 </template>
 <script setup>
 const quantityOfRowsToAdd = ref(1);
-const fieldTypes = useFieldTypes();
+const fieldTypes = fieldTypes();
 const fieldType = ref('str');
 const fieldName = ref();
 const op = ref();
