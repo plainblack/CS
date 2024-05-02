@@ -58,7 +58,7 @@
 definePageMeta({
     middleware: ['auth']
 });
-const currentUser = useCurrentUserStore();
+const currentUser = useCurrentUser();
 const games = useVingKind({
     listApi: `/api/${useRestVersion()}/game`,
     createApi: `/api/${useRestVersion()}/game`,

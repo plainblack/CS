@@ -54,7 +54,7 @@ definePageMeta({
 });
 const route = useRoute();
 const id = route.params.id.toString();
-const currentUser = useCurrentUserStore();
+const currentUser = useCurrentUser();
 const game = useVingRecord({
     id,
     fetchApi: `/api/${useRestVersion()}/game/${id}`,
