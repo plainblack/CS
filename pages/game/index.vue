@@ -60,8 +60,8 @@ definePageMeta({
 });
 const currentUser = useCurrentUserStore();
 const games = useVingKind({
-    listApi: `/api/${restVersion()}/game`,
-    createApi: `/api/${restVersion()}/game`,
+    listApi: `/api/${useRestVersion()}/game`,
+    createApi: `/api/${useRestVersion()}/game`,
     query: { includeMeta: true, sortBy: 'name', sortOrder: 'asc' },
     newDefaults: { name: '', userId: currentUser.props?.id },
 });

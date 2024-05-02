@@ -23,20 +23,20 @@ const gameId = route.params.id.toString();
 const datasetId = route.params.dsid.toString();
 const game = useVingRecord({
     id: gameId,
-    fetchApi: `/api/${restVersion()}/game/${gameId}`,
-    createApi: `/api/${restVersion()}/game`,
+    fetchApi: `/api/${useRestVersion()}/game/${gameId}`,
+    createApi: `/api/${useRestVersion()}/game`,
     query: { includeMeta: true, includeOptions: true },
 });
 await game.fetch()
 const dataset = useVingRecord({
     id: datasetId,
-    fetchApi: `/api/${restVersion()}/dataset/${datasetId}`,
-    createApi: `/api/${restVersion()}/dataset`,
+    fetchApi: `/api/${useRestVersion()}/dataset/${datasetId}`,
+    createApi: `/api/${useRestVersion()}/dataset`,
     query: { includeMeta: true, includeOptions: true },
 });
 const rows = useVingKind({
-    listApi: `/api/${restVersion()}/dataset/${datasetId}/rows`,
-    createApi: `/api/${restVersion()}/row`,
+    listApi: `/api/${useRestVersion()}/dataset/${datasetId}/rows`,
+    createApi: `/api/${useRestVersion()}/row`,
     query: { includeMeta: true, sortBy: 'name', itemsPerPage: 100 },
     newDefaults: { name: '', gameId, datasetId },
 });

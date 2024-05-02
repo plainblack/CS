@@ -57,15 +57,15 @@ const id = route.params.id.toString();
 const currentUser = useCurrentUserStore();
 const game = useVingRecord({
     id,
-    fetchApi: `/api/${restVersion()}/game/${id}`,
+    fetchApi: `/api/${useRestVersion()}/game/${id}`,
     query: { includeMeta: true, includeOptions: true },
     async onDelete() {
         await navigateTo('/game');
     },
 });
 const collaborators = useVingKind({
-    listApi: `/api/${restVersion()}/collaborator`,
-    createApi: `/api/${restVersion()}/collaborator`,
+    listApi: `/api/${useRestVersion()}/collaborator`,
+    createApi: `/api/${useRestVersion()}/collaborator`,
     query: { includeMeta: true, sortBy: 'createdAt', sortOrder: 'desc', includeRelated: ['user'] },
     newDefaults: { gameId: id, userId: currentUser.props?.id },
 });
@@ -78,8 +78,8 @@ onBeforeRouteLeave(() => game.dispose());
 onBeforeRouteLeave(() => collaborators.dispose());
 const selectedCollaborator = ref();
 const users = useVingKind({
-    listApi: `/api/${restVersion()}/user`,
-    createApi: `/api/${restVersion()}/user`,
+    listApi: `/api/${useRestVersion()}/user`,
+    createApi: `/api/${useRestVersion()}/user`,
     query: { includeMeta: true, sortBy: 'username' },
 });
 await users.search();

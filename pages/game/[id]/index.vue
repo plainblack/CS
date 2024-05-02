@@ -35,7 +35,7 @@ const route = useRoute();
 const id = route.params.id.toString();
 const game = useVingRecord({
     id,
-    fetchApi: `/api/${restVersion()}/game/${id}`,
+    fetchApi: `/api/${useRestVersion()}/game/${id}`,
     query: { includeMeta: true, includeOptions: true },
     async onDelete() {
         await navigateTo('/game');

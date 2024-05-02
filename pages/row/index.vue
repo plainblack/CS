@@ -82,8 +82,8 @@
 
 <script setup>
 const rows = useVingKind({
-    listApi: `/api/${restVersion()}/row`,
-    createApi: `/api/${restVersion()}/row`,
+    listApi: `/api/${useRestVersion()}/row`,
+    createApi: `/api/${useRestVersion()}/row`,
     query: { includeMeta: true, sortBy: 'createdAt', sortOrder: 'desc' },
     newDefaults: { name: '', datasetId: '' },
 });

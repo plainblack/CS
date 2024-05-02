@@ -31,7 +31,7 @@ const route = useRoute();
 const id = route.params.id.toString();
 const row = useVingRecord({
     id,
-    fetchApi: `/api/${restVersion()}/row/${id}`,
+    fetchApi: `/api/${useRestVersion()}/row/${id}`,
     query: { includeMeta: true, includeOptions: true },
     async onDelete() {
         await navigateTo('/row');

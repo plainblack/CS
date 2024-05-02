@@ -61,7 +61,7 @@ const route = useRoute();
 const id = route.params.id.toString();
 const game = useVingRecord({
     id,
-    fetchApi: `/api/${restVersion()}/game/${id}`,
+    fetchApi: `/api/${useRestVersion()}/game/${id}`,
     query: { includeMeta: true, includeOptions: true },
     async onDelete() {
         await navigateTo('/game');
@@ -71,8 +71,8 @@ await game.fetch();
 onBeforeRouteLeave(() => game.dispose());
 
 const datasets = useVingKind({
-    listApi: `/api/${restVersion()}/dataset`,
-    createApi: `/api/${restVersion()}/dataset`,
+    listApi: `/api/${useRestVersion()}/dataset`,
+    createApi: `/api/${useRestVersion()}/dataset`,
     query: { includeMeta: true, sortBy: 'createdAt', sortOrder: 'desc', includeExtra: ['totalQuantity','rowCount'] },
     newDefaults: { name: '', gameId: id },
 });

@@ -46,8 +46,8 @@ const notify = useNotifyStore();
 const id = route.params.id.toString();
 const row = useVingRecord({
     id,
-    fetchApi: `/api/${restVersion()}/row/${id}`,
-    createApi: `/api/${restVersion()}/row`,
+    fetchApi: `/api/${useRestVersion()}/row/${id}`,
+    createApi: `/api/${useRestVersion()}/row`,
     query: { includeMeta: true, includeOptions: true },
     onUpdate() {
         notify.success('Updated Row.');
