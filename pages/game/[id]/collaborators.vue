@@ -84,7 +84,7 @@ const users = useVingKind({
 });
 await users.search();
 onBeforeRouteLeave(() => users.dispose());
-const notify = useNotifyStore();
+const notify = useNotify();
 
 const validateAndCreateCollaborator = (e) => {
     const userId = e.value.value;

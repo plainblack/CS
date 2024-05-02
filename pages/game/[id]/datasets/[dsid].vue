@@ -18,7 +18,7 @@ definePageMeta({
     layout: 'empty',
 });
 const route = useRoute();
-const notify = useNotifyStore();
+const notify = useNotify();
 const gameId = route.params.id.toString();
 const datasetId = route.params.dsid.toString();
 const game = useVingRecord({
