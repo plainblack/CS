@@ -18,7 +18,6 @@ definePageMeta({
     layout: 'empty',
 });
 const route = useRoute();
-const dt = useDateTime();
 const notify = useNotifyStore();
 const gameId = route.params.id.toString();
 const datasetId = route.params.dsid.toString();

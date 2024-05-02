@@ -14,7 +14,7 @@
                     </Column>
                     <Column field="props.createdAt" header="Added At" sortable>
                         <template #body="slotProps">
-                            {{ dt.formatDateTime(slotProps.data.props.createdAt) }}
+                            {{ formatDateTime(slotProps.data.props.createdAt) }}
                         </template>
                     </Column>
                     <Column header="Remove">
@@ -85,7 +85,6 @@ const users = useVingKind({
 await users.search();
 onBeforeRouteLeave(() => users.dispose());
 const notify = useNotifyStore();
-const dt = useDateTime();
 
 const validateAndCreateCollaborator = (e) => {
     const userId = e.value.value;

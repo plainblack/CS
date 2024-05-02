@@ -82,7 +82,6 @@ await Promise.all([
 ]);
 onBeforeRouteLeave(() => datasets.dispose());
 
-const dt = useDateTime();
 const links = useGameLinks(game);
 const buttons = useGameButtons(game);
 

@@ -29,7 +29,6 @@ const game = useVingRecord({
 await game.fetch();
 onBeforeRouteLeave(() => game.dispose());
 
-const dt = useDateTime();
 const links = useGameLinks(game);
 const buttons = useGameButtons(game);
 </script>

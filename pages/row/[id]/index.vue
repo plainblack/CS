@@ -5,9 +5,9 @@
         
             <div><b>Id</b>: {{row.props?.id}} <CopyToClipboard :text="row.props?.id" /></div>
             
-            <div><b>Created At</b>: {{dt.formatDateTime(row.props?.createdAt)}}</div>
+            <div><b>Created At</b>: {{formatDateTime(row.props?.createdAt)}}</div>
             
-            <div><b>Updated At</b>: {{dt.formatDateTime(row.props?.updatedAt)}}</div>
+            <div><b>Updated At</b>: {{formatDateTime(row.props?.updatedAt)}}</div>
             
             <div><b>Name</b>: {{row.props?.name}}</div>
             
@@ -39,7 +39,6 @@ const row = useVingRecord({
 });
 await row.fetch();
 onBeforeRouteLeave(() => row.dispose());
-const dt = useDateTime();
 const breadcrumbs = [
     { label: 'Rows', to: '/row' },
     { label: 'View' },

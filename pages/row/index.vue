@@ -23,12 +23,12 @@
             </Column>
             <Column field="props.createdAt" header="Created At" sortable>
                 <template #body="slotProps">
-                    {{ dt.formatDateTime(slotProps.data.props.createdAt) }}
+                    {{ formatDateTime(slotProps.data.props.createdAt) }}
                 </template>
             </Column>
             <Column field="props.updatedAt" header="Updated At" sortable>
                 <template #body="slotProps">
-                    {{ dt.formatDateTime(slotProps.data.props.updatedAt) }}
+                    {{ formatDateTime(slotProps.data.props.updatedAt) }}
                 </template>
             </Column>
             <Column field="props.name" header="Name" sortable>
@@ -81,7 +81,6 @@
 </template>
 
 <script setup>
-const dt = useDateTime();
 const rows = useVingKind({
     listApi: `/api/${restVersion()}/row`,
     createApi: `/api/${restVersion()}/row`,

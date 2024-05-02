@@ -17,9 +17,9 @@
             
                 <div class="mb-4"><b>Id</b>: {{row.props?.id}} <CopyToClipboard :text="row.props?.id" /></div>
                 
-            <div class="mb-4"><b>Created At</b>: {{dt.formatDateTime(row.props.createdAt)}}</div>
+            <div class="mb-4"><b>Created At</b>: {{formatDateTime(row.props.createdAt)}}</div>
             
-            <div class="mb-4"><b>Updated At</b>: {{dt.formatDateTime(row.props.updatedAt)}}</div>
+            <div class="mb-4"><b>Updated At</b>: {{formatDateTime(row.props.updatedAt)}}</div>
             
             <div class="mb-4"><b>Quantity</b>: {{row.props?.quantity}}</div>
             
@@ -42,7 +42,6 @@ definePageMeta({
     middleware: ['auth']
 });
 const route = useRoute();
-const dt = useDateTime();
 const notify = useNotifyStore();
 const id = route.params.id.toString();
 const row = useVingRecord({

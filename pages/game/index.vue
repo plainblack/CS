@@ -58,7 +58,6 @@
 definePageMeta({
     middleware: ['auth']
 });
-const dt = useDateTime();
 const currentUser = useCurrentUserStore();
 const games = useVingKind({
     listApi: `/api/${restVersion()}/game`,
