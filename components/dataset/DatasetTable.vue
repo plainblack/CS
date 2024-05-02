@@ -32,7 +32,7 @@
   import 'handsontable/dist/handsontable.full.css';
 
   registerAllModules();
-  const notify = useNotifyStore();
+  const notify = useNotify();
 
   const props = defineProps({
       rows: Object,
