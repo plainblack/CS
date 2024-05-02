@@ -7,6 +7,5 @@
 </template>
 
 <script setup>
-const throbber = useThrobberStore();
-onMounted(() => throbber.counter = 0);
+const throbber = useThrobber();
 </script>

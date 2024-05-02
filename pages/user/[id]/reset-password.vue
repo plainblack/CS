@@ -8,25 +8,19 @@
             <Form :send="resetPassword">
                 <div class="flex gap-5 flex-column-reverse md:flex-row">
                     <div class="flex-auto">
-                        <div class="mb-4">
-                            <FormInput name="code" type="text" v-model="newPassword.code" required readonly
-                                label="Reset Code" />
-                        </div>
-                        <div class="mb-4">
-                            <FormInput name="password" type="password" v-model="newPassword.password" required
-                                label="New Password" autocomplete="new-password" />
-                        </div>
-                        <div class="mb-4">
-                            <FormInput name="password" type="password" v-model="newPassword.password2" required
-                                :mustMatch="{ field: 'New Password', value: newPassword.password }"
-                                label="Confirm New Password" autocomplete="new-password" />
-                        </div>
+                        <FormInput name="code" type="text" v-model="newPassword.code" required readonly
+                            label="Reset Code" class="mb-4" />
 
-                        <div>
-                            <Button type="submit" label="Update Profile" class="w-auto">
-                                Reset Password
-                            </Button>
-                        </div>
+                        <FormInput name="password" type="password" v-model="newPassword.password" required
+                        label="New Password" autocomplete="new-password" class="mb-4" />
+
+                        <FormInput name="password" type="password" v-model="newPassword.password2" required
+                        :mustMatch="{ field: 'New Password', value: newPassword.password }"
+                        label="Confirm New Password" autocomplete="new-password" class="mb-4" />
+
+                        <Button type="submit" label="Update Profile" class="w-auto">
+                            Reset Password
+                        </Button>
                     </div>
 
                 </div>
@@ -40,10 +34,10 @@ const route = useRoute();
 const query = route.query;
 const newPassword = reactive({ password: '', password2: '', code: query.code?.toString() || '' });
 const config = useRuntimeConfig();
-const notify = useNotifyStore();
+const notify = useNotify();
 async function resetPassword() {
     notify.info('Please wait while we reset your password...');
-    const response = await useRest(`/api/${restVersion()}/user/${route.params.id}/reset-password`, {
+    const response = await useRest(`/api/${useRestVersion()}/user/${route.params.id}/reset-password`, {
         method: 'post',
         query: { includeOptions: true },
         body: { code: newPassword.code, password: newPassword.password },

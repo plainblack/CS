@@ -8,6 +8,10 @@
                 :autocomplete="autocomplete" :required="required" :inputClass="fieldClass" :step="step"
                 :incrementButtonClass="append ? 'border-noround' : ''" @change="emit('change')"
                 :decrementButtonClass="append ? 'border-noround' : ''" />
+            <InputSwitch v-if="type == 'switch' && (isBoolean(val) || isUndefined(val))"
+                v-model="val" :placeholder="placeholder" :name="name" :id="computedId"
+                :inputClass="fieldClass" @change="emit('change')"
+                 />
             <Password v-else-if="type == 'password' && (isString(val) || isNull(val) || isUndefined(val))" @change="emit('change')"
                 v-model="val" toggleMask :placeholder="placeholder" :name="name" :id="computedId" :feedback="false"
                 :autocomplete="autocomplete" :required="required" :inputClass="fieldClass" class="w-full" />
@@ -17,11 +21,9 @@
             <MarkdownInput v-else-if="type == 'markdown' && (isString(val) || isNull(val) || isUndefined(val))"
                 v-model="val" :placeholder="placeholder" :id="computedId" @change="emit('change')"
                 />
-            <SelectInput v-else-if="type == 'select'"
+            <Dropdown v-else-if="type == 'select'"
                 v-model="val" :name="name" :id="computedId" :options="options" :class="fieldClass" :required="required"
-                @change="emit('change')">
-                <template v-for="(_, name) in $slots" v-slot:[name]="slotData"><slot :name="name" v-bind="slotData" /></template>
-            </SelectInput>
+                @change="emit('change')" optionLabel="label" optionValue="value" />  
             <InputText
                 v-else-if="['text', 'email'].includes(type) && (isString(val) || isNull(val) || isUndefined(val))"
                 v-model="val" :placeholder="placeholder" :name="name" :id="computedId" :autocomplete="autocomplete"
@@ -31,12 +33,12 @@
             </Message>
             <span v-if="append" class="p-inputgroup-addon"> {{ append }} </span>
         </div>
-        <small :class="invalid && !empty ? 'text-red-500' : ''" v-if="invalid">{{ invalidReason }}</small>
+        <small :class="invalid && !empty ? 'text-red-500' : ''" v-if="subtext">{{ subtext }}</small>
     </div>
 </template>
 
 <script setup>
-import {isNumber, isString, isNull, isUndefined, isNil} from '#ving/utils/identify.mjs';
+import {isNumber, isString, isNull, isUndefined, isNil, isBoolean} from '#ving/utils/identify.mjs';
 
 
 const props = defineProps({
@@ -45,12 +47,15 @@ const props = defineProps({
         type: String,
         default: () => 'text',
         validator(value, props) {
-            return ['textarea', 'text', 'password', 'number', 'email','markdown','select'].includes(value)
+            return ['textarea', 'text', 'password', 'number', 'email','markdown','select','switch'].includes(value)
         }
     },
     name: {
         type: String,
         required: true,
+    },
+    subtext: {
+        type: String,
     },
     id: String,
     append: String,
@@ -83,7 +88,7 @@ const computedId = props.id || props.name;
 
 const emit = defineEmits(['update:modelValue','change']);
 
-let invalidReason = '';
+let subtext = ref(props.subtext);
 
 const invalidForm = inject('invalidForm', (a) => { });
 
@@ -91,27 +96,29 @@ const empty = computed(() => isNil(props.modelValue));
 
 const invalid = computed(() => {
     if (props.required && empty.value) {
-        invalidReason = `${displayName} is required.`;
-        invalidForm([props.name, true, invalidReason]);
+        subtext.value = `${displayName} is required.`;
+        invalidForm([props.name, true, subtext.value]);
         return true;
     }
     else if (!isUndefined(props.mustMatch) && props.mustMatch.value !== props.modelValue) {
-        invalidReason = `${displayName} must match ${props.mustMatch.field}.`;
-        invalidForm([props.name, true, invalidReason]);
+        subtext.value = `${displayName} must match ${props.mustMatch.field}.`;
+        invalidForm([props.name, true, subtext.value]);
         return true;
     }
     else if (props.type == 'email' && !isNil(props.modelValue) && !(props.modelValue.toString().match(/.+@.+\..+/))) {
-        invalidReason = `${displayName} doesn't look like an email address.`;
-        invalidForm([props.name, true, invalidReason]);
+        subtext.value = `${displayName} doesn't look like an email address.`;
+        invalidForm([props.name, true, subtext.value]);
         return true;
     }
+    if (props.subtext)
+        subtext.value = props.subtext;
     invalidForm([props.name, false]);
     return false;
 });
 
 const fieldClass = computed(() => {
     if (props.type == 'select')
-        return invalid.value ? 'p-inputtext border-red-500 w-full' : 'p-inputtext w-full';
+        return invalid.value ? 'border-red-500' : '';
     return invalid.value && !empty.value ? 'p-invalid w-full' : 'w-full' 
 });
 

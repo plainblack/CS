@@ -4,7 +4,7 @@ import { isObject, isUndefined } from '#ving/utils/identify.mjs';
 
 const query = { includeOptions: true, includeMeta: true, includeLinks: true };
 
-export const useCurrentUserStore = defineStore('currentUser', {
+export const useCurrentUser = defineStore('currentUser', {
     state: () => ({
         props: {},
         meta: {},
@@ -13,7 +13,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
     }),
     actions: {
         async fetch() {
-            const response = await useRest(`/api/${restVersion()}/user/whoami`, {
+            const response = await useRest(`/api/${useRestVersion()}/user/whoami`, {
                 query,
             });
             if (isObject(response.data)) {
@@ -30,7 +30,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
             }
         },
         async login(login, password) {
-            const response = await useRest(`/api/${restVersion()}/session`, {
+            const response = await useRest(`/api/${useRestVersion()}/session`, {
                 method: 'post',
                 body: {
                     login,
@@ -45,7 +45,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
             return response;
         },
         async logout() {
-            const response = await useRest(`/api/${restVersion()}/session`, {
+            const response = await useRest(`/api/${useRestVersion()}/session`, {
                 method: 'delete',
             });
             this.setState({});
@@ -71,8 +71,20 @@ export const useCurrentUserStore = defineStore('currentUser', {
                 this.setState(response.data);
             return response;
         },
+        async save(key) {
+            const valuesToSave = {};
+            valuesToSave[key] = this.props[key];
+            const response = await useRest(this.links?.self?.href, {
+                method: 'put',
+                body: valuesToSave,
+                query,
+            });
+            if (response.data)
+                this.setState(response.data);
+            return response;
+        },
         async create(newUser) {
-            const response = await useRest(`/api/${restVersion()}/user`, {
+            const response = await useRest(`/api/${useRestVersion()}/user`, {
                 method: 'post',
                 body: newUser,
                 query: { includeOptions: true },

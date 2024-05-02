@@ -2,11 +2,11 @@
  * Creates a data structure for the current user's settings naivigation buttons.
  * @returns {object[]} An array of objects to be used with the PanelNav component.
  * @example
- * userSettingsButtons()
+ * useUserSettingsButtons()
  */
 
 export default () => {
-    const currentUser = useCurrentUserStore();
+    const currentUser = useCurrentUser();
     const buttons = computed(() => {
         const out = [
             { label: 'Sign Out', to: '/user/logout', icon: 'ph:door', severity: 'primary' },

@@ -10,8 +10,8 @@
  * const bus = useMessageBus()
  */
 export default async function useMessageBus() {
-    const notify = useNotifyStore();
-    const currentUser = useCurrentUserStore();
+    const notify = useNotify();
+    const currentUser = useCurrentUser();
 
     let reconnectFrequencySeconds = 1;
     let bus = null;
@@ -29,7 +29,7 @@ export default async function useMessageBus() {
     const reconnect = () => setTimeout(tryToSetup, wait);
 
     const setupBusHandler = () => {
-        bus = new EventSource(`/api/${restVersion()}/user/messagebus`);
+        bus = new EventSource(`/api/${useRestVersion()}/user/messagebus`);
         bus.onmessage = (event) => {
             const message = JSON.parse(event.data);
             switch (message.type) {
