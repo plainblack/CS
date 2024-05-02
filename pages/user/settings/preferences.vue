@@ -5,11 +5,9 @@
             </template>
             <template #content v-if="currentUser.props">
                 <PanelZone title="Preferences" info="These settings will change your experience on the site.">
-                    <div class="mb-4">
-                        <FormInput type="select" @change="currentUser.save('developer')" v-model="currentUser.props.developer"
-                            :options="currentUser.options?.developer" label="Are you a software developer?"
-                            name="developer" />
-                    </div>
+                    <FormInput type="select" @change="currentUser.save('developer')" v-model="currentUser.props.developer"
+                        :options="currentUser.options?.developer" label="Are you a software developer?"
+                        name="developer" class="mb-4" />
                 </PanelZone>
             </template>
         </PanelFrame>
@@ -19,7 +17,7 @@
 definePageMeta({
     middleware: ['auth']
 });
-const currentUser = useCurrentUserStore();
-const links = userSettingsLinks();
-const buttons = userSettingsButtons();
+const currentUser = useCurrentUser();
+const links = useUserSettingsLinks();
+const buttons = useUserSettingsButtons();
 </script>

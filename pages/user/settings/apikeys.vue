@@ -18,7 +18,7 @@
                     @sort="(event) => apikeys.sortDataTable(event)">
                     <Column field="props.createdAt" header="Created" sortable>
                         <template #body="slotProps">
-                            {{ dt.formatDate(slotProps.data.props.createdAt) }}
+                            {{ formatDate(slotProps.data.props.createdAt) }}
                         </template>
                     </Column>
                     <Column field="props.name" header="Name" sortable></Column>
@@ -47,44 +47,33 @@
                 <Dialog v-model:visible="dialog.visible" maximizable modal header="Header"
                     :style="{ width: '75vw' }">
 
-                    
-                    <div class="mb-4">
-                        <FormInput name="name" type="text" v-model="dialog.current.props.name"
-                            required label="Name" @change="dialog.current.save('name')" />
-                    </div>
-                    <div class="mb-4">
-                        <FormInput name="url" type="text" v-model="dialog.current.props.url"
-                            label="URL" @change="dialog.current.save('url')" />
-                    </div>
-                    <div class="mb-4">
-                        <FormInput name="reason" type="textarea"
-                            v-model="dialog.current.props.reason" label="Reason"
-                            @change="dialog.current.save('reason');" />
-                    </div>
+                    <FormInput name="name" type="text" v-model="dialog.current.props.name"
+                        required label="Name" @change="dialog.current.save('name')" class="mb-4" />
 
+                    <FormInput name="url" type="text" v-model="dialog.current.props.url"
+                    label="URL" @change="dialog.current.save('url')" class="mb-4" />
+
+                    <FormInput name="reason" type="textarea"
+                    v-model="dialog.current.props.reason" label="Reason"
+                    @change="dialog.current.save('reason');" class="mb-4" />
+    
                 </Dialog>
             </PanelZone>
             
             <PanelZone title="Create API Key" info="Make a new API Key.">
                 <Form :send="() => apikeys.create()">
                   
-                    <div class="mb-4">
-                        <FormInput name="name" type="text" v-model="apikeys.new.name" required
-                            label="Name" />
-                    </div>
-                    <div class="mb-4">
-                        <FormInput name="url" type="text" v-model="apikeys.new.url" label="URL" />
-                    </div>
-                    <div class="mb-4">
-                        <FormInput name="reason" type="textarea" v-model="apikeys.new.reason"
-                            label="Reason" />
-                    </div>
+                    <FormInput name="name" type="text" v-model="apikeys.new.name" required
+                        label="Name" class="mb-4" />
 
-                    <div>
-                        <Button type="submit" class="w-auto" severity="success">
-                            <Icon name="ph:plus" class="mr-1"/> Create API Key
-                        </Button>
-                    </div>
+                    <FormInput name="url" type="text" v-model="apikeys.new.url" label="URL" class="mb-4" />
+
+                    <FormInput name="reason" type="textarea" v-model="apikeys.new.reason"
+                    label="Reason" class="mb-4" />
+
+                    <Button type="submit" class="w-auto" severity="success">
+                        <Icon name="ph:plus" class="mr-1"/> Create API Key
+                    </Button>
                       
                 </Form>
             </PanelZone>
@@ -97,14 +86,12 @@
 definePageMeta({
     middleware: ['auth']
 });
-
-const dt = useDateTime();
-const currentUser = useCurrentUserStore();
-const links = userSettingsLinks();
-const buttons = userSettingsButtons();
+const currentUser = useCurrentUser();
+const links = useUserSettingsLinks();
+const buttons = useUserSettingsButtons();
 const apikeys = useVingKind({
     listApi: currentUser.links?.apikeys.href,
-    createApi: `/api/${restVersion()}/apikey`,
+    createApi: `/api/${useRestVersion()}/apikey`,
     query: { includeMeta: true, sortBy: 'name', sortOrder: 'asc' },
     newDefaults: { name: '', reason: '', url: 'http://', userId: currentUser.props?.id },
 });

@@ -2,7 +2,7 @@ import { defu } from "defu";
 import { debounce } from 'perfect-debounce';
 import { ouch } from '#ving/utils/ouch.mjs';
 class VingKind {
-    #notify = useNotifyStore();
+    #notify = useNotify();
 
     #state = reactive({
         query: { includeLinks: true },
@@ -381,7 +381,7 @@ class VingKind {
     }
 
     /**
-     * Turns the list of records into an array compatible with various components such as SelectInput and Autocomplete
+     * Turns the list of records into an array compatible with various components such as FormInput, Dropdown and Autocomplete
      * 
      * @param {'props'|'meta'|'extra'} section One of the describe section names such as `props`, or `meta`, or `extra`.
      * @param {string} field The name of the field within the `section` that will serve as the labelf for this option list.

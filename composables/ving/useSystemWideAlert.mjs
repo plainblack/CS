@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-export const useSystemWideAlertStore = defineStore('system-wide-alert', {
+export const useSystemWideAlert = defineStore('system-wide-alert', {
     state: () => ({
         message: '', ttl: 1000 * 60 * 60, severity: 'success'
     }),
@@ -11,19 +11,19 @@ export const useSystemWideAlertStore = defineStore('system-wide-alert', {
             this.severity = data.severity;
         },
         async get() {
-            const response = await useRest(`/api/${restVersion()}/system-wide-alert`);
+            const response = await useRest(`/api/${useRestVersion()}/system-wide-alert`);
             if (response.data) {
                 this.setState(response.data);
             }
         },
         async delete() {
-            const response = await useRest(`/api/${restVersion()}/system-wide-alert`, { method: 'delete' });
+            const response = await useRest(`/api/${useRestVersion()}/system-wide-alert`, { method: 'delete' });
             if (response.data) {
                 this.setState(response.data);
             }
         },
         async post() {
-            const response = await useRest(`/api/${restVersion()}/system-wide-alert`, {
+            const response = await useRest(`/api/${useRestVersion()}/system-wide-alert`, {
                 method: 'post',
                 body: this.$state,
             });

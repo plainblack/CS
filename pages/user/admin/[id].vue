@@ -6,55 +6,39 @@
         <template #content>
             <FieldsetNav v-if="user.props?.id">
                 <FieldsetItem name="Account">
-                    <div class="mb-4">
-                        <FormInput name="username" v-model="user.props.username" required label="Username"
-                            @change="user.save('username')" />
-                    </div>
-                    <div class="mb-4">
-                        <FormInput type="email" name="email" v-model="user.props.email" label="Email" required
-                            @change="user.save('email')" />
-                    </div>
-                    <div class="mb-4">
-                        <FormInput name="realName" v-model="user.props.realName" label="Real Name"
-                            @change="user.save('realName')" />
-                    </div>
+                    <FormInput name="username" v-model="user.props.username" required label="Username"
+                        @change="user.save('username')" class="mb-4" />
 
-                    <div class="mb-4">
-                        <FormInput name="password" v-model="password" label="Password"
-                            @change="user.save('password')" />
-                    </div>
+                    <FormInput type="email" name="email" v-model="user.props.email" label="Email" required
+                    @change="user.save('email')" class="mb-4" />
+
+                    <FormInput name="realName" v-model="user.props.realName" label="Real Name"
+                    @change="user.save('realName')" class="mb-4" />
+
+                    <FormInput name="password" v-model="password" label="Password"
+                        @change="user.save('password')" class="mb-4" />
                 </FieldsetItem>
 
                 <FieldsetItem name="Privileges">
-                    <div class="mb-4">
                         <FormInput type="select" @change="user.save('admin')" v-model="user.props.admin" :options="user.options?.admin"
-                            name="admin" label="Admin" />
-                    </div>
+                            name="admin" label="Admin" class="mb-4" />
                 </FieldsetItem>
 
                 <FieldsetItem name="Preferences">
 
-                    <div class="mb-4">
                         <FormInput type="select" @change="user.save('developer')" v-model="user.props.developer"
-                            :options="user.options?.developer" label="Are you a software developer?" name="developer" />
-                    </div>
+                            :options="user.options?.developer" label="Are you a software developer?" name="developer" class="mb-4" />
 
                 </FieldsetItem>
 
                 <FieldsetItem name="Profile">
-                    <div class="mb-4">
-                        <FormInput type="select" @change="user.save('useAsDisplayName')" v-model="user.props.useAsDisplayName"
-                            :options="user.options?.useAsDisplayName" name="useAsDisplayName" label="Use As Display Name" />
-                    </div>
+                    <FormInput type="select" @change="user.save('useAsDisplayName')" v-model="user.props.useAsDisplayName"
+                        :options="user.options?.useAsDisplayName" name="useAsDisplayName" label="Use As Display Name" class="mb-4" />
 
-                    <div class="mb-4">
-                        <FormInput type="markdown" @change="user.save('bio')" label="Bio"  v-model="user.props.bio" name="bio"  />
-                    </div>
+                    <FormInput type="markdown" @change="user.save('bio')" label="Bio"  v-model="user.props.bio" name="bio" class="mb-4"  />
 
-                    <div class="mb-4">
-                        <FormInput type="select" @change="user.save('avatarType')" v-model="user.props.avatarType"
-                            :options="user.options?.avatarType" name="avatarType" label="Avatar" />
-                    </div>
+                    <FormInput type="select" @change="user.save('avatarType')" v-model="user.props.avatarType"
+                        :options="user.options?.avatarType" name="avatarType" label="Avatar" class="mb-4" />
 
                     <div class="mb-4">
                         <span class="font-medium text-900 mb-2">Profile Picture</span><br>
@@ -68,11 +52,11 @@
                     </div>
 
                     <div class="mb-4">
-                        Created at {{ dt.formatDateTime(user.props.createdAt) }}
+                        <b>Created at</b>: {{ formatDateTime(user.props.createdAt) }}
                     </div>
 
                     <div class="mb-4">
-                        Updated at {{ dt.formatDateTime(user.props.updatedAt) }}
+                        <b>Updated at</b>: {{ formatDateTime(user.props.updatedAt) }}
                     </div>
                 </FieldsetItem>
 
@@ -98,14 +82,13 @@ definePageMeta({
     middleware: ['auth', 'admin']
 });
 const route = useRoute();
-const dt = useDateTime();
-const notify = useNotifyStore();
+const notify = useNotify();
 
 const id = route.params.id.toString();
 const user = useVingRecord({
     id,
-    fetchApi: `/api/${restVersion()}/user/${id}`,
-    createApi: `/api/${restVersion()}/user`,
+    fetchApi: `/api/${useRestVersion()}/user/${id}`,
+    createApi: `/api/${useRestVersion()}/user`,
     query: { includeMeta: true, includeOptions: true },
     onUpdate() {
         notify.success('Updated user.');
@@ -121,7 +104,7 @@ onBeforeRouteLeave(() => user.dispose());
 async function become() {
     await user.call('post', user.links?.self.href + '/become', undefined, {
         async onSuccess() {
-            const currentUser = useCurrentUserStore();
+            const currentUser = useCurrentUser();
             currentUser.fetch();
             await navigateTo('/');
         }
@@ -130,6 +113,6 @@ async function become() {
 
 const password = ref('');
 
-const links = adminLinks();
+const links = useAdminLinks();
 
 </script>

@@ -3,6 +3,26 @@ outline: deep
 ---
 # Change Log
 
+## 2024-05-02
+* Moved the docs folder from ./docs to ./ving/docs to avoid collisions with downstream projects.
+* Created a utils folder for UI utility functions and moved enum2labels() into it since it was never a composable.
+* Renamed all composables to start with "use" per Nuxt convention.
+* Removed a bunch of extra markup by formatting form controls with their own default bottom margins.
+* NOTE: useDateTime() no longer exists, just use formatDate(), formatDateTime(), and formatTimeAgo() directly.
+* NOTE: restVersion() has been renamed to useRestVersion(), update your codebase appropriately.
+* NOTE: adminLinks() has been renamed to useAdminLinks(), update your codebase appropriately.
+* NOTE: useCurrentUserStore() has been renamed to useCurrentUser(), update your codebase appropriately.
+* NOTE: useNotifyStore() has been renamed to useNotify(), update your codebase appropriately.
+* NOTE: useSystemWideAlertStore() has been renamed to useSystemWideAlert(), update your codebase appropriately.
+* NOTE: useThrobberStore() has been renamed to useThrobber(), update your codebase appropriately.
+* NOTE: userSettingsButtons() has been renamed to useUserSettingsButtons(), update your codebase appropriately.
+* NOTE: userSettingsLinks() has been renamed to useUserSettingsLinks(), update your codebase appropriately.
+* Implemented: add "subtext" to FormInput #143
+* Implemented: add switch as a type to FormInput #145
+* Implemented: eliminate SelectInput in favor of Dropdown #142
+* NOTE: Eliminated the prepend/append slots on FormInput. Use spread operator instead.
+* NOTE: Eliminated SelectInput. Use Dropdown or FormInput type="select" instead.
+
 ## 2024-04-29
 * Implemented: reformat page generator to use panel components on view and edit #139
 
@@ -14,7 +34,7 @@ outline: deep
 * NOTE: Recommend updating your UI components to use .save('propname') instead of .update() on @change events to reduce wire traffic.
 * Eliminated p-fluid from all pages as it wasn't necessary and was causing weird button stretching.
 * NOTE: Delete p-fluid from all generated pages in your apps.
-* NOTE: AdminNav component has been removed. Replaced with adminLinks() composable.
+* NOTE: AdminNav component has been removed. Replaced with useAdminLinks() composable.
 * Implemented: reformat admin to use panel components #138
 
 ## 2024-04-26
@@ -32,7 +52,7 @@ outline: deep
 * Added ManageButton component.
 * Added link to user in user admin panel.
 * Removed all references to PrimeVue icons as they don't size well with the Iconify icons.
-* Replaced UserSettingsNav with PanelNav and userSettingsLinks() and userSettingsButtons().
+* Replaced UserSettingsNav with PanelNav and useUserSettingsLinks() and useUserSettingsButtons().
 * Made the profile editing page mobile friendly.
 * Added PanelFrame component which dovetails nicely with PanelNav for building UIs.
 * Added PanelZone as a content area for PanelFrame.

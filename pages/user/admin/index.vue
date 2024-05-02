@@ -32,7 +32,7 @@
                     </Column>
                     <Column field="props.createdAt" header="Created" sortable>
                         <template #body="slotProps">
-                            {{ dt.formatDateTime(slotProps.data.props.createdAt) }}
+                            {{ formatDateTime(slotProps.data.props.createdAt) }}
                         </template>
                     </Column>
                     <Column header="Manage">
@@ -54,23 +54,17 @@
 
                 <Form :send="() => users.create()">
                 
-                            <div class="mb-4">
-                                <FormInput name="nausernameme" type="text" v-model="users.new.username" required
-                                    label="Username" />
-                            </div>
-                            <div class="mb-4">
-                                <FormInput name="realName" type="text" v-model="users.new.realName" required
-                                    label="Real Name" />
-                            </div>
-                            <div class="mb-4">
-                                <FormInput name="email" type="email" v-model="users.new.email" required label="Email" />
-                            </div>
+                    <FormInput name="nausernameme" type="text" v-model="users.new.username" required
+                        label="Username" class="mb-4" />
 
-                            <div>
-                                <Button type="submit" class="w-auto" severity="success">
-                                    <Icon name="ph:plus" class="mr-1"/> Create User
-                                </Button>
-                            </div>
+                    <FormInput name="realName" type="text" v-model="users.new.realName" required
+                    label="Real Name" class="mb-4" />
+
+                    <FormInput name="email" type="email" v-model="users.new.email" required label="Email" class="mb-4" />
+
+                    <Button type="submit" class="w-auto" severity="success">
+                        <Icon name="ph:plus" class="mr-1"/> Create User
+                    </Button>
                     
                 </Form>
             </PanelZone>
@@ -79,20 +73,19 @@
 </template>
 
 <script setup>
-const notify = useNotifyStore();
+const notify = useNotify();
 definePageMeta({
     middleware: ['auth', 'admin']
 });
 
-const dt = useDateTime();
 const users = useVingKind({
-    listApi: `/api/${restVersion()}/user`,
-    createApi: `/api/${restVersion()}/user`,
+    listApi: `/api/${useRestVersion()}/user`,
+    createApi: `/api/${useRestVersion()}/user`,
     query: { includeMeta: true, sortBy: 'username', sortOrder: 'asc' },
     newDefaults: { username: '', realName: '', email: '' },
 });
 await users.search();
 
 onBeforeRouteLeave(() => users.dispose());
-const links = adminLinks();
+const links = useAdminLinks();
 </script>

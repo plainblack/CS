@@ -55,7 +55,7 @@ const columns = (name, schema) => {
             out += `
             <Column field="props.${prop.name}" header="${makeLabel(prop.name)}" sortable>
                 <template #body="slotProps">
-                    {{ dt.formatDateTime(slotProps.data.props.${prop.name}) }}
+                    {{ formatDateTime(slotProps.data.props.${prop.name}) }}
                 </template>
             </Column>`;
         }
@@ -88,15 +88,11 @@ const createProps = (schema) => {
         if (prop.required && prop.edit.length > 0) {
             if (['enum', 'boolean'].includes(prop.type)) {
                 out += `
-                    <div class="mb-4">
-                        <FormInput name="${prop.name}" type="select" :options="${schema.tableName}.propsOptions?.${prop.name}" v-model="${schema.tableName}.new.${prop.name}" label="${makeLabel(prop.name)}" />
-                    </div>`;
+                    <FormInput name="${prop.name}" type="select" :options="${schema.tableName}.propsOptions?.${prop.name}" v-model="${schema.tableName}.new.${prop.name}" label="${makeLabel(prop.name)}" class="mb-4" />`;
             }
             else if (prop.type != 'virtual') {
                 out += `
-                    <div class="mb-4">
-                        <FormInput name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.tableName}.new.${prop.name}" required label="${makeLabel(prop.name)}" />
-                    </div>`;
+                    <FormInput name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.tableName}.new.${prop.name}" required label="${makeLabel(prop.name)}" class="mb-4" />`;
             }
         }
     }
@@ -165,10 +161,9 @@ const indexTemplate = ({ name, schema }) =>
 </template>
 
 <script setup>
-const dt = useDateTime();
 const ${schema.tableName} = useVingKind({
-    listApi: \`/api/\${restVersion()}/${name.toLowerCase()}\`,
-    createApi: \`/api/\${restVersion()}/${name.toLowerCase()}\`,
+    listApi: \`/api/\${useRestVersion()}/${name.toLowerCase()}\`,
+    createApi: \`/api/\${useRestVersion()}/${name.toLowerCase()}\`,
     query: { includeMeta: true, sortBy: 'createdAt', sortOrder: 'desc' ${includeRelatedTemplate(schema)} },
     newDefaults: { ${newDefaults(schema)} },
 });
@@ -185,7 +180,7 @@ const viewProps = (schema) => {
         if (prop.view.length > 0 || prop.edit.length > 0) {
             if (prop.type == 'date') {
                 out += `
-            <div><b>${makeLabel(prop.name)}</b>: {{dt.formatDateTime(${schema.kind.toLowerCase()}.props?.${prop.name})}}</div>
+            <div><b>${makeLabel(prop.name)}</b>: {{formatDateTime(${schema.kind.toLowerCase()}.props?.${prop.name})}}</div>
             `;
             }
             else if (['boolean', 'enum'].includes(prop.type)) {
@@ -268,7 +263,7 @@ const route = useRoute();
 const id = route.params.id.toString();
 const ${name.toLowerCase()} = useVingRecord({
     id,
-    fetchApi: \`/api/\${restVersion()}/${name.toLowerCase()}/\${id}\`,
+    fetchApi: \`/api/\${useRestVersion()}/${name.toLowerCase()}/\${id}\`,
     query: { includeMeta: true, includeOptions: true ${includeRelatedTemplate(schema)} },
     async onDelete() {
         await navigateTo('/${name.toLowerCase()}');
@@ -276,7 +271,6 @@ const ${name.toLowerCase()} = useVingRecord({
 });
 await ${name.toLowerCase()}.fetch();
 onBeforeRouteLeave(() => ${name.toLowerCase()}.dispose());
-const dt = useDateTime();
 </script>`;
 
 const editProps = (schema) => {
@@ -285,9 +279,7 @@ const editProps = (schema) => {
         if (prop.edit.length > 0) {
             if (['enum', 'boolean'].includes(prop.type)) {
                 out += `
-                    <div class="mb-4">
-                        <FormInput name="${prop.name}" type="select" :options="${schema.kind.toLowerCase()}.options?.${prop.name}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.save('${prop.name}')" />
-                    </div>`;
+                    <FormInput name="${prop.name}" type="select" :options="${schema.kind.toLowerCase()}.options?.${prop.name}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.save('${prop.name}')" class="mb-4" />`;
             }
             else if (prop.type == 'id' && prop?.relation?.type == 'parent' && prop.relation?.kind == 'S3File') {
                 out += `
@@ -298,9 +290,7 @@ const editProps = (schema) => {
             }
             else if (prop.type != 'virtual') {
                 out += `
-                    <div class="mb-4">
-                        <FormInput name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" ${prop.required ? 'required' : ''} label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.save('${prop.name}')" />
-                    </div>`;
+                    <FormInput name="${prop.name}" type="${prop2type(prop)}" v-model="${schema.kind.toLowerCase()}.props.${prop.name}" ${prop.required ? 'required' : ''} label="${makeLabel(prop.name)}" @change="${schema.kind.toLowerCase()}.save('${prop.name}')" class="mb-4" />`;
             }
         }
     }
@@ -313,7 +303,7 @@ const statProps = (schema) => {
         if (prop.view.length > 0 && prop.edit.length == 0) {
             if (prop.type == 'date') {
                 out += `
-            <div class="mb-4"><b>${makeLabel(prop.name)}</b>: {{dt.formatDateTime(${schema.kind.toLowerCase()}.props.${prop.name})}}</div>
+            <div class="mb-4"><b>${makeLabel(prop.name)}</b>: {{formatDateTime(${schema.kind.toLowerCase()}.props.${prop.name})}}</div>
             `;
             }
             else if (prop.type == 'id') {
@@ -365,13 +355,12 @@ definePageMeta({
     middleware: ['auth']
 });
 const route = useRoute();
-const dt = useDateTime();
-const notify = useNotifyStore();
+const notify = useNotify();
 const id = route.params.id.toString();
 const ${name.toLowerCase()} = useVingRecord({
     id,
-    fetchApi: \`/api/\${restVersion()}/${name.toLowerCase()}/\${id}\`,
-    createApi: \`/api/\${restVersion()}/${name.toLowerCase()}\`,
+    fetchApi: \`/api/\${useRestVersion()}/${name.toLowerCase()}/\${id}\`,
+    createApi: \`/api/\${useRestVersion()}/${name.toLowerCase()}\`,
     query: { includeMeta: true, includeOptions: true ${includeRelatedTemplate(schema)} },
     onUpdate() {
         notify.success('Updated ${makeWords(name)}.');

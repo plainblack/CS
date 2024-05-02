@@ -130,9 +130,10 @@ Generate the appropritate form field based upon input types. This also handles l
 Props:
 
 - **label** - A form label for proper ARIA compliance.
-- **type** - Defaults to `text` but can also be `textarea`, `password`, `number`, `markdown`, `select` or `email`.
+- **type** - Defaults to `text` but can also be `textarea`, `password`, `number`, `markdown`, `select`, `switch` or `email`.
 - **name** - The field name for the form input. Required.
 - **id** - Defaults to whatever the `name` field is set to, but can be any string.
+- **subtext** - Add a small message beneath the field. Note, only shows if the field is not required, or is required and has a value, or isn't invalid. 
 - **append** - Appends an input group to the end of the field. Example: `.00`
 - **prepend** - Prepends an input group to the front of the field. Example `$`
 - **autocomplete** - Sets the browser's autocomplete settings for password fillers and whatnot. Defaults to `off`.
@@ -147,11 +148,6 @@ Props:
     - **field** - A label for a field or some other attribute such as `Password`. 
     - **value** - The value that this field must match.
 - **class** - A CSS class that should be applied to the field.
-
-Slots:
-
-- **prepend** - Add an option to the top of the list when type is `select`.
-- **append** - Add an option to the bottom of the list when type is `select`.
 
 ### FormLabel
 An ARIA compliant label for a form field. In general you wouldn't use this directly, but via the `label` prop of `FormInput`.
@@ -211,7 +207,7 @@ Props:
 ```
 
 ### Notify
-Place this in your layouts so that users can receive toasts that will be triggered via the `useNotifyStore()` composable.
+Place this in your layouts so that users can receive toasts that will be triggered via the `useNotify()` composable.
 ```html
 <Notify/>
 ```
@@ -302,44 +298,14 @@ Props:
 - **info** - Give the header a little subtext.
 
 
-### SelectInput
-A form select list. Generally you won't use this directly, but rather use `FormInput` with type `select`.
-
-```html
-<SelectInput @change="currentUser.save('useAsDisplayName')" v-model="currentUser.props.useAsDisplayName"
-                                :options="currentUser.options?.useAsDisplayName" id="useAsDisplayName"
-                                 />
-```
-
-Props:
-
-- **id** - The unique id of the form field. Required.
-- **v-model** - What Vue reactive variable should this be connected to? Required.
-- **options** - An array of objects:
-    - **label** - The human readable label for the value.
-    - **value** - The value to select. Can be string, number, or boolean.
-
-Slots:
-
-- **prepend** - Add an option to the top of the list.
-- **append** - Add an option to the bottom of the list.
-
-```html
-<SelectInput>
-    <template #prepend>
-        <option value="foo">Foo</option>
-    </template>
-</SelectInput>
-```
-
 ### SystemWideAlert
-Place this in your layouts where you would like the system wide alert to be displayed when an admin has configured one. It is triggered by the `useSystemWideAlertStore()` composable.
+Place this in your layouts where you would like the system wide alert to be displayed when an admin has configured one. It is triggered by the `useSystemWideAlert()` composable.
 ```html
 <SystemWideAlert/>
 ```
 
 ### Throbber
-Place this in your layouts so the user has an indication that there are some background activites such as rest calls happening. It is triggered by the `useThrobberStore()` composable.
+Place this in your layouts so the user has an indication that there are some background activites such as rest calls happening. It is triggered by the `useThrobber()` composable.
 ```html
 <Throbber />
 ```
@@ -360,20 +326,22 @@ Wraps the `UserAvatar` component in a `NuxtLink` pointing to the user's profile 
 ```
 
 ## Composables
-Each of these also has documentation of how to use them in the form of JSDocs in the source code.
+Composables are reactive data functions that can only be used in script setup, other composables, or lifecycle hooks. 
 
-### adminLinks()
+>Each of these also has documentation of how to use them in the form of JSDocs in the source code.
+
+### useAdminLinks()
 Returns a data structure for use with the `PanelNav` component.
 
 ```js
-const links = adminLinks();
+const links = useAdminLinks();
 ```
 
-### currentUserStore()
+### useCurrentUser()
 Gets you the currently logged in user. 
 
 ```js
-const user = useCurrentUserStore();
+const user = useCurrentUser();
 if (await user.isAuthenticated()) {
     // do logged in user stuff
 }
@@ -390,29 +358,6 @@ It also triggers 2 window events for when the user logs in or out.
     });
 ```
 
-### enum2label()
-Converts an enum value into an emum label as defined in a ving schema.
-
-```js
-const label = enum2label(enum2label('archived', [{value: 'archived', label:'Is Archived'}, {value: 'not_archived', label:'Not Archived'}]))
-```
-
-### restVersion()
-Returns the current rest version number from `ving.json` for when you are manually specifying URLs to rest services. such as this:
-
-```
-useRest(`/api/${restVersion()}/user`);
-```
-
-### useDateTime()
-Date formatting tools based upon [date-fns](https://date-fns.org/).
-```js
-const dt = useDateTime()
-const date = dt.determineDate("2012-04-23T18:25:43.511Z");
-const formattedDateTime = dt.formateDateTime(new Date());
-const formattedDate = dt.formateDate(new Date());
-const timeago = dt.formatTimeAgo("2012-04-23T18:25:43.511Z");
-```
 
 ### useMessageBus()
 Connects the browser to the server's [message bus](messagebus). It establishes a connection between your browser and the server, so it needs to be installed in an `onMounted()` handler in your layouts.
@@ -422,11 +367,11 @@ onMounted(() => {
 })
 ```
 
-### useNotifyStore()
+### useNotify()
 Allows you to notify the user via toasts. 
 
 ```js
-    const notify = useNotifyStore();
+    const notify = useNotify();
     notify.info('Just wanted to let you know');
     notify.warn('You might want to get concerned');
     notify.error('Be afraid');
@@ -442,41 +387,48 @@ You would then use the Notify Component in your layout.
 A wrapper around the Nuxt composable `$fetch()` that allows for streamlined fetches, but integrate's with ving's subsystems.
 
 ```js
-const response = useFetch(`/api/${restVersion()}/user`);
+const response = useFetch(`/api/${useRestVersion()}/user`);
 ```
 
-### userSettingsButtons()
+### useRestVersion()
+Returns the current rest version number from `ving.json` for when you are manually specifying URLs to rest services. such as this:
+
+```
+useRest(`/api/${useRestVersion()}/user`);
+```
+
+### useUserSettingsButtons()
 Returns a data structure for use with the `PanelNav` component.
 
 ```js
-const buttons = userSettingsButtons();
+const buttons = useUserSettingsButtons();
 ```
 
-### userSettingsLinks()
+### useUserSettingsLinks()
 Returns a data structure for use with the `PanelNav` component.
 
 ```js
-const links = userSettingsLinks();
+const links = useUserSettingsLinks();
 ```
 
-### useSystemWideAlertStore()
+### useSystemWideAlert()
 Generally not something you'd need to use, but you will interact with it through the admin UI for the system wide alert, but it is used by the `SystemWideAlert` component.
 
 ```js
-const swa = useSystemWideAlertStore();
+const swa = useSystemWideAlert();
 onMounted(async () => {
     swa.check();
 }
 ```
 
 
-### useThrobberStore()
+### useThrobber()
 Whenever there is an interaction with the API via the `useRest()` composable it will update the throbber store. It is then used by the `Throbber` component.
 
 You may also wish to trigger it for other background actions that are happening so that your user knows something is going on at the moment. Maybe if you're processing a file for export, or if you have some heavy calculations going on, or if you're waiting on a web worker.
 
 ```js
-    const throbber = useThrobberStore();
+    const throbber = useThrobber();
     throbber.working();
     throbber.done();
 ```
@@ -487,8 +439,8 @@ A client for interacting with [server-side ving kinds](ving-record#kind-api) thr
 
 ```js
 const users = useVingKind({
-    listApi : `/api/${restVersion()}/user`,
-    createApi : `/api/${restVersion()}/user`,
+    listApi : `/api/${useRestVersion()}/user`,
+    createApi : `/api/${useRestVersion()}/user`,
     query: { includeMeta: true, sortBy: 'username', sortOrder: 'asc' },
     newDefaults: { username: '', realName: '', email: '' },
 });
@@ -503,8 +455,8 @@ A client for interacting with [server-side ving records](ving-record#record-api)
 const id = route.params.id.toString();
 const user = useVingRecord<'User'>({
     id,
-    fetchApi: `/api/${restVersion()}/user/${id}`,
-    createApi: `/api/${restVersion()}/user`,
+    fetchApi: `/api/${useRestVersion()}/user/${id}`,
+    createApi: `/api/${useRestVersion()}/user`,
     query: { includeMeta: true, includeOptions: true },
     onUpdate() {
         notify.success('Updated user.');
@@ -515,4 +467,26 @@ const user = useVingRecord<'User'>({
 });
 await user.fetch()
 onBeforeRouteLeave(() => user.dispose());
+```
+
+## Utilities
+These are UI utility functions that will make your life easier.
+
+>Each of these also has documentation of how to use them in the form of JSDocs in the source code.
+
+
+### Date Formatting
+Date formatting tools based upon [date-fns](https://date-fns.org/).
+```js
+determineDate("2012-04-23T18:25:43.511Z") // a Date() object
+formatDateTime(new Date()) // August 2, 2023 at 4:03pm
+formatDate(new Date()) // August 2, 2023
+formatTimeAgo("2012-04-23T18:25:43.511Z") // 3 years ago
+```
+
+### enum2label()
+Converts an enum value into an emum label as defined in a ving schema.
+
+```js
+enum2label(enum2label('archived', [{value: 'archived', label:'Is Archived'}, {value: 'not_archived', label:'Not Archived'}]))
 ```
