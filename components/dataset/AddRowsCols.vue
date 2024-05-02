@@ -13,7 +13,7 @@
             <Form>
                 <FormInput name="fieldName" type="text" v-model="fieldName" label="Field Name" required class="mb-3" />
                 <small>No spaces or special characters other than underscore _.</small>
-                <FormInput name="fieldType" type="select" v-model="fieldType" :options="fieldTypes" label="Field Type" class="mb-3" />
+                <FormInput name="fieldType" type="select" v-model="fieldType" :options="fieldTypes()" label="Field Type" class="mb-3" />
                 <Button severity="success">
                     <Icon name="mdi:table-column-add-after" class="mr-1" /> Add Column
                 </Button>
@@ -30,7 +30,7 @@
 </template>
 <script setup>
 const quantityOfRowsToAdd = ref(1);
-const fieldTypes = fieldTypes();
+//const fieldTypes = fieldTypes();
 const fieldType = ref('str');
 const fieldName = ref();
 const op = ref();
