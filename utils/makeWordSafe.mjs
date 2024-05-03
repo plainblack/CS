@@ -1,0 +1,1 @@
+export default (name) => name.replace(/^[^A-Za-z]/g, 'A').replace(/[^A-Za-z0-9]/g, '_');
