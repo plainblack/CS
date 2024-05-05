@@ -4,7 +4,7 @@
         <Button severity="secondary" title="Back" alt="Back to Game" class="p-button-sm p-1"><Icon name="dashicons:exit"/>Back to Game</Button>
     </NuxtLink>
 
-    <AddRowsCols/>
+    <AddRowsCols :dataset="dataset"/>
         
     <button @click="rename" class="ml-5">Rename</button>  <button @click="addRow" class="ml-5">Add Row</button>     {{ rows.records.length }}
 

@@ -35,6 +35,9 @@
 </template>
 <script setup>
 import appendNumberToString from '#ving/utils/appendNumberToString';
+const props = defineProps({
+      dataset: Object,
+  });
 const quantityOfRowsToAdd = ref(1);
 const fieldType = ref('str');
 const fieldName = ref();
