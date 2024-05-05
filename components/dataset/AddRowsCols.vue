@@ -2,11 +2,12 @@
     <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:layout-cells-large" class="mr-1" /> Cells</Button>
 
     <OverlayPanel ref="op" class="surface-ground">
+        {{ appendNumberToString('f00d') }}
         <div class="flex flex-wrap gap-4">
             <div class="flex-grow-1">
                 <PanelZone title="Add Column" margin="mb-0">
                     <Form>
-                        <FormInput :coerce="makeWordSafe" name="fieldName" type="text" v-model="fieldName" label="Field Name" required class="mb-3" subtext="No spaces or special characters other than underscore _." />
+                        <FormInput :coerce="makeNameSafe" name="fieldName" type="text" v-model="fieldName" label="Field Name" required class="mb-3" subtext="No spaces or special characters other than underscore _." />
                         <FormInput name="fieldType" type="select" v-model="fieldType" :options="fieldTypes()" label="Field Type" class="mb-3" />
                         <Button severity="success">
                             <Icon name="mdi:table-column-add-after" class="mr-1" /> Add Column
@@ -33,6 +34,7 @@
     </OverlayPanel>
 </template>
 <script setup>
+import appendNumberToString from '#ving/utils/appendNumberToString';
 const quantityOfRowsToAdd = ref(1);
 const fieldType = ref('str');
 const fieldName = ref();
@@ -45,5 +47,13 @@ const members = ref([
 
 const toggle = (event) => {
     op.value.toggle(event);
+}
+const makeNameSafe = (userTyped) => {
+    let safe = makeWordSafe(userTyped);
+    if (safe == '')
+        safe = 'A';
+    if (props.dataset.props.rowFieldOrder.includes(safe))
+        return makeNameSafe(appendNumberToString(safe));
+    return safe;
 }
 </script>
