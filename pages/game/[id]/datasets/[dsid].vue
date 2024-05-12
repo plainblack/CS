@@ -1,8 +1,6 @@
 <template>
     
-    <NuxtLink :to="`/game/${game.props?.id}/datasets`" class="mr-2 no-underline">
-        <Button severity="secondary" title="Back" alt="Back to Game" class="p-button-sm p-1"><Icon name="dashicons:exit"/>Back to Game</Button>
-    </NuxtLink>
+    <Button @click="navigateTo(`/game/${game.props?.id}/datasets`)" severity="secondary" title="Back" alt="Back to Game" class="p-button-sm p-1 mr-2"><Icon name="dashicons:exit" class="mr-1"/>Back to Game</Button>
 
     <AddRowsCols :dataset="dataset" :rows="rows" />
         
