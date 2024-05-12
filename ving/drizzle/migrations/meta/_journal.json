@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1712375744083,
-      "tag": "0000_goofy_moonstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1712376595942,
-      "tag": "0001_thick_nico_minoru",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1712550536559,
-      "tag": "0002_ambitious_multiple_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1712856320530,
-      "tag": "0003_cute_ben_grimm",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1713541295868,
-      "tag": "0004_clumsy_ultragirl",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1713565852740,
-      "tag": "0005_thankful_starfox",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1714010189520,
-      "tag": "0006_tiny_cerise",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1714010933903,
-      "tag": "0007_wise_lorna_dane",
+      "when": 1715538010688,
+      "tag": "0000_absurd_nomad",
       "breakpoints": true
     }
   ]
