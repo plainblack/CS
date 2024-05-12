@@ -3,6 +3,21 @@ outline: deep
 ---
 # Change Log
 
+## 2024-05-12
+* Fixed: file uploads are broken after id switch #151
+* NOTE: Thumbnails now use a different URL scheme than previously, and thus will be in broken locations. Since we're pre-production, just reupload any images you had.
+* Added schema prop validation to not allow the relation name to conflict with a prop name.
+
+## 2024-05-11
+* VingRecord id's are now integers for better database performance. They are translated to encrypted strings on the API for better security. 
+* NOTE: You will likely want to recreate your database from scratch as all primary and foreign keys are changing from strings to integers, and doing a migration for that is going to be challenging.
+* NOTE: You should add a VING_SKIPJACK_KEY to your .env file that takes the format of between 1 and 10 random numbers separated by commas. 
+* NOTE: You should run `npm i` as we've added skip32 as a new required module.
+* Fixed some email verification corner case problems.
+* Removed the findObject() utility as Array.prototype.find() essentially works the same way, and this forces better error handling.
+* Removed the token CLI command.
+* Added the id CLI command.
+
 ## 2024-05-06
 * Updated useVingRecord() to allow for extended actions.
 * Refactored useCurrentUser() to use useVingRecord()'s new extended actions feature.

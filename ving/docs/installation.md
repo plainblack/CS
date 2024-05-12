@@ -22,32 +22,22 @@ nvm install --lts
 node -e "console.log('Running Node.js ' + process.version)"
 ```
 
-## Ving Installation Variants
+## Ving Source Code
+Rather than acting as a library, Ving is considered to be a living code-base where your app is just a continued fork of ving, and thus you can upgrade to the latest version using git.
 
-You need to choose whether you want to be able to get updates from future versions of ving or not.
+### Fork the Repository
 
-### If you want updates: FORK
-
-Choose this option so you can choose to [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) the changes from the main ving repo into your repository at any time in the future.
-
+You need to fork the Ving source code so you can choose to [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) the changes from the main ving repo into your repository at any time in the future.
 
 [Fork the ving repo.](https://github.com/plainblack/ving/fork)
 
+### Clone the Repository
 
 After forking, [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) your forked repo to your computer.
 
+### Rename your Repository
 
-### If you don't want updates: DOWNLOAD
-
-Choose this option if you just want to use ving as a starter and don't care about what happens in the future.
-
-[Download a zip file of the repo.](https://github.com/plainblack/ving/archive/refs/heads/main.zip)
-
-Then unzip it.
-
-### Either way: RENAME
-
-Then feel free to rename the folder to whatever you are calling your project.
+Then rename the folder to whatever you are calling your project.
 
 ```bash
 mv ving my-cool-project
@@ -69,6 +59,7 @@ Go ahead and create your `.env` file now and we'll add to it in the next few sec
 
 ```bash
 echo "VING_SITE_URL=http://localhost:3000" >> .env
+echo "VING_SKIPJACK_KEY=\"$((RANDOM)),$((RANDOM)),$((RANDOM)),$((RANDOM)),$((RANDOM))\"" >> .env
 ```
 
 
@@ -155,10 +146,10 @@ To make full use of all of Ving's features, there are other things you'll need t
 
 For developement we recommend [Visual Studio Code](https://code.visualstudio.com/download).
 
-And for the best possible experience, we also recommend installing these plugins:
+And for the best possible experience, we also recommend installing these optional but nice plugins:
 
- - [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) - optional, but nice
- - [vscode-icons](https://marketplace.visualstudio.com/items?itemName=vscode-icons-team.vscode-icons) - optional, but nice
- - [MySQL](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-mysql-client2) - optional, but nice
- - [Iconify IntelliSense](https://marketplace.visualstudio.com/items?itemName=antfu.iconify) - optional, but nice
- - [Nunjucks Template Formatting](https://marketplace.visualstudio.com/items?itemName=eseom.nunjucks-template) - optional, but nice
+ - [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+ - [vscode-icons](https://marketplace.visualstudio.com/items?itemName=vscode-icons-team.vscode-icons)
+ - [MySQL](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-mysql-client2)
+ - [Iconify IntelliSense](https://marketplace.visualstudio.com/items?itemName=antfu.iconify)
+ - [Nunjucks Template Formatting](https://marketplace.visualstudio.com/items?itemName=eseom.nunjucks-template)

@@ -12,9 +12,9 @@ There are a bunch of utilities libraries in `ving/utils` that solve common probl
 
 Adds a number to the end of a string, or increments it if there's already one there.
 
-### findObject
+### base62
 
-Provides light wrappers around the javascript `find()` function that throws an error if the object you're looking for isn't found.
+Given an input, can generate an encoded string based upon A-Z, a-z, 0-9, and _.
 
 ### fs
 
@@ -23,6 +23,10 @@ A bunch of wrappers around node's `fs` library to give you easy to use and terse
 ### identify
 
 A bunch of utilites to identify whether a variable is an array, or an object or undefined, etc. You can do all this in javascript, but this ensures we do the same tests consistently through-out ving and its shorter to write too.
+
+### int2str
+
+Uses the base62 and skipjack utils to generate encrypted strings from integers. This is what generates the public facing IDs for Rest endpoints in Ving.
 
 ### miniHash
 
@@ -35,6 +39,10 @@ A way to throw standardized errors through-out ving.
 ### rest
 
 A bunch of utilities that provide glue between Nuxt's rest system and Ving's records. 
+
+### skipjack
+
+A fast 2-way encryption library to encrypt/decrypt integers to prevent outside observers from guessing the real values.
 
 ### sleep
 

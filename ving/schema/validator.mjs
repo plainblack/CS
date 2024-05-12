@@ -161,6 +161,8 @@ export const validateRelationName = (prop, schema) => {
         throw ving.ouch(442, `${formatPropPath(prop, schema)}.relation.name must be a string.`);
     if (!/^[a-z]/.test(prop.relation.name))
         throw ving.ouch(442, `${formatPropPath(prop, schema)}.relation.name must start with a lower case letter.`);
+    if (schema.props.find(p => p.name == prop.relation.name))
+        throw ving.ouch(442, `${formatPropPath(prop, schema)}.relation.name collides with a prop named ${prop.relation.name}.`);
 }
 
 /**
@@ -435,8 +437,8 @@ export const validatePropDefault = (prop, schema) => {
     const notSet = !('default' in prop);
     if (['string', 'json', 'enum'].includes(prop.type) && (notSet || !(isString(prop.default) || isFunction(prop.default))))
         throw ving.ouch(442, `${formatPropPath(prop, schema)}.default must be a string or a function.`);
-    if (['id', 'virtual'].includes(prop.type) && (notSet || !(isString(prop.default) || isFunction(prop.default) || isUndefined(prop.default))))
-        throw ving.ouch(442, `${formatPropPath(prop, schema)}.default must be a string or a function or explicitly undefined.`);
+    if (['id', 'virtual'].includes(prop.type) && (notSet || !(isNumber(prop.default) || isFunction(prop.default) || isUndefined(prop.default))))
+        throw ving.ouch(442, `${formatPropPath(prop, schema)}.default must be a number or a function or explicitly undefined.`);
     if (['int'].includes(prop.type) && (notSet || !(isNumber(prop.default) || isFunction(prop.default))))
         throw ving.ouch(442, `${formatPropPath(prop, schema)}.default must be a number or a function.`);
     if (['date'].includes(prop.type) && (notSet || !(isFunction(prop.default))))
@@ -483,6 +485,8 @@ export const validatePropFilterQualifier = (prop, schema) => {
         return;
     if (!isBoolean(prop.filterQualifier))
         throw ving.ouch(442, `${formatPropPath(prop, schema)}.filterQualifier must be a boolean.`);
+    if (prop.type == 'id' && prop.relation?.type != 'parent')
+        throw ving.ouch(442, `${formatPropPath(prop, schema)}.filterQualifier can only exist on type id if the relation.type is parent.`);
 }
 
 /**
