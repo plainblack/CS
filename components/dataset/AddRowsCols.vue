@@ -2,7 +2,6 @@
     <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:layout-cells-large" class="mr-1" /> Cells</Button>
 
     <OverlayPanel ref="op" class="surface-ground">
-        {{ appendNumberToString('f00d') }}
         <div class="flex flex-wrap gap-4">
             <div class="flex-grow-1">
                 <PanelZone title="Add Column" margin="mb-0">
@@ -17,8 +16,8 @@
             </div>
             <div class="flex-grow-1">
                 <PanelZone title="Add Rows">
-                    <InputNumber showButtons v-model="quantityOfRowsToAdd" required />
-                    <Button severity="success" class="ml-1">
+                    <InputNumber showButtons v-model="quantityOfRowsToAdd" required :min="0" :max="100" />
+                    <Button severity="success" class="ml-1" @click="addRows">
                         <Icon name="mdi:table-row-add-before" class="mr-1" /> Add Rows
                     </Button>
                 </PanelZone>
@@ -37,6 +36,7 @@
 import appendNumberToString from '#ving/utils/appendNumberToString';
 const props = defineProps({
       dataset: Object,
+      rows: Object,
   });
 const quantityOfRowsToAdd = ref(1);
 const fieldType = ref('str');
@@ -58,5 +58,12 @@ const makeNameSafe = (userTyped) => {
     if (props.dataset.props.rowFieldOrder.includes(safe))
         return makeNameSafe(appendNumberToString(safe));
     return safe;
+}
+
+const addRows = () => {
+    for (let i = 0; i < quantityOfRowsToAdd.value; i++) {
+        props.rows.create({name: 'Untitled '+Math.random().toString()});
+    }
+    toggle();
 }
 </script>

@@ -4,9 +4,9 @@
         <Button severity="secondary" title="Back" alt="Back to Game" class="p-button-sm p-1"><Icon name="dashicons:exit"/>Back to Game</Button>
     </NuxtLink>
 
-    <AddRowsCols :dataset="dataset"/>
+    <AddRowsCols :dataset="dataset" :rows="rows" />
         
-    <button @click="rename" class="ml-5">Rename</button>  <button @click="addRow" class="ml-5">Add Row</button>     {{ rows.records.length }}
+    <button @click="rename" class="ml-5">Rename</button>     {{ rows.records.length }}
 
     <DatasetTable :rows="rows" :dataset="dataset"/>
 
@@ -50,10 +50,6 @@ await Promise.all([
     rows.all(),
     rows.fetchPropsOptions(),
 ]);
-
-function addRow() {
-    rows.create({name: 'Untitled'+Math.random().toString()})
-}
 
 
 function rename() {
