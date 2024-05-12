@@ -70,7 +70,7 @@ export class DatasetRecord extends VingRecord {
         if (this.#skipDefaults)
             return;
         const rows = await this.children('rows');
-        await rows.create({ name: 'Untitiled' });
+        await rows.create({ name: 'Untitled' });
     }
 
     async serialize() {
