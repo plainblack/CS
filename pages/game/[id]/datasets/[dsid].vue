@@ -1,9 +1,5 @@
 <template>
     <Title>{{ dataset.props?.name }} Dataset Editor</Title>
-    {{ game.props }} 
-    <hr>
-    {{ dataset.props }}
-
     <div class="flex flex-wrap gap-1">
         <AddRowsCols :dataset="dataset" :rows="rows" />
         <UserPreferences/>
