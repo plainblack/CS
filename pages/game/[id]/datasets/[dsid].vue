@@ -33,11 +33,13 @@ const dataset = useVingRecord({
     createApi: `/api/${useRestVersion()}/dataset`,
     query: { includeMeta: true, includeOptions: true },
 });
+const appendNewRows = useLocalStorage('appendNewRows', 'top');
 const rows = useVingKind({
     listApi: `/api/${useRestVersion()}/dataset/${datasetId}/rows`,
     createApi: `/api/${useRestVersion()}/row`,
     query: { includeMeta: true, sortBy: 'name', itemsPerPage: 100 },
     newDefaults: { name: '', gameId, datasetId },
+    unshift : !appendNewRows.value,
 });
 onBeforeRouteLeave(() => {
     game.dispose();
