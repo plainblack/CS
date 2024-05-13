@@ -1,4 +1,5 @@
 <template>
+    <Title>{{ game.props?.name }} Font Palette</Title>
     <PanelFrame :title="`${game.props?.name} Font Palette`">
         <template #left>
             <PanelNav :links="links" :buttons="buttons" />

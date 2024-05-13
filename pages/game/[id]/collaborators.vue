@@ -1,4 +1,5 @@
 <template>
+    <Title>{{ game.props?.name }} Collaborators</Title>
     <PanelFrame :title="`${game.props?.name} Collaborators`">
         <template #left>
             <PanelNav :links="links" :buttons="buttons" />

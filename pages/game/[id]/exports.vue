@@ -1,4 +1,5 @@
 <template>
+    <Title>{{ game.props?.name }} Exports</Title>
     <PanelFrame :title="`${game.props?.name} Exports`">
         <template #left>
             <PanelNav :links="links" :buttons="buttons" />

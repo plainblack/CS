@@ -1,11 +1,12 @@
 {
     "site": {
         "email": "info@thegamecrafter.com",
-        "name": "ving",
+        "name": "Component.Studio 3",
         "logoUrl": "/ving.svg",
         "streetAddress": [
-            "123 Main Street",
-            "Madison, WI 53701",
+            "The Game Crafter, LLC",
+            "1360 Regent St #146",
+            "Madison, WI 53715",
             "USA"
         ]
     },

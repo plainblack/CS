@@ -1,4 +1,5 @@
 <template>
+    <Title>Games</Title>
     <PanelFrame title="Games">
         <template #content>
             <PanelZone title="Existing Games">

@@ -1,5 +1,5 @@
 <template>
-    
+    <Title>{{ dataset.props?.name }} Dataset Editor</Title>
     <Button @click="navigateTo(`/game/${game.props?.id}/datasets`)" severity="secondary" title="Back" alt="Back to Game" class="p-button-sm p-1 mr-2"><Icon name="dashicons:exit" class="mr-1"/>Back to Game</Button>
 
     <AddRowsCols :dataset="dataset" :rows="rows" />

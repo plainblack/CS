@@ -1,4 +1,5 @@
 <template>
+    <Title>{{ game.props?.name }} Settings</Title>
     <PanelFrame :title="`${game.props?.name} Settings`">
         <template #left>
             <PanelNav :links="links" :buttons="buttons" />

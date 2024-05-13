@@ -1,4 +1,5 @@
 <template>
+    <Title>{{ game.props?.name }} Archives</Title>
     <PanelFrame :title="`${game.props?.name} Archives`">
         <template #left>
             <PanelNav :links="links" :buttons="buttons" />
