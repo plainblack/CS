@@ -2,6 +2,7 @@
     <Title>{{ dataset.props?.name }} Dataset Editor</Title>
     <div class="flex flex-wrap gap-1">
         <AddRowsCols :dataset="dataset" :rows="rows" />
+        <UserPreferences/>
         <BackToDatasets :game="game" />        
     </div>
     <button @click="rename" class="ml-5">Rename</button>     {{ rows.records.length }}

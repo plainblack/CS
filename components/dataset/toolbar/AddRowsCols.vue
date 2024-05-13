@@ -1,5 +1,5 @@
 <template>
-    <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
+    <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
 
     <OverlayPanel ref="op" class="surface-ground">
         <div class="flex flex-wrap gap-4">
@@ -41,16 +41,8 @@ const props = defineProps({
 const quantityOfRowsToAdd = ref(1);
 const fieldType = ref('str');
 const fieldName = ref();
-const op = ref();
-const members = ref([
-    { name: 'Amy Elsner', image: 'amyelsner.png', email: 'amy@email.com', role: 'Owner' },
-    { name: 'Bernardo Dominic', image: 'bernardodominic.png', email: 'bernardo@email.com', role: 'Editor' },
-    { name: 'Ioni Bowcher', image: 'ionibowcher.png', email: 'ioni@email.com', role: 'Viewer' }
-]);
+const toolbarLabels = useLocalStorage('toolbarLabels', true);
 
-const toggle = (event) => {
-    op.value.toggle(event);
-}
 const makeNameSafe = (userTyped) => {
     let safe = makeWordSafe(userTyped);
     if (safe == '')
@@ -65,5 +57,10 @@ const addRows = () => {
         props.rows.create({name: 'Untitled '+Math.random().toString()});
     }
     toggle();
+}
+
+const op = ref();
+const toggle = (event) => {
+    op.value.toggle(event);
 }
 </script>
