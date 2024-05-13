@@ -1,5 +1,9 @@
 <template>
     <Title>{{ dataset.props?.name }} Dataset Editor</Title>
+    {{ game.props }} 
+    <hr>
+    {{ dataset.props }}
+
     <div class="flex flex-wrap gap-1">
         <AddRowsCols :dataset="dataset" :rows="rows" />
         <UserPreferences/>
@@ -26,7 +30,6 @@ const game = useVingRecord({
     createApi: `/api/${useRestVersion()}/game`,
     query: { includeMeta: true, includeOptions: true },
 });
-await game.fetch()
 const dataset = useVingRecord({
     id: datasetId,
     fetchApi: `/api/${useRestVersion()}/dataset/${datasetId}`,
@@ -44,11 +47,12 @@ const rows = useVingKind({
 onBeforeRouteLeave(() => {
     game.dispose();
     dataset.dispose();
+    rows.dispose();
 });
 await Promise.all([
     game.fetch(),
     dataset.fetch(),
-    rows.all(),
+    rows.search(),
     rows.fetchPropsOptions(),
 ]);
 

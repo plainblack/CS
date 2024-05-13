@@ -2,6 +2,8 @@
     <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
 
     <OverlayPanel ref="op" class="surface-ground">
+        {{ dataset.props }}
+        {{ rows.records.length }}
         <div class="flex flex-wrap gap-4">
             <div class="flex-grow-1">
                 <PanelZone title="Add Column" margin="mb-0">
@@ -23,7 +25,7 @@
                 </PanelZone>
 
                 <PanelZone title="Start Over">
-                    <Button severity="danger">
+                    <Button @click="deleteAllRows" severity="danger">
                         <Icon name="ph:trash" class="mr-1" /> Delete All Rows
                     </Button>
                 </PanelZone>
@@ -35,13 +37,17 @@
 <script setup>
 import appendNumberToString from '#ving/utils/appendNumberToString';
 const props = defineProps({
-      dataset: Object,
-      rows: Object,
-  });
-const quantityOfRowsToAdd = ref(1);
+    dataset: Object,
+    rows: Object,
+});
+const toolbarLabels = useLocalStorage('toolbarLabels', true);
+const op = ref();
+const toggle = (event) => {
+    op.value.toggle(event);
+}
+
 const fieldType = ref('str');
 const fieldName = ref();
-const toolbarLabels = useLocalStorage('toolbarLabels', true);
 
 const makeNameSafe = (userTyped) => {
     let safe = makeWordSafe(userTyped);
@@ -50,17 +56,22 @@ const makeNameSafe = (userTyped) => {
     if (props.dataset.props.rowFieldOrder.includes(safe))
         return makeNameSafe(appendNumberToString(safe));
     return safe;
-}
+};
 
+const quantityOfRowsToAdd = ref(1);
 const addRows = () => {
     for (let i = 0; i < quantityOfRowsToAdd.value; i++) {
         props.rows.create({name: 'Untitled '+Math.random().toString()});
     }
     toggle();
-}
+};
 
-const op = ref();
-const toggle = (event) => {
-    op.value.toggle(event);
-}
+const deleteAllRows = () => {
+    if (confirm('Are you sure you want to delete all rows in this dataset?')) {
+        exportRows(props.dataset, props.rows);
+        
+    }
+};
+
+
 </script>
