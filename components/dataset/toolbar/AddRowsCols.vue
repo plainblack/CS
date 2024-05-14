@@ -56,9 +56,9 @@ const addColumn = () => {
     const rowFieldOrder = props.dataset.props.rowFieldOrder;
     rowFieldOrder.push(fieldName.value);
     const rowSchema = props.dataset.props.rowSchema;
-    rowSchema[fieldName] = { type : fieldType };
-    if (fieldType == 'image')
-        rowSchema[fieldName].helper = 'images';
+    rowSchema[fieldName.value] = { type : fieldType.value };
+    if (fieldType.value == 'image')
+        rowSchema[fieldName.value].helper = 'images';
     props.dataset.partialUpdate({
         rowSchema,
         rowFieldOrder,
