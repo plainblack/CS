@@ -2,7 +2,6 @@ import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
 
 export const exportRows = (dataset, rows) => {
-    console.log('XXX:', dataset.props);
     const columns = ['quantity', 'name'];
     for (const field of dataset.props.rowFieldOrder) {
         columns.push(field);

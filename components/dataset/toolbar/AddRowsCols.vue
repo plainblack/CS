@@ -68,6 +68,7 @@ const deleteAllRows = async () => {
     if (confirm('Are you sure you want to delete all rows in this dataset?')) {
         exportRows(props.dataset, props.rows);
         await props.dataset.call('DELETE', props.dataset.links.rows.href);
+        props.rows.reset();
         toggle();
     }
 };
