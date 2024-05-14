@@ -44,9 +44,14 @@ const toggle = (event) => {
     op.value.toggle(event);
 }
 
+const notify = useNotify();
 const fieldType = ref('str');
 const fieldName = ref('');
 const addColumn = () => {
+    if (fieldName.value == '') {
+        notify.warn('You must specify a column name to add a column.');
+        return;
+    }
     suspendHotRender();
     const rowFieldOrder = props.dataset.props.rowFieldOrder;
     rowFieldOrder.push(fieldName.value);
