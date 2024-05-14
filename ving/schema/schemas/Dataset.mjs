@@ -1,4 +1,5 @@
 import { baseSchemaProps, dbString, zodString, dbEnum, dbBoolean, dbText, zodText, dbRelation, dbDateTime, dbTimestamp, dbInt, dbJson, zodNumber, zodJsonObject, dbMediumText, zodMediumText } from '../helpers.mjs';
+import { z } from 'zod';
 
 export const datasetSchema = {
     kind: 'Dataset',
@@ -66,7 +67,7 @@ export const datasetSchema = {
             required: false,
             default: '[]',
             db: (prop) => dbJson(prop),
-            zod: (prop) => zodJsonObject(prop).passthrough(), // or replace .passthrough() with something like .extends({foo: z.string()})
+            zod: (prop) => z.string().array(),
             view: [],
             edit: ['owner'],
         },

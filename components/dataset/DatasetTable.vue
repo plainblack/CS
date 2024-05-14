@@ -30,6 +30,7 @@
   import { HotTable } from '@handsontable/vue3';
   import { registerAllModules } from 'handsontable/registry';
   import 'handsontable/dist/handsontable.full.css';
+  import Handsontable from 'handsontable';
 
   registerAllModules();
   const notify = useNotify();
@@ -238,14 +239,12 @@
             }
 
             let button = document.createElement('button');
-            button.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+            button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><g fill="currentColor"><circle cx="10" cy="15" r="2"/><circle cx="10" cy="10" r="2"/><circle cx="10" cy="5" r="2"/></g></svg>';
             button.classList.add(
-              'btn',
-              'btn-secondary',
-              'btn-sm',
-              'p-1',
-              'border',
-              'rounded'
+              'p-button',
+              'p-button-secondary',
+              'p-button-sm',
+              'p-0',
             );
             div.addEventListener('click', function() {
             //  self.editField(tableRow.id, field);

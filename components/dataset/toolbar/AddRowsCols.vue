@@ -8,7 +8,7 @@
                     <Form>
                         <FormInput :coerce="makeNameSafe" name="fieldName" type="text" v-model="fieldName" label="Field Name" required class="mb-3" subtext="No spaces or special characters other than underscore _." />
                         <FormInput name="fieldType" type="select" v-model="fieldType" :options="fieldTypes()" label="Field Type" class="mb-3" />
-                        <Button severity="success">
+                        <Button severity="success" @click="addColumn">
                             <Icon name="mdi:table-column-add-after" class="mr-1" /> Add Column
                         </Button>
                     </Form>
@@ -45,12 +45,31 @@ const toggle = (event) => {
 }
 
 const fieldType = ref('str');
-const fieldName = ref();
+const fieldName = ref('');
+const addColumn = () => {
+    suspendHotRender();
+    const rowFieldOrder = props.dataset.props.rowFieldOrder;
+    rowFieldOrder.push(fieldName.value);
+    const rowSchema = props.dataset.props.rowSchema;
+    rowSchema[fieldName] = { type : fieldType };
+    if (fieldType == 'image')
+        rowSchema[fieldName].helper = 'images';
+    props.dataset.partialUpdate({
+        rowSchema,
+        rowFieldOrder,
+    });
+    resumeHotRender();
+    toggle();
+    fieldType.value = 'str';
+    fieldName.value = '';
+};
 
 const makeNameSafe = (userTyped) => {
     let safe = makeWordSafe(userTyped);
     if (safe == '')
         safe = 'A';
+    if (['id','quantity','name'].includes(safe))
+        safe += '2';
     if (props.dataset.props.rowFieldOrder.includes(safe))
         return makeNameSafe(appendNumberToString(safe));
     return safe;
