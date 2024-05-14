@@ -36,6 +36,7 @@
   import { registerAllModules } from 'handsontable/registry';
   import 'handsontable/dist/handsontable.full.css';
   import Handsontable from 'handsontable';
+  import {range} from '#ving/utils/range.mjs';
 
   registerAllModules();
   const notify = useNotify();
@@ -85,7 +86,6 @@
 
   const saveColumnMove = async () => {
       let cols = [];
-      console.log(hotWrapper.value.hotInstance.getColHeader())
       for (let col of hotWrapper.value.hotInstance.getColHeader()) {
         if (!['', 'id', 'name', 'quantity'].includes(col)) {
           cols.push(col);
@@ -421,7 +421,7 @@
             name:
               '<i class="fas fa-arrow-to-left"></i> Move Column(s) To Far Left',
             disabled: disablePropertyColumns,
-            callback(key, selection) {
+            async callback(key, selection) {
               let myself = this;
               for (let colNumber of range(
                 selection[0].start.col,
@@ -435,7 +435,7 @@
           {
             name: '<i class="fas fa-chevron-left"></i> Move Column(s) Left',
             disabled: disablePropertyColumns,
-            callback(key, selection) {
+            async callback(key, selection) {
               let myself = this;
               for (let colNumber of range(
                 selection[0].start.col,
@@ -449,7 +449,7 @@
           {
             name: '<i class="fas fa-chevron-right"></i> Move Column(s) Right',
             disabled: disablePropertyColumns,
-            callback(key, selection) {
+            async callback(key, selection) {
               let myself = this;
               for (let colNumber of range(
                 selection[0].start.col,
@@ -464,7 +464,7 @@
             name:
               '<i class="fas fa-arrow-to-right"></i> Move Column(s) To Far Right',
             disabled: disablePropertyColumns,
-            callback(key, selection) {
+            async callback(key, selection) {
               let myself = this;
               for (let colNumber of range(
                 selection[0].start.col,
@@ -485,7 +485,7 @@
         items: {
           delete_rows: {
             name: 'Delete Row(s)',
-            callback(key, selection) {
+            async callback(key, selection) {
               let instance = this;
               let rows = [];
               for (let rowNumber of range(
