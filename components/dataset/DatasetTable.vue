@@ -49,7 +49,7 @@
 
   const columnHeaders = computed(() => {
     let out = ['', 'quantity', 'name'];
-    for (let field of props.dataset.props.rowFieldOrder) {
+    for (let field of props.dataset.props.rowFieldOrder || []) {
       out.push(field);
     }
     return out;
@@ -65,7 +65,7 @@
         image: 200,
         bool: 80,
       };
-      for (let field of props.dataset.props.rowFieldOrder) {
+      for (let field of props.dataset.props.rowFieldOrder || []) {
         columns.push(
           props.dataset.props.rowSchema[field]?.size || sizes[props.dataset.props.rowSchema[field]?.type] || 300
         );
@@ -221,7 +221,7 @@
         },
       ];
       
-      for (let field of props.dataset.props.rowFieldOrder) {
+      for (let field of props.dataset.props.rowFieldOrder || []) {
         columns.push({
           data: 'props.fields.' + field + '.userValue',
           type: 'text',
