@@ -23,6 +23,7 @@
             :manualColumnMove="true"
             :afterColumnMove="saveColumnMove"
             :dropdownMenu="dropDownMenuSettings"
+            :contextMenu="contextMenuSettings"
             :filters="true"
             :search="{ searchResultClass: 'searchmatch' }"
             id="datasettable"
@@ -151,23 +152,21 @@
   }
 
     const rowControlsRenderer = (instance, td, rowIndex) => {
-        return td;
         // implement this later
-        /*
       let self = this;
       Handsontable.dom.empty(td);
       let deleteButton = document.createElement('button');
-      deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'p-1');
-      deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
-      deleteButton.addEventListener('click', function() {
+      deleteButton.classList.add('p-button', 'p-button-sm', 'p-button-danger', 'p-1');
+      deleteButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0m48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0"/></svg>';
+      deleteButton.addEventListener('click', async function() {
         await deleteRows([
           instance.getSourceDataAtRow(instance.toPhysicalRow(rowIndex)),
         ]);
       });
       td.appendChild(deleteButton);
       let dupButton = document.createElement('button');
-      dupButton.classList.add('btn', 'btn-sm', 'btn-secondary', 'p-1');
-      dupButton.innerHTML = '<i class="fas fa-clone"></i>';
+      dupButton.classList.add('p-button', 'b-button-sm', 'p-button-secondary', 'p-1');
+      dupButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48M362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6m96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6"/></svg>';
       dupButton.addEventListener('click', async function() {
         const tableRow = instance.getSourceDataAtRow(
           instance.toPhysicalRow(rowIndex)
@@ -175,10 +174,10 @@
         const row = util.findObject(tableRow.id, self.rows);
         let newRow = await self.$store.dispatch('duplicateRow', row);
         self.$store.dispatch('addRowToServer', newRow);
+        await props.rows.create(newRow);
       });
       td.appendChild(dupButton);
       return td;
-      */
     }
 
     /*
@@ -332,6 +331,28 @@
       return false;
     }
 
+    const removeColumns = async (fields) => {
+      if (
+        confirm(
+          'Are you sure you want to permanently remove ' +
+            fields.join(', ') +
+            '?'
+        )
+      ) {
+        suspendHotRender();
+        for (let field of fields) {
+          const index = findIndex(field, props.dataset.props.rowFieldOrder);
+          props.dataset.props.rowFieldOrder.splice(index, 1);
+          delete props.dataset.props.rowSchema[field];
+          if (props.dataset.props.enumerateOn == field) {
+            props.dataset.props.enumerateOn = '';
+          }
+        }
+        await props.dataset.update();
+        resumeHotRender();
+      }
+    }
+
     const deleteRows = async (rows) => {
       let rowNames = [];
       for (let row of rows) {
@@ -355,9 +376,9 @@
     const dropDownMenuSettings = ref({
         items: [
           {
-            name: '<i class="fas fa-trash-alt"></i> Delete Column(s)',
+            name: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0m48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0"/></svg> Delete Column(s)',
             disabled: disablePropertyColumns,
-            callback(key, selection) {
+            async callback(key, selection) {
               let myself = this;
               let columnNames = [];
               for (let colNumber of range(
@@ -366,12 +387,12 @@
               ).reverse()) {
                 columnNames.push(myself.getColHeader(colNumber));
               }
-              self.removeColumns(columnNames);
+              await removeColumns(columnNames);
             },
           },
           '---------',
           {
-            name: '<i class="fas fa-sliders-h-square"></i> Change Column Type',
+            name: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/></svg> Change Column Type',
             disabled: disablePropertyColumns,
             callback(key, selection) {
               let myself = this;
@@ -387,7 +408,7 @@
             },
           },
           {
-            name: '<i class="fas fa-edit"></i> Edit Column Name',
+            name: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="m18.988 2.012l3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287l-3-3L8 13z"/><path fill="currentColor" d="M19 19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2z"/></svg> Rename Column',
             disabled: disablePropertyColumns,
             callback(key, selection) {
               let myself = this;
@@ -401,7 +422,7 @@
           },
           '---------',
           {
-            name: '<i class="fas fa-chart-bar"></i> Stats',
+            name: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M22 21H2V3h2v16h2v-9h4v9h2V6h4v13h2v-5h4z"/></svg> Stats',
             disabled: disablePropertyColumnsExceptQuantity,
             callback(key, selection) {
               let myself = this;
@@ -419,7 +440,7 @@
           '---------',
           {
             name:
-              '<i class="fas fa-arrow-to-left"></i> Move Column(s) To Far Left',
+              '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 48 48"><g fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M14 23.9917H42"/><path d="M26 36L14 24L26 12"/><path d="M5 36V12"/></g></svg> Move Column(s) To Far Left',
             disabled: disablePropertyColumns,
             async callback(key, selection) {
               let myself = this;
@@ -433,7 +454,7 @@
             },
           },
           {
-            name: '<i class="fas fa-chevron-left"></i> Move Column(s) Left',
+            name: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 48 48"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M31 36L19 24L31 12"/></svg> Move Column(s) Left',
             disabled: disablePropertyColumns,
             async callback(key, selection) {
               let myself = this;
@@ -447,7 +468,7 @@
             },
           },
           {
-            name: '<i class="fas fa-chevron-right"></i> Move Column(s) Right',
+            name: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 48 48"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M19 12L31 24L19 36"/></svg> Move Column(s) Right',
             disabled: disablePropertyColumns,
             async callback(key, selection) {
               let myself = this;
@@ -462,7 +483,7 @@
           },
           {
             name:
-              '<i class="fas fa-arrow-to-right"></i> Move Column(s) To Far Right',
+              '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 48 48"><g fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M34 24.0083H6"/><path d="M22 12L34 24L22 36"/><path d="M42 12V36"/></g></svg> Move Column(s) To Far Right',
             disabled: disablePropertyColumns,
             async callback(key, selection) {
               let myself = this;
@@ -484,7 +505,7 @@
       const contextMenuSettings = ref({
         items: {
           delete_rows: {
-            name: 'Delete Row(s)',
+            name: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="M12 6H8V2h4zM3.5 2H7v4H5a2 2 0 0 1-2-2V2.5a.5.5 0 0 1 .5-.5M15 6h-2V2h3.5a.5.5 0 0 1 .5.5V4a2 2 0 0 1-2 2m1.5 12a.5.5 0 0 0 .5-.5V16a2 2 0 0 0-2-2h-2v4zM12 18v-4H8v4zm-5 0H3.5a.5.5 0 0 1-.5-.5V16a2 2 0 0 1 2-2h2zm10.5-7.5a.5.5 0 0 0 0-1h-4.887c-.106.125-.224.24-.342.353l-.143.14l.143.14c.122.119.245.237.353.367zm-15-1h4.887a5 5 0 0 0 .342.353l.143.14l-.143.14a5 5 0 0 0-.353.367H2.5a.5.5 0 0 1 0-1m9.354 2.354a.5.5 0 0 0 0-.708L10.707 10l1.147-1.146a.5.5 0 0 0-.708-.708L10 9.293L8.854 8.146a.5.5 0 1 0-.708.708L9.293 10l-1.147 1.146a.5.5 0 0 0 .708.708L10 10.707l1.146 1.147a.5.5 0 0 0 .708 0"/></svg> Delete Row(s)',
             async callback(key, selection) {
               let instance = this;
               let rows = [];
@@ -500,8 +521,8 @@
             },
           },
           sp1: '---------',
-          undo: 'Undo',
-          redo: 'Redo',
+          undo: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M7 19v-2h7.1q1.575 0 2.738-1T18 13.5T16.838 11T14.1 10H7.8l2.6 2.6L9 14L4 9l5-5l1.4 1.4L7.8 8h6.3q2.425 0 4.163 1.575T20 13.5t-1.737 3.925T14.1 19z"/></svg> Undo',
+          redo: '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M9.9 19q-2.425 0-4.163-1.575T4 13.5t1.738-3.925T9.9 8h6.3l-2.6-2.6L15 4l5 5l-5 5l-1.4-1.4l2.6-2.6H9.9q-1.575 0-2.738 1T6 13.5T7.163 16T9.9 17H17v2z"/></svg> Redo',
         },
       });
     
