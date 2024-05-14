@@ -21,7 +21,7 @@
             :search="{ searchResultClass: 'searchmatch' }"
             id="datasettable"
             licenseKey="467cc-a5a56-132e4-3471d-0fa33"
-            ref="hotTableWrapper">
+            ref="hotWrapper">
         </hot-table>
     </client-only>
 </template>
@@ -49,7 +49,7 @@
 
   const tableUpdate = (changes) => {
     if (changes != null) {
-      const hotInstance = hotTableWrapper.value.hotInstance;
+      const hotInstance = hotWrapper.value.hotInstance;
       for (let change of changes) {
         const tableRow = hotInstance.getSourceDataAtRow(
           hotInstance.toPhysicalRow(change[0])
@@ -259,12 +259,12 @@
       return columns;
     });
 
-    const hotTableWrapper = ref(null);
+    const hotWrapper = useState('hotWrapper', () => null);
     const renderCount = ref(0);
     const tableInit = () => {
       if (renderCount.value < 2) {
         // fixes weird render bug
-        hotTableWrapper.value.hotInstance
+        hotWrapper.value.hotInstance
           .getPlugin('autoRowSize')
           .recalculateAllRowsHeight();
         renderCount.value++;

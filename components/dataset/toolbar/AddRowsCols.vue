@@ -58,18 +58,22 @@ const makeNameSafe = (userTyped) => {
 
 const quantityOfRowsToAdd = ref(1);
 const addRows = () => {
+    suspendHotRender();
     for (let i = 0; i < quantityOfRowsToAdd.value; i++) {
         props.rows.create({name: 'Untitled '+Math.random().toString()});
     }
     toggle();
+    resumeHotRender();
 };
 
 const deleteAllRows = async () => {
     if (confirm('Are you sure you want to delete all rows in this dataset?')) {
+        suspendHotRender();
         exportRows(props.dataset, props.rows);
         await props.dataset.call('DELETE', props.dataset.links.rows.href);
         props.rows.reset();
         toggle();
+        resumeHotRender();
     }
 };
 
