@@ -38,7 +38,7 @@ const props = defineProps({
     dataset: Object,
     rows: Object,
 });
-const toolbarLabels = useLocalStorage('toolbarLabels', true);
+const toolbarLabels = useToolbarLabels();
 const op = ref();
 const toggle = (event) => {
     op.value.toggle(event);
@@ -88,7 +88,7 @@ const addRows = async () => {
     }
     toggle();
     resumeHotRender();
-    const appendNewRows = useLocalStorage('appendNewRows', 'top');
+    const appendNewRows = useAppendNewRows();
     if (appendNewRows == 'top')
         scrollHotTop();
     else    

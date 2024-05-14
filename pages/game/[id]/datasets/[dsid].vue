@@ -32,7 +32,7 @@ const dataset = useVingRecord({
     createApi: `/api/${useRestVersion()}/dataset`,
     query: { includeMeta: true, includeOptions: true },
 });
-const appendNewRows = useLocalStorage('appendNewRows', 'top');
+const appendNewRows = useAppendNewRows();;
 const rows = useVingKind({
     listApi: `/api/${useRestVersion()}/dataset/${datasetId}/rows`,
     createApi: `/api/${useRestVersion()}/row`,

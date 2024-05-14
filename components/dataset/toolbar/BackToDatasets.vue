@@ -5,5 +5,5 @@
 const props = defineProps({
       game: Object,
 });
-const toolbarLabels = useLocalStorage('toolbarLabels', true);
+const toolbarLabels = useToolbarLabels();
 </script>

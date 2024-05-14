@@ -79,16 +79,16 @@ const toggle = (event) => {
 }
 
 // global
-const toolbarLabels = useLocalStorage('toolbarLabels', true);
+const toolbarLabels = useToolbarLabels();
 
 // dataset
-const appendNewRows = useLocalStorage('appendNewRows', 'top');
+const appendNewRows = useAppendNewRows();
 
 // designer
-const layerOrder = useLocalStorage('layerOrder', 'bottom-up');
-const speedMode = useLocalStorage('speedMode', 'elegance');
-const layerPanelWidth = useLocalStorage('layerPanelWidth', 42);
-const refreshMode = useLocalStorage('refreshMode', 'auto');
-const precacheImages = useLocalStorage('precacheImages', true);
+const layerOrder = useLayerOrder();
+const speedMode = useSpeedMode();
+const layerPanelWidth = useLayerPanelWidth();
+const refreshMode = useRefreshMode();
+const precacheImages = usePrecacheImages();
 
 </script>
