@@ -48,7 +48,7 @@ onBeforeRouteLeave(() => {
 await Promise.all([
     game.fetch(),
     dataset.fetch(),
-    rows.search(),
+    rows.all(),
     rows.fetchPropsOptions(),
 ]);
 

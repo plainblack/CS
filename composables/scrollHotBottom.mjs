@@ -1,5 +1,5 @@
 export default () => {
     const hotWrapper = useState('hotWrapper');
     if (hotWrapper.value != null)
-        hotWrapper.value.hotInstance.suspendRender();
+        hotWrapper.value.hotInstance.scrollViewportTo(hotWrapper.value.hotInstance.countRows() - 1, 1);
 }

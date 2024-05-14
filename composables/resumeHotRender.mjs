@@ -1,5 +1,5 @@
 export default () => {
-    const hotWrapper = useState('hotWrapper', () => null);
+    const hotWrapper = useState('hotWrapper');
     if (hotWrapper.value != null)
         hotWrapper.value.hotInstance.resumeRender();
 }

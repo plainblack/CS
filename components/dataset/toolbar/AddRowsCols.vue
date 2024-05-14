@@ -57,13 +57,18 @@ const makeNameSafe = (userTyped) => {
 };
 
 const quantityOfRowsToAdd = ref(1);
-const addRows = () => {
+const addRows = async () => {
     suspendHotRender();
     for (let i = 0; i < quantityOfRowsToAdd.value; i++) {
-        props.rows.create({name: 'Untitled '+Math.random().toString()});
+        await props.rows.create({name: 'Untitled '+Math.random().toString()});
     }
     toggle();
     resumeHotRender();
+    const appendNewRows = useLocalStorage('appendNewRows', 'top');
+    if (appendNewRows == 'top')
+        scrollHotTop();
+    else    
+        scrollHotBottom();
 };
 
 const deleteAllRows = async () => {

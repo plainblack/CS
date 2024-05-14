@@ -54,7 +54,7 @@
         const tableRow = hotInstance.getSourceDataAtRow(
           hotInstance.toPhysicalRow(change[0])
         );
-        const row = props.rows.find(tableRow.$id);
+        const row = props.rows.find(tableRow.props.id);
         let field = change[1];
         if (field == 'props.name') {
           saveName(row, change[2]);
