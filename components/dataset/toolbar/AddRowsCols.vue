@@ -2,8 +2,6 @@
     <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
 
     <OverlayPanel ref="op" class="surface-ground">
-        {{ dataset.props }}
-        {{ rows.records.length }}
         <div class="flex flex-wrap gap-4">
             <div class="flex-grow-1">
                 <PanelZone title="Add Column" margin="mb-0">
@@ -66,10 +64,11 @@ const addRows = () => {
     toggle();
 };
 
-const deleteAllRows = () => {
+const deleteAllRows = async () => {
     if (confirm('Are you sure you want to delete all rows in this dataset?')) {
         exportRows(props.dataset, props.rows);
-        
+        await props.dataset.call('DELETE', props.dataset.links.rows.href);
+        toggle();
     }
 };
 
