@@ -5,6 +5,10 @@ outline: deep
 
 ## May 2024
 
+### 2024-05-22
+* Fixed: leaking id in robot avatar #153
+* Fixed hydration mismatch on copy to clipboard button.
+
 ### 2024-05-14
 * Removed extraneous import from rest endpoint.
 * Added range() util.
