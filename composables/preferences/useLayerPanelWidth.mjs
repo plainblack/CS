@@ -1,1 +1,1 @@
-export default () => useLocalStorage('layerPanelWidth', 42);
+export default () => useLocalStorage('layerPanelWidth', 40);

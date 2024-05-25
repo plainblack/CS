@@ -16,12 +16,13 @@
                     <div class="mt-5 font-semibold text-medium">Layer Panel Width</div>
                     <div class="mb-2"><small>Only affects large displays.</small></div>
                     <SelectButton v-model="layerPanelWidth"  :options="[
-                        {label: '8%', value: 8},
-                        {label: '17%', value: 17},
-                        {label: '25%', value: 25},
-                        {label: '33%', value: 33},
-                        {label: '42%', value: 42},
-                        {label: '50%', value: 50},
+                        {label: '10%', value: 'w-10rem'},
+                        {label: '15%', value: 'w-15rem'},
+                        {label: '20%', value: 'w-20rem'},
+                        {label: '25%', value: 'w-25rem'},
+                        {label: '35%', value: 'w-35rem'},
+                        {label: '40%', value: 'w-40rem'},
+                        {label: '50%', value: 'w-50rem'},
                         ]" optionLabel="label" optionValue="value" dataKey="value" aria-labelledby="basic" />
 
                     <div class="mt-5 font-semibold text-medium">Speed Mode</div>

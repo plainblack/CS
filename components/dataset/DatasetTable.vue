@@ -30,6 +30,9 @@
             >
         </hot-table>
     </client-only>
+    <Sidebar v-model:visible="sidebarVisible" header="Right Sidebar" position="right" role="region" :modal="false">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </Sidebar>
 </template>
 
 <script setup>
@@ -41,6 +44,8 @@
 
   registerAllModules();
   const notify = useNotify();
+
+  const sidebarVisible = ref(false);
 
   const props = defineProps({
       rows: Object,
@@ -94,43 +99,44 @@
       await props.dataset.save('rowFieldOrder',cols);
   }
 
-  const tableUpdate = async (changes) => {
-    if (changes != null) {
-      const hotInstance = hotWrapper.value.hotInstance;
-      for (let change of changes) {
-        const tableRow = hotInstance.getSourceDataAtRow(
-          hotInstance.toPhysicalRow(change[0])
+  const tableUpdate = (changes) => {
+    if (changes == null)
+      return;
+    suspendHotRender();
+    const hotInstance = hotWrapper.value.hotInstance;
+    let rowPos = null;
+    let tableRow = null;
+    let row = null;
+    for (let change of changes) {
+      if (rowPos != change[0]) {
+        saveRow(row);
+        rowPos = change[0];
+
+        tableRow = hotInstance.getSourceDataAtRow(
+          hotInstance.toPhysicalRow(rowPos)
         );
-        const row = props.rows.find(tableRow.props.id);
-        let field = dropProps(change[1]);
-        if (field == 'name') {
-          saveName(row, change[2]);
-        } else if (field == 'quantity') {
-          saveProp(row);
-        } else if (field == 'id') {
-          // do nothing
-        } else {
-          field = getFieldName(field);
-          row.props = versionFieldHistory(row.props, [field]);
-          row.props = templateEngine.process({
-            images: {}, // context.getters.imageTemplateVars,
-            game: {}, //context.getters.gameTemplateVars,
-            dataset: {}, //context.getters.datasetTemplateVars,
-            _type: 'row',
-            _object: row.props,
-            _schema: props.dataset.props.rowSchema,
-          });
-          console.log(row.props)
-          await row.save('fields');
-        }
+        row = props.rows.find(tableRow.props.id);
+      }
+      let field = dropProps(change[1]);
+      if (field == 'name') {
+        validateName(row, change[2]);
+      } else if (field == 'quantity') {
+        // do nothing
+      } else if (field == 'id') {
+        // do nothing
+      } else {
+        field = getFieldName(field);
+        row.props = versionFieldHistory(row.props, [field]);
       }
     }
+    saveRow(row);
+    resumeHotRender();
   }
   
   const dropProps = (path) =>  path.replace(/^props\.(.*)/, '$1');
   const getFieldName = (path) =>  path.replace(/fields\.(.*)\.userValue/, '$1');
 
-  const saveName = (row, was) => {
+  const validateName = (row, was) => {
     if (row.props.name == '') {
       notify.error('You must give the row a name.');
       return;
@@ -143,17 +149,22 @@
     }
     if (error) {
       notify.error('You already have another row named ' + row.props.name + '.');
-      console.log(was)
       row.props.name = was;
-    } else {
-      saveProp(row);
     }
   }
 
-  const saveProp = (row) => {
-    row.update();
-    // TODO: 
-  //   this.$store.dispatch('calcRow', row);
+  const saveRow = (row) => {
+    if (row) {
+      row.props = templateEngine.process({
+        images: {}, // context.getters.imageTemplateVars,
+        game: {}, //context.getters.gameTemplateVars,
+        dataset: {}, //context.getters.datasetTemplateVars,
+        _type: 'row',
+        _object: row.props,
+        _schema: props.dataset.props.rowSchema,
+      });
+      row.update();
+    }
   }
 
     const rowControlsRenderer = (instance, td, rowIndex) => {
@@ -289,6 +300,7 @@
               'p-0',
             );
             div.addEventListener('click', function() {
+              sidebarVisible.value = true;
             //  self.editField(tableRow.id, field);
             });
             div.appendChild(button);
@@ -361,7 +373,7 @@
     const deleteRows = async (rows) => {
       let rowNames = [];
       for (let row of rows) {
-        rowNames.push(row.name);
+        rowNames.push(row.props.name);
       }
       if (
         confirm(
@@ -370,10 +382,9 @@
             '?'
         )
       ) {
+        exportRows(props.dataset, props.rows);
         for (let row of rows) {
-          console.log('row to delete', row)
-          // TODO
-          //self.$store.dispatch('deleteRow', row);
+          row.delete({skipConfirm:true});
         }
       }
     }
