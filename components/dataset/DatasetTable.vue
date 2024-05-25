@@ -56,8 +56,7 @@
   });
 
   const columnWidths = computed(() => {
-      let columns = [58, 80];
-      columns.push(props.dataset.props.rowSchema?.name?.size || 120);
+      let columns = [62, 80, 120];
       let sizes = {
         int: 90,
         hex: 110,
@@ -157,7 +156,7 @@
       Handsontable.dom.empty(td);
       let deleteButton = document.createElement('button');
       deleteButton.classList.add('p-button', 'p-button-sm', 'p-button-danger', 'p-1');
-      deleteButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1em" height="1em" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0m48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0"/></svg>';
+      deleteButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="vertical-align-middle" width="1rem" height="1rem" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0m48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0"/></svg>';
       deleteButton.addEventListener('click', async function() {
         await deleteRows([
           instance.getSourceDataAtRow(instance.toPhysicalRow(rowIndex)),
@@ -166,7 +165,7 @@
       td.appendChild(deleteButton);
       let dupButton = document.createElement('button');
       dupButton.classList.add('p-button', 'b-button-sm', 'p-button-secondary', 'p-1');
-      dupButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48M362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6m96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6"/></svg>';
+      dupButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M6 16H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1M9 20h10a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1z"/></svg>';
       dupButton.addEventListener('click', async function() {
         const tableRow = instance.getSourceDataAtRow(
           instance.toPhysicalRow(rowIndex)
