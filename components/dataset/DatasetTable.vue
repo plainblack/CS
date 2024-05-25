@@ -78,7 +78,7 @@
         return;
       }
       let field = dropProps(getFieldName(columnFields.value[columnIndex].data));
-      if (!("field" in props.dataset.props.rowSchema)) {
+      if (!(field in props.dataset.props.rowSchema)) {
         props.dataset.props.rowSchema[field] = { size: 120 };
       }
       props.dataset.props.rowSchema[field].size = newSize;

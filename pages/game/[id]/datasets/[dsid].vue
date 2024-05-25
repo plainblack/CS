@@ -39,6 +39,11 @@ const rows = useVingKind({
     query: { includeMeta: true, sortBy: 'name', itemsPerPage: 100 },
     newDefaults: { name: '', gameId, datasetId },
     unshift : !appendNewRows.value,
+    onEach(record) {
+        for (const field in dataset.props.rowSchema) {
+            record.props.fields[field] = formatFieldType(dataset.props.rowSchema[field].type, record.props.fields[field]);
+        }
+    }
 });
 onBeforeRouteLeave(() => {
     game.dispose();
@@ -48,10 +53,9 @@ onBeforeRouteLeave(() => {
 await Promise.all([
     game.fetch(),
     dataset.fetch(),
-    rows.all(),
     rows.fetchPropsOptions(),
 ]);
-
+await rows.all();
 
 function rename() {
     rows.records[0].props.name = 'Untitled'+Math.random().toString();
