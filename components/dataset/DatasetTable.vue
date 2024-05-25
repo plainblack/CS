@@ -94,7 +94,7 @@
       await props.dataset.save('rowFieldOrder',cols);
   }
 
-  const tableUpdate = (changes) => {
+  const tableUpdate = async (changes) => {
     if (changes != null) {
       const hotInstance = hotWrapper.value.hotInstance;
       for (let change of changes) {
@@ -111,11 +111,17 @@
           // do nothing
         } else {
           field = getFieldName(field);
-          // TODO:
-         /* self.$store.dispatch('saveRowFieldHistory', {
-            row: row,
-            fields: [field],
-          });*/
+          row.props = versionFieldHistory(row.props, [field]);
+          row.props = templateEngine.process({
+            images: {}, // context.getters.imageTemplateVars,
+            game: {}, //context.getters.gameTemplateVars,
+            dataset: {}, //context.getters.datasetTemplateVars,
+            _type: 'row',
+            _object: row.props,
+            _schema: props.dataset.props.rowSchema,
+          });
+          console.log(row.props)
+          await row.save('fields');
         }
       }
     }
