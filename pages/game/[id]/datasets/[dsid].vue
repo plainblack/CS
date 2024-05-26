@@ -42,8 +42,8 @@ const rows = useVingKind({
     onEach(record) {
         for (const field in dataset.props.rowSchema) {
             record.props.fields[field] = formatFieldType(dataset.props.rowSchema[field].type, record.props.fields[field]);
-            record.props.fields[field] = recalcRow(props.dataset.props.rowSchema, record.props.fields[field]);
         }
+        record.props = recalcRow(dataset.props.rowSchema, record.props);
     }
 });
 onBeforeRouteLeave(() => {

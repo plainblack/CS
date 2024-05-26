@@ -30,8 +30,19 @@
             >
         </hot-table>
     </client-only>
-    <Sidebar v-model:visible="sidebarVisible" header="Right Sidebar" position="right" role="region" :modal="false">
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    <Sidebar v-model:visible="sidebarVisible" :header="currentRowField" position="right" role="region" :modal="false">
+      <Message v-if="currentRow.props.fields[currentRowField].hasError" class="mb-2" :closable="false" severity="error">{{currentRow.props.fields[currentRowField].error}}</Message>
+      
+      <div class="mb-2">
+        <label for="calcValue">Calculated Value</label>
+        <Textarea id="calcValue" v-model="currentRow.props.fields[currentRowField].calcValue" disabled rows="1" class="w-full" />
+      </div>
+
+      <div class="mb-2">
+        <label for="userValue">User Value</label>
+        <Textarea id="userValue" v-model="currentRow.props.fields[currentRowField].userValue" class="w-full" @change="saveRow(currentRow)" />
+      </div>
+
     </Sidebar>
 </template>
 
@@ -189,18 +200,14 @@
       return td;
     }
 
-    /*
-    const editField = (id, name) => {
-      let current = this.$store.getters.currentRowField;
-      current.id = id;
-      current.field = name;
-      this.$store.commit('setCurrentRowField', current);
-      setTimeout(() => {
-        // gotta give the commit time to react
-        this.$root.$emit('bv::toggle::collapse', 'rowfieldeditor');
-      }, 100);
+    const currentRow = ref(null);
+    const currentRowField = ref(null);
+
+    const editField = (row, name) => {
+      currentRow.value = row;
+      currentRowField.value = name;
+      sidebarVisible.value = true;
     }
-    */
 
     const columnFields = computed(() => {
       const columns = [
@@ -246,12 +253,13 @@
             div.style.right = 0;
             let tableRow = instance.getSourceDataAtRow(rowIndex);
             if (
-              tableRow &&
-              tableRow.fields &&
-              tableRow.fields[field] &&
-              tableRow.fields[field].hasError
+              tableRow
+              && tableRow.props
+              && tableRow.props.fields
+              && tableRow.props.fields[field]
+              && tableRow.props.fields[field].hasError
             ) {
-              td.className = 'border border-danger';
+              td.className = 'border-1 border-red-500';
             }
             switch (fieldType) {
               case 'image': {
@@ -259,8 +267,8 @@
                 image.style.height = '30px';
                 image.style.maxWidth = '100px';
                 image.style.verticalAlign = 'top';
-                if (tableRow && tableRow.fields && tableRow.fields[field]) {
-                  image.src = tableRow.fields[field].calcValue;
+                if (tableRow && tableRow.props && tableRow.props.fields && tableRow.props.fields[field]) {
+                  image.src = tableRow.props.fields[field].calcValue;
                 }
                 image.classList.add('border', 'rounded');
                 div.appendChild(image);
@@ -274,9 +282,9 @@
                 color.style.margin = 0;
                 color.style.display = 'inline-block';
                 color.style.verticalAlign = 'top';
-                if (tableRow && tableRow.fields && tableRow.fields[field]) {
+                if (tableRow && tableRow.props && tableRow.props.fields && tableRow.props.fields[field]) {
                   color.style.backgroundColor =
-                    '#' + tableRow.fields[field].calcValue;
+                    '#' + tableRow.props.fields[field].calcValue;
                 }
                 color.classList.add('border', 'rounded');
                 div.appendChild(color);
@@ -293,8 +301,7 @@
               'p-0',
             );
             div.addEventListener('click', function() {
-              sidebarVisible.value = true;
-            //  self.editField(tableRow.id, field);
+              editField(tableRow, field);
             });
             div.appendChild(button);
             td.appendChild(div);
