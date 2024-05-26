@@ -155,14 +155,7 @@
 
   const saveRow = (row) => {
     if (row) {
-      row.props = templateEngine.process({
-        images: {}, // context.getters.imageTemplateVars,
-        game: {}, //context.getters.gameTemplateVars,
-        dataset: {}, //context.getters.datasetTemplateVars,
-        _type: 'row',
-        _object: row.props,
-        _schema: props.dataset.props.rowSchema,
-      });
+      row.props = recalcRow(props.dataset.props.rowSchema, row.props);
       row.update();
     }
   }
