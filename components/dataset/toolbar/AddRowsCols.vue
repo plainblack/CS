@@ -1,5 +1,5 @@
 <template>
-    <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
+    <Button type="button" severity="secondary" class="p-button-sm p-1" @mouseDown="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
 
     <OverlayPanel ref="op" class="surface-ground">
         <div class="flex flex-wrap gap-4">
@@ -8,7 +8,7 @@
                     <Form>
                         <FormInput :coerce="makeNameSafe" name="fieldName" type="text" v-model="fieldName" label="Field Name" required class="mb-3" subtext="No spaces or special characters other than underscore _." />
                         <FormInput name="fieldType" type="select" v-model="fieldType" :options="fieldTypes()" label="Field Type" class="mb-3" />
-                        <Button severity="success" @click="addColumn">
+                        <Button severity="success" @mouseDown="addColumn">
                             <Icon name="mdi:table-column-add-after" class="mr-1" /> Add Column
                         </Button>
                     </Form>
@@ -17,13 +17,13 @@
             <div class="flex-grow-1">
                 <PanelZone title="Add Rows">
                     <InputNumber showButtons v-model="quantityOfRowsToAdd" required :min="0" :max="100" />
-                    <Button severity="success" class="ml-1" @click="addRows">
+                    <Button severity="success" class="ml-1" @mouseDown="addRows">
                         <Icon name="mdi:table-row-add-before" class="mr-1" /> Add Rows
                     </Button>
                 </PanelZone>
 
                 <PanelZone title="Start Over">
-                    <Button @click="deleteAllRows" severity="danger">
+                    <Button @mouseDown="deleteAllRows" severity="danger">
                         <Icon name="ph:trash" class="mr-1" /> Delete All Rows
                     </Button>
                 </PanelZone>

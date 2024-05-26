@@ -5,7 +5,7 @@
         <UserPreferences/>
         <BackToDatasets :game="game" />        
     </div>
-    <button @click="rename" class="ml-5">Rename</button>     {{ rows.records.length }}
+    <button @mouseDown="rename" class="ml-5">Rename</button>     {{ rows.records.length }}
 
     <DatasetTable :rows="rows" :dataset="dataset"/>
 

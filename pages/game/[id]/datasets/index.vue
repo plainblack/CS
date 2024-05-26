@@ -12,7 +12,7 @@
                     </InputGroupAddon>
                     <InputText type="text" placeholder="Datasets" class="w-full"
                         v-model="datasets.query.search" @keydown.enter="datasets.search()" />
-                    <Button label="Search" @click="datasets.search()" />
+                    <Button label="Search" @mouseDown="datasets.search()" />
                 </InputGroup>
 
                 <DataTable :value="datasets.records" stripedRows @sort="(e) => datasets.sortDataTable(e)">

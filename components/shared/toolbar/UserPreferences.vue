@@ -1,5 +1,5 @@
 <template>
-    <Button type="button" severity="secondary" class="p-button-sm p-1" @click="toggle"><Icon name="gravity-ui:gear" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Preferences</span></Button>
+    <Button type="button" severity="secondary" class="p-button-sm p-1" @mouseDown="toggle"><Icon name="gravity-ui:gear" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Preferences</span></Button>
 
     <OverlayPanel ref="op" class="surface-ground">
         <div class="flex flex-wrap gap-4">
