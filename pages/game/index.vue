@@ -9,7 +9,7 @@
                     </InputGroupAddon>
                     <InputText type="text" placeholder="Search Games" class="w-full" v-model="games.query.search"
                         @keydown.enter="games.search()" />
-                    <Button label="Search" @mouseDown="games.search()" />
+                    <Button label="Search" @mousedown="games.search()" />
                 </InputGroup>
 
                 <DataTable :value="games.records" stripedRows @sort="(e) => games.sortDataTable(e)">

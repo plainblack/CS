@@ -9,7 +9,7 @@
             </InputGroupAddon>
             <InputText type="text" placeholder="Rows" class="w-full"
                 v-model="rows.query.search" @keydown.enter="rows.search()" />
-            <Button label="Search" @mouseDown="rows.search()" />
+            <Button label="Search" @mousedown="rows.search()" />
         </InputGroup>
 
         <DataTable :value="rows.records" stripedRows @sort="(e) => rows.sortDataTable(e)">
@@ -49,7 +49,7 @@
                     <NuxtLink v-if="slotProps.data.meta?.isOwner" :to="`/row/${slotProps.data.props.id}/edit`" class="mr-2 no-underline">
                         <Button icon="pi pi-pencil" severity="success" title="Edit" alt="Edit Row" />
                     </NuxtLink>
-                    <Button v-if="slotProps.data.meta?.isOwner"  title="Delete" alt="Delete Row" icon="pi pi-trash" severity="danger" @mouseDown="slotProps.data.delete()" />
+                    <Button v-if="slotProps.data.meta?.isOwner"  title="Delete" alt="Delete Row" icon="pi pi-trash" severity="danger" @mousedown="slotProps.data.delete()" />
                 </template>
             </Column>
         </DataTable>

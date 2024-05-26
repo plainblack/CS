@@ -22,7 +22,7 @@
         <NuxtLink :to="`/row/${row.props?.id}/edit`" class="no-underline mr-2 mb-2">
             <Button severity="success" title="Edit" alt="Edit Row"><i class="pi pi-pencil mr-1"></i> Edit</Button>
         </NuxtLink>
-        <Button @mouseDown="row.delete()" severity="danger" title="Delete" alt="Delete Row"><i class="pi pi-trash mr-1"></i> Delete</Button>
+        <Button @mousedown="row.delete()" severity="danger" title="Delete" alt="Delete Row"><i class="pi pi-trash mr-1"></i> Delete</Button>
     </div>
 </template>
   

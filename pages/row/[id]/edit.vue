@@ -31,7 +31,7 @@
             <NuxtLink :to="`/row/${row.props?.id}`" class="no-underline">
                 <Button title="View" alt="View Row" class="mr-2 mb-2"><i class="pi pi-eye mr-1"></i> View</Button>
             </NuxtLink>
-            <Button @mouseDown="row.delete()" severity="danger" class="mr-2 mb-2" title="Delete" alt="Delete Row"><i class="pi pi-trash mr-1"></i> Delete</Button>
+            <Button @mousedown="row.delete()" severity="danger" class="mr-2 mb-2" title="Delete" alt="Delete Row"><i class="pi pi-trash mr-1"></i> Delete</Button>
         </FieldsetItem>
 
     </FieldsetNav>

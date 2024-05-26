@@ -22,7 +22,7 @@
                         <template #body="slotProps">
                             <Button v-if="slotProps.data.meta?.isOwner" title="Remove"
                                 alt="Remove Collaborator" icon="pi pi-trash" severity="danger"
-                                @mouseDown="slotProps.data.delete()" />
+                                @mousedown="slotProps.data.delete()" />
                         </template>
                     </Column>
                 </DataTable>
