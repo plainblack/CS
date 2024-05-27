@@ -1,5 +1,5 @@
 <template>
-    <Button type="button" severity="secondary" class="p-button-sm p-1" @mousedown="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
+    <Button type="button" severity="success" class="p-button-sm p-1" @mousedown="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
 
     <OverlayPanel ref="op" class="surface-ground mt-3 mr-3" :showCloseIcon="true">
         <div class="flex flex-wrap gap-4">
