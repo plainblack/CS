@@ -14,7 +14,10 @@
       </div>
 
       <div>Shortcuts</div>
-      <FieldHistory :variables="row.props.fields[field].history" />
+      <div class="flex flex-inline gap-1">
+        <TemplateFunctions />
+        <FieldHistory :variables="row.props.fields[field].history" />
+      </div>
 
     </Sidebar>
 </template>

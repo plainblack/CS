@@ -2,10 +2,12 @@
     <Button type="button" severity="secondary" class="p-button-sm p-1" @mousedown="toggle">{{label}}</Button>
 
     <OverlayPanel ref="op" class="surface-ground">
+      <div class="max-h-10rem overflow-scroll">
         <div v-for="(variable, index) in sortedList" :key="index" class="mb-2">
           <div v-if="variable.header"><b>{{variable.header}}</b></div>
-          <div v-else @mousedown="takeAction(variable.value)" class="cursor-pointer">{{ variable.label}}</div>
+          <div v-else @mousedown="takeAction(variable.value)" class="cursor-pointer" v-html="variable.label"></div>
         </div>
+      </div>
     </OverlayPanel>
 
     <!--
@@ -42,7 +44,11 @@ const props = defineProps({
     sort: {
         type: Boolean,
         default : false,
-    }
+    },
+    wrap: {
+        type: Boolean,
+        default : false,
+    },
 });
 const op = ref();
 const toggle = (event) => {
@@ -52,8 +58,12 @@ const { copy } = useClipboard();
 const notify = useNotify();
 
 const takeAction = (text) => {
-  copy(text);
-  notify.info(`Copied ${text} to Clipboard`);
+  let str = text;
+  if (props.wrap) {
+    str = '{{ ' + text + ' }}';
+  }
+  copy(str);
+  notify.info(`Copied ${str} to Clipboard`);
   toggle();
 }
 
