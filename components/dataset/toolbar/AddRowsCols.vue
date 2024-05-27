@@ -1,13 +1,13 @@
 <template>
     <Button type="button" severity="secondary" class="p-button-sm p-1" @mousedown="toggle"><Icon name="gravity-ui:layout-cells-large" /> <span v-if="toolbarLabels" class="ml-1 hidden md:block white-space-nowrap">Cells</span></Button>
 
-    <OverlayPanel ref="op" class="surface-ground">
+    <OverlayPanel ref="op" class="surface-ground mt-3 mr-3" :showCloseIcon="true">
         <div class="flex flex-wrap gap-4">
             <div class="flex-grow-1">
                 <PanelZone title="Add Column" margin="mb-0">
                     <Form>
                         <FormInput :coerce="makeNameSafe" name="fieldName" type="text" v-model="fieldName" label="Field Name" required class="mb-3" subtext="No spaces or special characters other than underscore _." />
-                        <FormInput name="fieldType" type="select" v-model="fieldType" :options="fieldTypes()" label="Field Type" class="mb-3" />
+                        <FormInput name="fieldType" type="select" v-model="fieldType" :options="fieldTypes" label="Field Type" class="mb-3" />
                         <Button severity="success" @mousedown="addColumn">
                             <Icon name="mdi:table-column-add-after" class="mr-1" /> Add Column
                         </Button>
