@@ -1,5 +1,5 @@
 <template>
-  <VariableDropdown :variables="variables" label="func()" :sort="true" :wrap="true"></VariableDropdown>
+  <Shortcut :variables="variables" label="func()" :sort="true" :wrap="true"></Shortcut>
 </template>
   
 <script setup>

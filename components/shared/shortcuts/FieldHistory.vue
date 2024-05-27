@@ -1,5 +1,5 @@
 <template>
-  <VariableDropdown :variables="variables" label="history"></VariableDropdown>
+  <Shortcut :variables="variables" label="history"></Shortcut>
 </template>
   
 <script setup>
