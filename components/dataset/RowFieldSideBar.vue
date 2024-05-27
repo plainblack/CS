@@ -30,7 +30,6 @@
         return props.modelValue;
     },
     set(val) {
-        val = props.coerce(val);
         emit('update:modelValue', val);
     }
 });

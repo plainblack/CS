@@ -191,8 +191,7 @@
     const currentRowIndex = ref(null);
     const currentRowField = ref(null);
 
-    const editField = (row, name) => {
-      console.log(row);
+    const openRowFieldSideBar = (row, name) => {
       currentRowIndex.value = props.rows.findIndex(row.props.id);
       currentRowField.value = name;
       sidebarVisible.value = true;
@@ -290,7 +289,7 @@
               'p-0',
             );
             div.addEventListener('click', function() {
-              editField(tableRow, field);
+              openRowFieldSideBar(tableRow, field);
             });
             div.appendChild(button);
             td.appendChild(div);
