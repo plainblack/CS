@@ -277,7 +277,7 @@
                   color.style.backgroundColor =
                     '#' + tableRow.props.fields[field].calcValue;
                 }
-                color.classList.add('border', 'rounded');
+                color.classList.add('border-1', 'border-round');
                 div.appendChild(color);
                 break;
               }
