@@ -98,7 +98,7 @@
       await props.dataset.save('rowFieldOrder',cols);
   }
 
-  const tableUpdate = (changes) => {
+  const tableUpdate = async (changes) => {
     if (changes == null)
       return;
     suspendHotRender();
@@ -106,9 +106,10 @@
     let rowPos = null;
     let tableRow = null;
     let row = null;
+    const promises = [];
     for (let change of changes) {
       if (rowPos != change[0]) {
-        saveRow(row);
+        promises.push(saveRow(row));
         rowPos = change[0];
 
         tableRow = hotInstance.getSourceDataAtRow(
@@ -128,7 +129,8 @@
         row.props = versionFieldHistory(row.props, [field]);
       }
     }
-    saveRow(row);
+    promises.push(saveRow(row));
+    await Promise.all(promises);
     resumeHotRender();
   }
   
@@ -155,8 +157,9 @@
   const saveRow = (row) => {
     if (row) {
       row.props = recalcRow(props.dataset.props.rowSchema, row.props);
-      row.update();
+      return row.update();
     }
+    return Promise.resolve();
   }
 
     const rowControlsRenderer = (instance, td, rowIndex) => {
