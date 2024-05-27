@@ -30,20 +30,8 @@
             >
         </hot-table>
     </client-only>
-    <Sidebar v-model:visible="sidebarVisible" :header="currentRowField" position="right" role="region" :modal="false">
-      <Message v-if="currentRow.props.fields[currentRowField].hasError" class="mb-2" :closable="false" severity="error">{{currentRow.props.fields[currentRowField].error}}</Message>
-      
-      <div class="mb-2">
-        <label for="calcValue">Calculated Value</label>
-        <Textarea id="calcValue" v-model="currentRow.props.fields[currentRowField].calcValue" disabled rows="1" class="w-full" />
-      </div>
+    <RowFieldSideBar :row="rows.records[currentRowIndex]" :field="currentRowField" v-model="sidebarVisible" :saveRow="saveRow" />
 
-      <div class="mb-2">
-        <label for="userValue">User Value</label>
-        <Textarea id="userValue" v-model="currentRow.props.fields[currentRowField].userValue" class="w-full" @change="saveRow(currentRow)" />
-      </div>
-
-    </Sidebar>
 </template>
 
 <script setup>
@@ -200,11 +188,12 @@
       return td;
     }
 
-    const currentRow = ref(null);
+    const currentRowIndex = ref(null);
     const currentRowField = ref(null);
 
     const editField = (row, name) => {
-      currentRow.value = row;
+      console.log(row);
+      currentRowIndex.value = props.rows.findIndex(row.props.id);
       currentRowField.value = name;
       sidebarVisible.value = true;
     }

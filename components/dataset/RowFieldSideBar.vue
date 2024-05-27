@@ -1,0 +1,37 @@
+<template>
+
+    <Sidebar v-model:visible="val" :header="field" position="right" role="region" :modal="false">
+      <Message v-if="row.props.fields[field].hasError" class="mb-2 mt-0" :closable="false" severity="error">{{row.props.fields[field].error}}</Message>
+      
+      <div class="mb-2">
+        <label for="calcValue">Calculated Value</label>
+        <Textarea id="calcValue" v-model="row.props.fields[field].calcValue" disabled autoResize class="w-full" />
+      </div>
+
+      <div class="mb-2">
+        <label for="userValue">User Value</label>
+        <Textarea id="userValue" v-model="row.props.fields[field].userValue" autoResize class="w-full" @change="saveRow(row)" @focus="suspendHotRender()" @blur="resumeHotRender()" />
+      </div>
+
+    </Sidebar>
+</template>
+
+<script setup>
+
+  const props = defineProps({
+      row: Object,
+      field: String,
+      modelValue: Boolean,
+      saveRow: Function,
+  });
+  const emit = defineEmits(['update:modelValue']);
+  const val = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        val = props.coerce(val);
+        emit('update:modelValue', val);
+    }
+});
+</script>
