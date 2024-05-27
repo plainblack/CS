@@ -1,6 +1,6 @@
 <template>
 
-    <Sidebar v-model:visible="val" :header="field" position="right" role="region" :modal="false">
+    <Sidebar v-model:visible="val" :header="field" position="right" role="region" :modal="false" :dismissable="false">
       <Message v-if="row.props.fields[field].hasError" class="mb-2 mt-0" :closable="false" severity="error">{{row.props.fields[field].error}}</Message>
       
       <div class="mb-2">
@@ -10,8 +10,11 @@
 
       <div class="mb-2">
         <label for="userValue">User Value</label>
-        <Textarea id="userValue" v-model="row.props.fields[field].userValue" autoResize class="w-full" @change="saveRow(row)" @focus="suspendHotRender()" @blur="resumeHotRender()" />
+        <Textarea id="userValue" v-model="row.props.fields[field].userValue" autoResize class="w-full" @change="row.props = versionFieldHistory(row.props, [field]);saveRow(row)" @focus="suspendHotRender()" @blur="resumeHotRender()" />
       </div>
+
+      <div>Shortcuts</div>
+      <FieldHistory :variables="row.props.fields[field].history" />
 
     </Sidebar>
 </template>
