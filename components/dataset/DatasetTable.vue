@@ -30,7 +30,7 @@
             >
         </hot-table>
     </client-only>
-    <RowFieldSideBar :row="rows.records[currentRowIndex]" :field="currentRowField" v-model="sidebarVisible" :saveRow="saveRow" />
+    <RowFieldSideBar :row="rows.records[currentRowIndex]" :field="currentRowField" v-model="sidebarVisible" />
 
 </template>
 
@@ -156,7 +156,7 @@
 
   const saveRow = (row) => {
     if (row) {
-      row.props = recalcRow(props.dataset.props.rowSchema, row.props);
+      row.props = recalcRow(row.props, props.dataset.props.rowSchema);
       return row.update();
     }
     return Promise.resolve();

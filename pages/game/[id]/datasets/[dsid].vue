@@ -5,7 +5,6 @@
         <UserPreferences/>
         <BackToDatasets :game="game" />        
     </div>
-    <button @mousedown="rename" class="ml-5">Rename</button>     {{ rows.records.length }}
 
     <DatasetTable :rows="rows" :dataset="dataset"/>
 
@@ -18,32 +17,22 @@ definePageMeta({
 });
 const route = useRoute();
 const notify = useNotify();
-const gameId = route.params.id.toString();
-const datasetId = route.params.dsid.toString();
-const game = useVingRecord({
-    id: gameId,
-    fetchApi: `/api/${useRestVersion()}/game/${gameId}`,
-    createApi: `/api/${useRestVersion()}/game`,
-    query: { includeMeta: true, includeOptions: true },
-});
-const dataset = useVingRecord({
-    id: datasetId,
-    fetchApi: `/api/${useRestVersion()}/dataset/${datasetId}`,
-    createApi: `/api/${useRestVersion()}/dataset`,
-    query: { includeMeta: true, includeOptions: true },
-});
+const gameId = useGameId(route.params.id.toString());
+const game = useGame();
+const datasetId = useDatasetId(route.params.dsid.toString());
+const dataset = useDataset();
 const appendNewRows = useAppendNewRows();;
 const rows = useVingKind({
-    listApi: `/api/${useRestVersion()}/dataset/${datasetId}/rows`,
+    listApi: `/api/${useRestVersion()}/dataset/${datasetId.value}/rows`,
     createApi: `/api/${useRestVersion()}/row`,
     query: { includeMeta: true, sortBy: 'name', itemsPerPage: 100 },
-    newDefaults: { name: '', gameId, datasetId },
+    newDefaults: { name: '', game: gameId.value, datasetId: datasetId.value },
     unshift : !appendNewRows.value,
     onEach(record) {
         for (const field in dataset.props.rowSchema) {
             record.props.fields[field] = formatFieldType(dataset.props.rowSchema[field].type, record.props.fields[field]);
         }
-        record.props = recalcRow(dataset.props.rowSchema, record.props);
+        record.props = recalcRow(record.props, dataset.props.rowSchema);
     }
 });
 onBeforeRouteLeave(() => {
@@ -57,12 +46,6 @@ await Promise.all([
     rows.fetchPropsOptions(),
 ]);
 await rows.all();
-
-function rename() {
-    rows.records[0].props.name = 'Untitled'+Math.random().toString();
-    rows.records[0].save('name');
-}
-
 
 
 </script>

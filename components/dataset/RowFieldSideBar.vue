@@ -10,7 +10,7 @@
 
       <div class="mb-2">
         <label for="userValue">User Value</label>
-        <Textarea id="userValue" v-model="row.props.fields[field].userValue" autoResize class="w-full" @change="row.props = versionFieldHistory(row.props, [field]);saveRow(row)" @focus="suspendHotRender()" @blur="resumeHotRender()" />
+        <Textarea id="userValue" v-model="row.props.fields[field].userValue" autoResize class="w-full" @change="saveRowFieldHistory(row, field)" @focus="suspendHotRender()" @blur="resumeHotRender()" />
       </div>
 
       <div>Shortcuts</div>
@@ -28,7 +28,6 @@
       row: Object,
       field: String,
       modelValue: Boolean,
-      saveRow: Function,
   });
   const emit = defineEmits(['update:modelValue']);
   const val = computed({
