@@ -1,6 +1,7 @@
 <template>
     <Title>{{ dataset.props?.name }} Dataset Editor</Title>
     <div class="flex flex-wrap gap-1">
+        <ManageGameVariables :game="game" />
         <AddRowsCols :dataset="dataset" :rows="rows" />
         <UserPreferences/>
         <BackToDatasets :game="game" />        

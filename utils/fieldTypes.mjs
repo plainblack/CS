@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {ouch} from '#ving/utils/ouch.mjs';
 
 const fixBool = z.coerce.string().transform((value) => ['false','undefined','0','null',''].includes(value) ? false : value);
 
@@ -70,4 +71,11 @@ export const fieldTypes = [
     },
 ];
 
-export const formatFieldType = (type, value) => fieldTypes[fieldTypeIndex[type]].formatter.parse(value);
+export const formatFieldType = (type, fieldObject = {}) => {
+    const result = fieldTypes[fieldTypeIndex[type]].formatter.safeParse(fieldObject);
+    if (result.success == false) {
+        console.log(result.error.format());
+        throw ouch(500, `Could not formatFieldType ${type} with ${fieldObject}`);
+    }
+    return result.data;
+};
