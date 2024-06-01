@@ -608,6 +608,8 @@ export class VingRecord {
      * await user.update()
      */
     async update() {
+        if (this.#dirty.length == 0)
+            return; // nothing worth updating
         const schema = findVingSchema(getTableName(this.table));
         // auto-update auto-updating date fields
         for (const field of schema.props) {
@@ -914,11 +916,11 @@ export class VingKind {
         const schema = findVingSchema(getTableName(this.table));
         for (const prop of schema.props) {
             if (prop.filterQuery)
-                filter.queryable.push(this.table[prop.name]);
+                filter.queryable.push({ vingSchemaProp: prop, drizzleColumn: this.table[prop.name] });
             if (prop.filterQualifier)
-                filter.qualifiers.push(this.table[prop.name]);
+                filter.qualifiers.push({ vingSchemaProp: prop, drizzleColumn: this.table[prop.name] });
             if (prop.filterRange)
-                filter.ranged.push(this.table[prop.name]);
+                filter.ranged.push({ vingSchemaProp: prop, drizzleColumn: this.table[prop.name] });
         }
         return filter;
     }
