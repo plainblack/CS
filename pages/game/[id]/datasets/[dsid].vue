@@ -45,23 +45,14 @@ recalcGameFields(game);
 await rows.all();
 
 const gameTemplateVars = useGameTemplateVars();
-const unsubscribeFromGameTemplateVars = gameTemplateVars.$onAction(
-    (e) => {
-      /*  {
-    name, // name of the action
-    store, // store instance, same as `someStore`
-    args, // array of parameters passed to the action
-    after, // hook after the action returns or resolves
-    onError, // hook if the action throws or rejects
-  }*/
+const unsubscribeFromGameTemplateVars = gameTemplateVars.$onAction((e) => {
     if (e.name == 'set') {
         e.after((result) => {
-            
-            console.log(`we should recalc rows because ${e.name} was triggered with ${e.store.vars.one} with ${result}`);
+            recalcRows(rows, dataset.props.rowSchema);
         });
     }
   }
-)
+);
 
 onBeforeRouteLeave(() => {
     unsubscribeFromGameTemplateVars();
