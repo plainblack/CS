@@ -494,6 +494,7 @@ export class VingRecord {
             ving.log('VingRecord').error(key.toString() + ' is not a prop');
             throw ving.ouch(400, key.toString() + ' is not a prop', key);
         }
+        console.log(key, value,this.#props[key])
         if (value != this.#props[key] && !this.#dirty.includes(key))
             this.#dirty.push(key);
         return this.#props[key] = value;

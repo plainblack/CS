@@ -17,8 +17,20 @@
             </div>
             <div class="flex-grow-1">
                 <PanelZone title="Existing Variables" margin="mb-0">
-                   
+                   <table cellpadding="5" class="w-full">
+                        <tr v-for="(data, key) in game.props.fields" :key="key">
+                            <td class="border-1 border-gray-200">{{key}}</td>
+                            <td class="border-1 border-gray-200"><FormInput :name="`gamefield_${key}`" type="text" v-model="data.userValue"/></td>
+                            <td>
+                                <Button severity="danger" @mousedown="deleteVariable(key)">
+                                    <Icon name="ph:trash" />
+                                </Button>
+                            </td>
+                        </tr>
+                   </table>
                 </PanelZone>
+            </div>
+            <div class="flex-grow-1">
             </div>
         </div>
     </OverlayPanel>
@@ -53,7 +65,13 @@ const addVariable = () => {
     props.game.update();
     fieldType.value = 'str';
     fieldName.value = '';
-    fieldName.value = '';
+    fieldValue.value = '';
 };
+const deleteVariable = (key) => {
+    delete props.game.props.fields[key];
+    delete props.game.props.fieldSchema[key];
+    recalcGameFields(props.game);
+    props.game.update();
+}
 
 </script>

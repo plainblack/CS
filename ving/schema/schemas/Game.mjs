@@ -36,7 +36,7 @@ export const gameSchema = {
             db: (prop) => dbJson(prop),
             zod: (prop) => zodJsonObject(prop).passthrough(), // or replace .passthrough() with something like .extends({foo: z.string()})
             view: ['public'],
-            edit: [],
+            edit: ['owner'],
         },
         {
             type: "json",
@@ -46,7 +46,7 @@ export const gameSchema = {
             db: (prop) => dbJson(prop),
             zod: (prop) => zodJsonObject(prop).passthrough(), // or replace .passthrough() with something like .extends({foo: z.string()})
             view: ['public'],
-            edit: [],
+            edit: ['owner'],
         },
         {
             type: "id",
