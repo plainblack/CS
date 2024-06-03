@@ -20,7 +20,9 @@
                    <table cellpadding="5" class="w-full">
                         <tr v-for="(data, key) in game.props.fields" :key="key">
                             <td class="border-1 border-gray-200">{{key}}</td>
-                            <td class="border-1 border-gray-200"><FormInput :name="`gamefield_${key}`" type="text" v-model="data.userValue"/></td>
+                            <td class="border-1 border-gray-200">
+                                <FormInput :name="`gamefield_${key}`" type="text" v-model="data.userValue" @change="updateVariable"/>
+                            </td>
                             <td>
                                 <Button severity="danger" @mousedown="deleteVariable(key)">
                                     <Icon name="ph:trash" />
@@ -56,6 +58,10 @@ const makeNameSafe = (userTyped) => {
     if (safe in props.game.props.fieldSchema)
         return makeNameSafe(appendNumberToString(safe));
     return safe;
+};
+const updateVariable = () => {
+    recalcGameFields(props.game);
+    props.game.update();
 };
 const addVariable = () => {
     props.game.props.fields[fieldName.value] = formatFieldType(fieldType.value);

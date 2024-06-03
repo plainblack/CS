@@ -46,6 +46,7 @@ await Promise.all([
     dataset.fetch(),
     rows.fetchPropsOptions(),
 ]);
+recalcGameFields(game);
 await rows.all();
 
 
