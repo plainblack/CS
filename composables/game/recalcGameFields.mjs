@@ -5,5 +5,5 @@ export const recalcGameFields = (game) => {
     _object: g.props,
     _schema: g.props.fieldSchema,
   })
-  useGameTemplateVars(game);
+  useGameTemplateVars().set(game);
 }
