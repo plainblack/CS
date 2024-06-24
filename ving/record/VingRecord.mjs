@@ -690,7 +690,7 @@ export class VingKind {
      * @param {Object} where A drizzle where clause
      * @returns {object} A drizzle where clause
      * @example
-     * const results = await Users.delete.where(Users.calcWhere(like(Users.realName, 'Fred%')));
+     * const results = await Users.delete.where(Users.calcWhere(like(Users.table.realName, 'Fred%')));
      */
     calcWhere(where) {
         let defaults = undefined;
@@ -800,11 +800,14 @@ export class VingKind {
      *
      * @param {Object} props A list of props
      * @param {Object} currentUser A `User` or `Session`
+     * @throws 441 if no currentUser is passed
      * @returns {VingRecord} A newly minted record or throws an error if validation fails
      * @example
-     * const record = await Users.createAndVerify({username: 'andy'})
+     * const record = await Users.createAndVerify({username: 'andy'}, currentUser)
      */
     async createAndVerify(props, currentUser) {
+        if (isUndefined(currentUser))
+            throw ving.ouch(441, `createAndVerify requires a user or session to test privileges against`);
         const obj = this.mint({});
         obj.testCreationProps(props);
         await obj.setPostedProps(props, currentUser);
@@ -951,7 +954,7 @@ export class VingKind {
      * @param {Object[]} options.orderBy An array of drizzle table fields to sort by with `asc()` or `desc()` function wrappers
      * @returns {VingRecord[]} A list of records
      * @example
-     * const listOfFredRecords = await Users.findMany(like(Users.realName, 'Fred%'));
+     * const listOfFredRecords = await Users.findMany(like(Users.table.realName, 'Fred%'));
      */
     async findMany(
         where,
@@ -978,7 +981,7 @@ export class VingKind {
      * @param {Object[]} options.orderBy An array of drizzle table fields to sort by with `asc()` or `desc()` function wrappers
      * @returns {Iterator<VingRecord>} An iterator that points to a list of records
      * @example
-     * const fredRecords = await Users.findAll(like(Users.realName, 'Fred%')); 
+     * const fredRecords = await Users.findAll(like(Users.table.realName, 'Fred%')); 
      * for await (const fred of fredRecords) { 
      *  // do stuff with each record
      * }
@@ -1007,7 +1010,7 @@ export class VingKind {
      * @param {Object} where A drizzle where clause
      * @returns {VingRecord|undefined} a record or `undefined` if no record is found
      * @example
-     * const fredRecord = await Users.findOne(eq(Users.username, 'Fred'));
+     * const fredRecord = await Users.findOne(eq(Users.table.username, 'Fred'));
      */
     async findOne(where) {
         const result = await this.findMany(where, { limit: 1 });

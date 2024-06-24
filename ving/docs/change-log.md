@@ -3,6 +3,35 @@ outline: deep
 ---
 # Change Log
 
+## June 2024
+
+### 2024-06-23
+* Fixed: examples in VingSchema need to differentiate between the able and the kind class #155
+* Implemented: add manifest.json file #162
+
+### 2024-06-21
+* Replaced PrimeFlex with Tailwind.
+* Replaced PrimeVue 3 with PrimeVue 4.
+* NOTE: All your UI stuff will need to be updated to work with Tailwind and PrimeVue 4. 
+* Added DarkModeSelector component.
+* Added ving-theme.
+* Fixed: fix documentation for createAndVerify #164
+* Fixed: useKind is treating the cache as if its a class not an instance #165
+* Upgraded to Nuxt 3.12.
+* NOTE: `npm i` to get the new version of nuxt
+* Migrated to new Nuxt 4 folder structure.
+* NOTE: All of your pages, layouts, composables, components, utils, middleware, etc needs to move into the app folder.
+
+### 2024-06-06
+* Fixed documentation for ving/utils/fs readJSON and writeJSON
+* Added an optional function that will be passed to an array filter to filter out any unwanted records from the current list of records on useVingKind() records list.
+* Added cron listing to ving jobs list.
+* ving jobs list auto-scales to fit terminal size.
+* Fixed: Help page type, missing "jobs" #160
+
+### 2024-06-01
+* Documented noSetAll() attribute in Ving Schemas.
+
 ## May 2024
 
 ### 2024-05-31
