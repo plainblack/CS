@@ -3,7 +3,7 @@
         <hot-table 
             :colHeaders="columnHeaders"
             :columns="columnFields"
-            :data="rows.records"
+            :data="dataset.props.rows"
             :columnSorting="true"
             :fixedColumnsLeft="3"
             :autoWrapCol="true"
@@ -30,7 +30,7 @@
             >
         </hot-table>
     </client-only>
-    <RowFieldSideBar :row="rows.records[currentRowIndex]" :field="currentRowField" v-model="sidebarVisible" />
+    <RowFieldSideBar :row="dataset.props.rows[currentRowIndex]" :field="currentRowField" v-model="sidebarVisible" />
 
 </template>
 
@@ -47,7 +47,6 @@
   const sidebarVisible = ref(false);
 
   const props = defineProps({
-      rows: Object,
       dataset: Object,
   });
 
@@ -109,15 +108,15 @@
     const promises = [];
     for (let change of changes) {
       if (rowPos != change[0]) {
-        promises.push(saveRow(row));
+        saveRow(row);
         rowPos = change[0];
 
         tableRow = hotInstance.getSourceDataAtRow(
           hotInstance.toPhysicalRow(rowPos)
         );
-        row = props.rows.find(tableRow.props.id);
+        row = props.dataset.props.rows.find(r => r.id == tableRow.id);
       }
-      let field = dropProps(change[1]);
+      let field = change[1];
       if (field == 'name') {
         validateName(row, change[2]);
       } else if (field == 'quantity') {
@@ -126,11 +125,13 @@
         // do nothing
       } else {
         field = getFieldName(field);
-        row.props = versionFieldHistory(row.props, [field]);
+        row = versionFieldHistory(row, [field]);
       }
     }
-    promises.push(saveRow(row));
-    await Promise.all(promises);
+    saveRow(row);
+    console.log(JSON.stringify(props.dataset.props.rows));
+
+    await props.dataset.save('rows');
     resumeHotRender();
   }
   
@@ -138,28 +139,30 @@
   const getFieldName = (path) =>  path.replace(/fields\.(.*)\.userValue/, '$1');
 
   const validateName = (row, was) => {
-    if (row.props.name == '') {
+    if (row.name == '') {
       notify.error('You must give the row a name.');
       return;
     }
     let error = false;
-    for (let other of props.rows.records) {
-      if (other.props.name == row.props.name && other.props.id != row.props.id) {
+    for (let other of props.dataset.props.rows) {
+      if (other.name == row.name && other.id != row.id) {
         error = true;
       }
     }
     if (error) {
-      notify.error('You already have another row named ' + row.props.name + '.');
-      row.props.name = was;
+      notify.error('You already have another row named ' + row.name + '.');
+      row.name = was;
     }
   }
 
   const saveRow = (row) => {
     if (row) {
-      row.props = recalcRow(row.props, props.dataset.props.rowSchema);
-      return row.update();
+      row = recalcRow(row, props.dataset.props.rowSchema);
+      //const index = props.dataset.props.rows.findIndex(r => r.id == row.id);
+      //if (index > -1) {
+     //   props.dataset.props.rows[index] = row;
+      //}
     }
-    return Promise.resolve();
   }
 
     const rowControlsRenderer = (instance, td, rowIndex) => {
@@ -183,9 +186,7 @@
           instance.toPhysicalRow(rowIndex)
         );
         const row = util.findObject(tableRow.id, self.rows);
-        let newRow = await self.$store.dispatch('duplicateRow', row);
-        self.$store.dispatch('addRowToServer', newRow);
-        await props.rows.create(newRow);
+        await duplicateRow(row);
       });
       td.appendChild(dupButton);
       return td;
@@ -194,23 +195,26 @@
     const currentRowIndex = ref(null);
     const currentRowField = ref(null);
 
-    const openRowFieldSideBar = (row, name) => {
-      currentRowIndex.value = props.rows.findIndex(row.props.id);
-      currentRowField.value = name;
+    const openRowFieldSideBar = (row, fieldName) => {
+      console.log('row',row )
+      console.log('name',fieldName)
+      currentRowIndex.value = props.dataset.props.rows.findIndex((r) => r.id === row.id);
+     //currentRowIndex.value = row;
+      currentRowField.value = fieldName;
       sidebarVisible.value = true;
     }
 
     const columnFields = computed(() => {
       const columns = [
         {
-          data: 'props.id',
+          data: 'id',
           type: 'text',
           readOnly: true,
           renderer: rowControlsRenderer,
         },
-        { data: 'props.quantity', type: 'numeric' },
+        { data: 'quantity', type: 'numeric' },
         {
-          data: 'props.name',
+          data: 'name',
           type: 'text',
           columnSorting: {
             compareFunctionFactory(sortOrder) {
@@ -230,7 +234,7 @@
       
       for (let field of props.dataset.props.rowFieldOrder || []) {
         columns.push({
-          data: 'props.fields.' + field + '.userValue',
+          data: 'fields.' + field + '.userValue',
           type: 'text',
           renderer(instance, td, row) {
             //, , col, prop, value, cellProperties)
@@ -245,10 +249,10 @@
             let tableRow = instance.getSourceDataAtRow(rowIndex);
             if (
               tableRow
-              && tableRow.props
-              && tableRow.props.fields
-              && tableRow.props.fields[field]
-              && tableRow.props.fields[field].hasError
+              && tableRow
+              && tableRow.fields
+              && tableRow.fields[field]
+              && tableRow.fields[field].hasError
             ) {
               td.className = 'border-1 border-red-500';
             }
@@ -258,8 +262,8 @@
                 image.style.height = '30px';
                 image.style.maxWidth = '100px';
                 image.style.verticalAlign = 'top';
-                if (tableRow && tableRow.props && tableRow.props.fields && tableRow.props.fields[field]) {
-                  image.src = tableRow.props.fields[field].calcValue;
+                if (tableRow && tableRow.fields && tableRow.fields[field]) {
+                  image.src = tableRow.fields[field].calcValue;
                 }
                 image.classList.add('border', 'rounded');
                 div.appendChild(image);
@@ -273,9 +277,9 @@
                 color.style.margin = 0;
                 color.style.display = 'inline-block';
                 color.style.verticalAlign = 'top';
-                if (tableRow && tableRow.props && tableRow.props.fields && tableRow.props.fields[field]) {
+                if (tableRow && tableRow.fields && tableRow.fields[field]) {
                   color.style.backgroundColor =
-                    '#' + tableRow.props.fields[field].calcValue;
+                    '#' + tableRow.fields[field].calcValue;
                 }
                 color.classList.add('border-1', 'border-round');
                 div.appendChild(color);
@@ -364,7 +368,7 @@
     const deleteRows = async (rows) => {
       let rowNames = [];
       for (let row of rows) {
-        rowNames.push(row.props.name);
+        rowNames.push(row.name);
       }
       if (
         confirm(
@@ -373,10 +377,13 @@
             '?'
         )
       ) {
-        exportRows(props.dataset, props.rows);
+        exportRows(props.dataset);
+        let ids = [];
         for (let row of rows) {
-          row.delete({skipConfirm:true});
+          ids.push(row.id);
         }
+        props.dataset.props.rows = props.dataset.props.rows.filter((r) => !ids.includes(r.id))
+        await props.dataset.save('rows');
       }
     }
 

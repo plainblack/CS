@@ -1,5 +1,6 @@
 export default async (row, field) => {
-    versionFieldHistory(row.props, [field]);
-    row.props = recalcRow(row.props);
-    await row.save('fields');
+    versionFieldHistory(row, [field]);
+    const dataset = useDataset();
+    row = recalcRow(row, dataset.props.rowSchema);
+    await dataset.save('rows');
 }

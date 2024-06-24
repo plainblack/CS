@@ -1,0 +1,1 @@
+ALTER TABLE `datasets` ADD `rows` json DEFAULT ('[]') NOT NULL;

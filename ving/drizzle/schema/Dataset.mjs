@@ -14,6 +14,7 @@ export const DatasetTable = mysqlTable('datasets',
 		fieldSchema: json('fieldSchema').notNull().default({}),
 		rowFieldOrder: json('rowFieldOrder').notNull().default([]),
 		rowSchema: json('rowSchema').notNull().default({}),
+		rows: json('rows').notNull().default([]),
 		gameId: bigint('gameId', {mode:'number', unsigned: true}).notNull()
     }, 
     (table) => ({

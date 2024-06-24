@@ -33,10 +33,10 @@
     </OverlayPanel>
 </template>
 <script setup>
+import { v4 } from 'uuid';
 import appendNumberToString from '#ving/utils/appendNumberToString';
 const props = defineProps({
     dataset: Object,
-    rows: Object,
 });
 const toolbarLabels = useToolbarLabels();
 const op = ref();
@@ -80,12 +80,28 @@ const makeNameSafe = (userTyped) => {
     return safe;
 };
 
+const appendNewRows = useAppendNewRows();
+const addRow = () => {
+    let row = { quantity: 1, name : 'Untitled '+Math.random().toString(), fields : {}, id : v4() };
+    for (const field in props.dataset.props.rowSchema) {
+        row.fields[field] = formatFieldType(props.dataset.props.rowSchema[field].type, row.fields[field]);
+    }
+    if (appendNewRows) {
+        props.dataset.props.rows.push(row);
+    }
+    else {
+        props.dataset.props.rows.unshift(row);
+    }
+}
+
+
 const quantityOfRowsToAdd = ref(1);
 const addRows = async () => {
     suspendHotRender();
     for (let i = 0; i < quantityOfRowsToAdd.value; i++) {
-        await props.rows.create({name: 'Untitled '+Math.random().toString()});
+        addRow();
     }
+    await props.dataset.save('rows');
     toggle();
     resumeHotRender();
     const appendNewRows = useAppendNewRows();
@@ -98,9 +114,9 @@ const addRows = async () => {
 const deleteAllRows = async () => {
     if (confirm('Are you sure you want to delete all rows in this dataset?')) {
         suspendHotRender();
-        exportRows(props.dataset, props.rows);
-        await props.dataset.call('DELETE', props.dataset.links.rows.href);
-        props.rows.reset();
+        exportRows(props.dataset);
+        props.dataset.props.rows = [];
+        await props.dataset.save('rows');
         toggle();
         resumeHotRender();
     }

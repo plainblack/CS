@@ -1,6 +1,6 @@
-export const recalcRows = (rows, schema) => {
-  let s = schema ? schema : useDataset().props.rowSchema;
-  for (const record of rows.records) {
-    record.props = recalcRow(record.props, s);
+export const recalcRows = (dataset) => {
+  let d = dataset ? dataset : useDataset();
+  for (let row of dataset.props.rows) {
+    row = recalcRow(row, dataset.props.rowSchema);
   }
 }

@@ -14,10 +14,9 @@ export class DatasetRecord extends VingRecord {
                 out.extra = {}
             if (params?.include?.extra.includes('totalQuantity')) {
                 out.extra.totalQuantity = 0;
-                const rows = await this.children('rows');
+                const rows = this.rows;
                 if (this.enumerateOn) {
-                    const rowRecords = await rows.findMany();
-                    for (const row of rowRecords) {
+                    for (const row of rows) {
                         let enumString = '';
                         if (row.fields[this.enumerateOn]?.userValue) {
                             enumString = row.fields[this.enumerateOn]?.userValue;
@@ -28,24 +27,17 @@ export class DatasetRecord extends VingRecord {
                     }
                 }
                 else {
-                    out.extra.totalQuantity = await rows.sum('quantity');
+                    out.extra.totalQuantity = this.rows.reduce((accumulator, row) => accumulator + row.quantity, 0);
                 }
             }
             if (params?.include?.extra.includes('rowCount')) {
-                out.extra.rowCount = await (await this.children('rows')).count();
+                out.extra.rowCount = this.rows.length;
             }
         }
         return out;
     }
 
-    async delete() {
-
-        //  if (await (await this.parent('design')).count())
-        //      throw ouch(441, 'Cannot delete a data set while it is still attached to a design.');
-        await (await this.children('rows')).deleteMany();
-
-        await super.delete();
-    }
+  
 
     async copyWithRows() {
         const newDataset = await super.copy();

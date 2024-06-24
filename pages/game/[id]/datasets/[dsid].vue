@@ -2,12 +2,12 @@
     <Title>{{ dataset.props?.name }} Dataset Editor</Title>
     <div class="flex flex-wrap gap-1">
         <ManageGameVariables :game="game" />
-        <AddRowsCols :dataset="dataset" :rows="rows" />
+        <AddRowsCols :dataset="dataset" />
         <UserPreferences/>
         <BackToDatasets :game="game" />        
     </div>
 
-    <DatasetTable :rows="rows" :dataset="dataset"/>
+    <DatasetTable :dataset="dataset"/>
 
 
 </template>
@@ -22,33 +22,30 @@ const gameId = useGameId(route.params.id.toString());
 const game = useGame();
 const datasetId = useDatasetId(route.params.dsid.toString());
 const dataset = useDataset();
-const appendNewRows = useAppendNewRows();;
-const rows = useVingKind({
-    listApi: `/api/${useRestVersion()}/dataset/${datasetId.value}/rows`,
-    createApi: `/api/${useRestVersion()}/row`,
-    query: { includeMeta: true, sortBy: 'name', itemsPerPage: 100 },
-    newDefaults: { name: '', game: gameId.value, datasetId: datasetId.value },
-    unshift : !appendNewRows.value,
-    onEach(record) {
+
+const formatAllRows = () => {
+    for (let i = 0; i < dataset.props.rows.length; i++) {
         for (const field in dataset.props.rowSchema) {
-            record.props.fields[field] = formatFieldType(dataset.props.rowSchema[field].type, record.props.fields[field]);
+            dataset.props.rows[i].fields[field] = formatFieldType(dataset.props.rowSchema[field].type, dataset.props.rows[i].fields[field]);
         }
-        record.props = recalcRow(record.props, dataset.props.rowSchema);
     }
-});
+}
+
 await Promise.all([
     game.fetch(),
     dataset.fetch(),
-    rows.fetchPropsOptions(),
 ]);
 recalcGameFields(game);
-await rows.all();
+formatAllRows();
+recalcRows(dataset);
+
+
 
 const gameTemplateVars = useGameTemplateVars();
 const unsubscribeFromGameTemplateVars = gameTemplateVars.$onAction((e) => {
     if (e.name == 'set') {
         e.after((result) => {
-            recalcRows(rows, dataset.props.rowSchema);
+            recalcRows(dataset);
         });
     }
   }
@@ -58,7 +55,6 @@ onBeforeRouteLeave(() => {
     unsubscribeFromGameTemplateVars();
     game.dispose();
     dataset.dispose();
-    rows.dispose();
 });
 
 </script>

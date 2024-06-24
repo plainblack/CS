@@ -8,6 +8,13 @@
       "when": 1715538010688,
       "tag": "0000_absurd_nomad",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1718047432337,
+      "tag": "0001_chief_salo",
+      "breakpoints": true
     }
   ]
 }

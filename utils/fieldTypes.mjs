@@ -51,7 +51,7 @@ export const fieldTypes = [
     },
     { label: 'Color', value: 'hex', default: '000000', formatter : z.object({
             ...shared,
-            ...bool,
+            ...hex,
         }).default({}),
     },
     { label: 'Number', value: 'int', default: 0, formatter : z.object({

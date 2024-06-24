@@ -82,6 +82,21 @@ export const datasetSchema = {
             edit: ['owner'],
         },
         {
+            type: "json",
+            name: "rows",
+            required: false,
+            default: '[]',
+            db: (prop) => dbJson(prop),
+            zod: (prop) => z.object({
+                quantity: z.number(),
+                name: z.string(),
+                id: z.string(),
+                fields: z.object({}).passthrough(),
+            }).array(),
+            view: [],
+            edit: ['owner'],
+        },
+        {
             type: "id",
             name: 'gameId', // the name of the remote record's id in this table
             required: true,
@@ -95,19 +110,6 @@ export const datasetSchema = {
             },
             view: ['public'],
             edit: ['owner'],
-        },
-        {
-            type: "virtual",
-            name: 'datasetId', // the name of this record's id in the remote table
-            required: false,
-            default: undefined,
-            view: ['public'],
-            edit: ['owner'],
-            relation: {
-                type: 'child',
-                name: 'rows',
-                kind: 'Row',
-            },
         },
         /*
         {
